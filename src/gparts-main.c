@@ -502,9 +502,14 @@ gparts_switch_page_cb(GtkNotebook *notebook, gpointer unused, gint page_no, gpoi
 
 int main(int argc, char* argv[])
 {
-    GParts *gparts;
+  GParts *gparts;
 
-    g_type_init();
+  g_type_init();
+
+  if (gtk_init_check(&argc, &argv)) {
+
+
+
     gtk_init(&argc, &argv);
 
     dlopen(NULL, RTLD_NOW | RTLD_GLOBAL);
@@ -515,7 +520,11 @@ int main(int argc, char* argv[])
     gparts = gparts_new();
 
     gtk_main();
-
-    return 0;
+  }
+  else {
+    fprintf(stderr, "Failed to initialize GTK");
+    return 1;
+  }
+  return 0;
 }
 

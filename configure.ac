@@ -3,6 +3,8 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
 
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])dnl
+
 AC_PROG_CC
 
 AC_PROG_CC_C_O
@@ -68,15 +70,22 @@ GMODULE_LIBS=`$PKG_CONFIG gmodule-2.0 --libs`
 AC_SUBST(GMODULE_CFLAGS)
 AC_SUBST(GMODULE_LIBS)
 
-##  GTK
+##  GTK 3.0
 ##
-GTK_VERSION=`$PKG_CONFIG gtk+-3.0 --modversion`
-GTK_CFLAGS=`$PKG_CONFIG gtk+-3.0 --cflags`
-GTK_LIBS=`$PKG_CONFIG gtk+-3.0 --libs`
+#GTK_VERSION=`$PKG_CONFIG gtk+-3.0 --modversion`
+#GTK_CFLAGS=`$PKG_CONFIG gtk+-3.0 --cflags`
+#GTK_LIBS=`$PKG_CONFIG gtk+-3.0 --libs`
+
+##  GTK 2.0
+##
+GTK_VERSION=`$PKG_CONFIG gtk+-2.0 --modversion`
+GTK_CFLAGS=`$PKG_CONFIG gtk+-2.0 --cflags`
+GTK_LIBS=`$PKG_CONFIG gtk+-2.0 --libs`
+
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-## XML 
+## XML
 ##
 LIBXML_VERSION=`$PKG_CONFIG libxml-2.0 --modversion`
 LIBXML_CFLAGS=`$PKG_CONFIG libxml-2.0 --cflags`
