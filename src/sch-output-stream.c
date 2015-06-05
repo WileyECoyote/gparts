@@ -21,6 +21,8 @@
 /*! \file sch-output-stream.c
  */
 
+#include <string.h>
+
 #include <glib.h>
 #include <glib-object.h>
 #include <gio/gio.h>
@@ -1179,7 +1181,7 @@ sch_output_stream_write_version(SchOutputStream *stream, const char *package_dat
             error
             );
 
-        g_free(str);        
+        g_free(str);
     }
 }
 
