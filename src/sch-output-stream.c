@@ -46,7 +46,7 @@ struct _SchOutputStreamPrivate
 };
 
 static void
-sch_output_stream_class_init(gpointer g_class, gpointer g_class_data);
+sch_output_stream_class_init(void *g_class, void *g_class_data);
 
 static void
 sch_output_stream_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
@@ -55,11 +55,11 @@ static void
 sch_output_stream_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-sch_output_stream_write_path_2_proc(SchPathCommand *command, gpointer user_data);
+sch_output_stream_write_path_2_proc(SchPathCommand *command, void *user_data);
 
 
 static void
-sch_output_stream_class_init(gpointer g_class, gpointer g_class_data)
+sch_output_stream_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
 
@@ -292,7 +292,7 @@ sch_output_stream_write_arc_2(SchOutputStream *stream, const SchArc *shape, GErr
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x;
         int   y;
         int   radius;
@@ -358,7 +358,7 @@ sch_output_stream_write_attributes_begin(SchOutputStream *stream, GError **error
 
     if (privat != NULL)
     {
-        gchar *str = g_strdup_printf(
+        char *str = g_strdup_printf(
             "%s%s",
             "{",
             SCH_OUTPUT_STREAM_EOL
@@ -385,7 +385,7 @@ sch_output_stream_write_attributes_end(SchOutputStream *stream, GError **error)
 
     if (privat != NULL)
     {
-        gchar *str = g_strdup_printf(
+        char *str = g_strdup_printf(
             "%s%s",
             "}",
             SCH_OUTPUT_STREAM_EOL
@@ -410,7 +410,7 @@ sch_output_stream_write_box_2(SchOutputStream *stream, const SchBox *shape, GErr
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x;
         int   y;
         int   width;
@@ -490,7 +490,7 @@ sch_output_stream_write_bus_2(SchOutputStream *stream, const SchBus *shape, GErr
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x1;
         int   y1;
         int   x2;
@@ -540,7 +540,7 @@ sch_output_stream_write_circle_2(SchOutputStream *stream, const SchCircle *shape
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x;
         int   y;
         int   radius;
@@ -619,7 +619,7 @@ sch_output_stream_write_component_2(SchOutputStream *stream, const SchComponent 
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x;
         int   y;
         int   selectable;
@@ -674,7 +674,7 @@ sch_output_stream_write_line_2(SchOutputStream *stream, const SchLine *shape, GE
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x1;
         int   y1;
         int   x2;
@@ -737,7 +737,7 @@ sch_output_stream_write_net_2(SchOutputStream *stream, const SchNet *shape, GErr
 
     if (privat != NULL && shape != NULL)
     {
-        gchar *str;
+        char *str;
         int   x1;
         int   y1;
         int   x2;
@@ -785,91 +785,89 @@ sch_output_stream_write_net_2(SchOutputStream *stream, const SchNet *shape, GErr
 }
 
 void
-sch_output_stream_write_path_2(SchOutputStream *stream, const SchPath *shape, GError **error)
+sch_output_stream_write_path_2(SchOutputStream *stream, SchPath *shape, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL)
-    {
-        gchar *str;
-        int   x;
-        int   y;
-        int   radius;
-        int   color;
-        int   line_width;
-        int   capstyle;
-        int   dashstyle;
-        int   dashlength;
-        int   dashspace;
-        int   fill_type;
-        int   fill_width;
-        int   fill_angle1;
-        int   fill_pitch1;
-        int   fill_angle2;
-        int   fill_pitch2;
-        int   count = sch_path_count(shape);
+  if (privat != NULL && shape != NULL) {
 
-        g_object_get(
-            (gpointer) shape,
-            "color",            &color,
-            "line-width",       &line_width,
-            "line-cap-style",   &capstyle,
-            "line-dash-style",  &dashstyle,
-            "line-dash-length", &dashlength,
-            "line-dash-space",  &dashspace,
-            "fill-type",        &fill_type,
-            "fill-width",       &fill_width,
-            "fill-angle1",      &fill_angle1,
-            "fill-pitch1",      &fill_pitch1,
-            "fill-angle2",      &fill_angle2,
-            "fill-pitch2",      &fill_pitch2,
-            NULL
-            );
+    char *str;
+    //        int   x;
+    //        int   y;
+    //        int   radius;
+    int   color;
+    int   line_width;
+    int   capstyle;
+    int   dashstyle;
+    int   dashlength;
+    int   dashspace;
+    int   fill_type;
+    int   fill_width;
+    int   fill_angle1;
+    int   fill_pitch1;
+    int   fill_angle2;
+    int   fill_pitch2;
+    int   count = sch_path_count(shape);
 
-        str = g_strdup_printf(
-            "%s %d %d %d %d %d %d %d %d %d %d %d %d %d%s",
-            "H",
-            color,
-            line_width,
-            capstyle,
-            dashstyle,
-            dashlength,
-            dashspace,
-            fill_type,
-            fill_width,
-            fill_angle1,
-            fill_pitch1,
-            fill_angle2,
-            fill_pitch2,
-            count,
-            SCH_OUTPUT_STREAM_EOL
-            );
+    g_object_get(shape,
+                 "color",            &color,
+                 "line-width",       &line_width,
+                 "line-cap-style",   &capstyle,
+                 "line-dash-style",  &dashstyle,
+                 "line-dash-length", &dashlength,
+                 "line-dash-space",  &dashspace,
+                 "fill-type",        &fill_type,
+                 "fill-width",       &fill_width,
+                 "fill-angle1",      &fill_angle1,
+                 "fill-pitch1",      &fill_pitch1,
+                 "fill-angle2",      &fill_angle2,
+                 "fill-pitch2",      &fill_pitch2,
+                 NULL);
 
-        g_output_stream_write(
-            privat->base_stream,
-            str,
-            strlen(str),
-            NULL,
-            error
-            );
+    str = g_strdup_printf(
+      "%s %d %d %d %d %d %d %d %d %d %d %d %d %d%s",
+      "H",
+      color,
+      line_width,
+      capstyle,
+      dashstyle,
+      dashlength,
+      dashspace,
+      fill_type,
+      fill_width,
+      fill_angle1,
+      fill_pitch1,
+      fill_angle2,
+      fill_pitch2,
+      count,
+      SCH_OUTPUT_STREAM_EOL
+    );
 
-        sch_path_foreach(shape, sch_output_stream_write_path_2_proc, stream);
+    g_output_stream_write(
+      privat->base_stream,
+      str,
+      strlen(str),
+                          NULL,
+                          error
+    );
 
-        g_free(str);
-    }
+    sch_path_foreach(shape, (GFunc)sch_output_stream_write_path_2_proc, stream);
+
+    g_free(str);
+  }
 }
 
 static void
-sch_output_stream_write_path_2_proc(SchPathCommand *command, gpointer user_data)
+sch_output_stream_write_path_2_proc(SchPathCommand *command, void *user_data)
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(user_data);
 
-    if ((privat != NULL) && (command != NULL))
-    {
-        gchar *str = NULL;
+    if ((privat != NULL) && (command != NULL)) {
 
-        switch (command->type)
-        {
+        char *str = NULL;
+
+        switch (command->type) {
+
             case SCH_PATH_COMMAND_INVALID:
                g_debug("SchGUICairoPath: invalid path command");
                 break;
@@ -967,13 +965,13 @@ sch_output_stream_write_path_2_proc(SchPathCommand *command, gpointer user_data)
 }
 
 void
-sch_output_stream_write_picture_2(SchOutputStream *stream, const SchPicture *shape, GError **error)
+sch_output_stream_write_picture_2(SchOutputStream *stream, SchPicture *shape, GError **error)
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL)
-    {
-        gchar *str;
+    if (privat != NULL && shape != NULL) {
+
+        char *str;
         int   x1;
         int   y1;
         int   x2;
@@ -982,8 +980,7 @@ sch_output_stream_write_picture_2(SchOutputStream *stream, const SchPicture *sha
         int   type;
         int   end;
 
-        g_object_get(
-            (gpointer) shape,
+        g_object_get(shape,
             "x1",       &x1,
             "y1",       &y1,
             "x2",       &x2,
@@ -1021,13 +1018,13 @@ sch_output_stream_write_picture_2(SchOutputStream *stream, const SchPicture *sha
 }
 
 void
-sch_output_stream_write_pin_2(SchOutputStream *stream, const SchPin *shape, GError **error)
+sch_output_stream_write_pin_2(SchOutputStream *stream, SchPin *shape, GError **error)
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL)
-    {
-        gchar *str;
+    if (privat != NULL && shape != NULL) {
+
+        char *str;
         int   x1;
         int   y1;
         int   x2;
@@ -1036,8 +1033,7 @@ sch_output_stream_write_pin_2(SchOutputStream *stream, const SchPin *shape, GErr
         int   type;
         int   end;
 
-        g_object_get(
-            (gpointer) shape,
+        g_object_get(shape,
             "x1",       &x1,
             "y1",       &y1,
             "x2",       &x2,
@@ -1078,8 +1074,8 @@ sch_output_stream_write_string(SchOutputStream *stream, const char *string, GErr
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && string != NULL)
-    {
+    if (privat != NULL && string != NULL) {
+
         g_output_stream_write(
             privat->base_stream,
             string,
@@ -1099,13 +1095,13 @@ sch_output_stream_write_string(SchOutputStream *stream, const char *string, GErr
 }
 
 void
-sch_output_stream_write_text_2(SchOutputStream *stream, const SchText *shape, GError **error)
+sch_output_stream_write_text_2(SchOutputStream *stream, SchText *shape, GError **error)
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL)
-    {
-        gchar *str;
+    if (privat != NULL && shape != NULL) {
+
+        char *str;
         int   x;
         int   y;
         int   color;
@@ -1116,8 +1112,7 @@ sch_output_stream_write_text_2(SchOutputStream *stream, const SchText *shape, GE
         int   alignment;
         int   num_lines;
 
-        g_object_get(
-            (gpointer) shape,
+        g_object_get(shape,
             "x",               &x,
             "y",               &y,
             "color",           &color,
@@ -1163,8 +1158,8 @@ sch_output_stream_write_version(SchOutputStream *stream, const char *package_dat
 {
     SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         char *str = g_strdup_printf(
             "%s %s %d%s",
             "v",
@@ -1184,4 +1179,3 @@ sch_output_stream_write_version(SchOutputStream *stream, const char *package_dat
         g_free(str);
     }
 }
-
