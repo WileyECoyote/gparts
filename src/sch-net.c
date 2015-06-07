@@ -47,9 +47,9 @@ typedef struct _SchNetPrivate SchNetPrivate;
 struct _SchNetPrivate
 {
     GeomLine line;
-    gint     color;
-    gint     net_type;
-    gint     net_end;
+    int      color;
+    int      net_type;
+    int      net_end;
 };
 
 static void
@@ -63,7 +63,6 @@ sch_net_set_property(GObject *object, guint property_id, const GValue *value, GP
 
 static void
 sch_net_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
-
 
 
 static void
@@ -183,10 +182,10 @@ sch_net_get_property(GObject *object, guint property_id, GValue *value, GParamSp
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_NET_X1:
                 g_value_set_int(value, privat->line.x[0]);
                 break;
@@ -226,8 +225,8 @@ sch_net_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchNetClass),    /* class_size */
             NULL,                   /* base_init */
@@ -257,10 +256,10 @@ sch_net_set_property(GObject *object, guint property_id, const GValue *value, GP
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_NET_X1:
                 privat->line.x[0] = g_value_get_int(value);
                 break;
@@ -298,8 +297,8 @@ sch_net_set_property(GObject *object, guint property_id, const GValue *value, GP
 void
 sch_net_get_color(const SchNet *shape, int *index)
 {
-    if (index != NULL)
-    {
+    if (index != NULL) {
+
         SchNetPrivate *privat = SCH_NET_GET_PRIVATE(shape);
 
         *index = SCH_NET_DEFAULT_COLOR;
@@ -340,7 +339,7 @@ sch_net_new(const SchConfig *config)
 }
 
 void
-sch_net_set_x0(SchNet *shape, gint x0)
+sch_net_set_x0(SchNet *shape, int  x0)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(shape);
 
@@ -353,7 +352,7 @@ sch_net_set_x0(SchNet *shape, gint x0)
 }
 
 void
-sch_net_set_x1(SchNet *shape, gint x1)
+sch_net_set_x1(SchNet *shape, int  x1)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(shape);
 
@@ -366,7 +365,7 @@ sch_net_set_x1(SchNet *shape, gint x1)
 }
 
 void
-sch_net_set_y0(SchNet *shape, gint y0)
+sch_net_set_y0(SchNet *shape, int  y0)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(shape);
 
@@ -379,7 +378,7 @@ sch_net_set_y0(SchNet *shape, gint y0)
 }
 
 void
-sch_net_set_y1(SchNet *shape, gint y1)
+sch_net_set_y1(SchNet *shape, int  y1)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(shape);
 
