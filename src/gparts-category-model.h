@@ -57,11 +57,10 @@ gparts_category_model_new(GPartsDatabase *database);
  *  \return The field value as a string.  This value must be freed when no
  *  longer needed.
  */
-gchar*
-gparts_category_model_get_field(GPartsCategoryModel *model, GtkTreeIter *iter, const gchar *name);
+char* gparts_category_model_get_field(GPartsCategoryModel *model, GtkTreeIter *iter, const char *name);
 
 /*! TODO Finish
  */
-void
-gparts_category_model_set_columns(GPartsCategoryModel* model, GtkTreeView *tree_view);
+void gparts_category_model_set_columns(GPartsCategoryModel* model, GtkTreeView *tree_view);
 
+void gparts_category_model_hide_columns(GtkTreeView *tree_view);
