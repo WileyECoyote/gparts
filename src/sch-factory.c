@@ -59,7 +59,6 @@ static void
 sch_factory_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 
-
 static void
 sch_factory_class_init(gpointer g_class, gpointer g_class_data)
 {
@@ -107,8 +106,7 @@ sch_factory_get_config(SchFactory *factory)
     SchConfig *config = NULL;
     SchFactoryPrivate *privat = SCH_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         config = privat->config;
     }
 
@@ -120,10 +118,10 @@ sch_factory_get_property(GObject *object, guint property_id, GValue *value, GPar
 {
     SchFactoryPrivate *privat = SCH_FACTORY_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_FACTORY_CONFIG:
                 g_value_set_object(value, privat->config);
                 break;
@@ -139,8 +137,8 @@ sch_factory_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchFactoryClass),    /* class_size */
             NULL,                       /* base_init */
@@ -168,30 +166,23 @@ sch_factory_get_type(void)
 SchFactory*
 sch_factory_new(SchConfig *config)
 {
-    return SCH_FACTORY(g_object_new(
-        SCH_TYPE_FACTORY,
-        "config", config,
-        NULL
-        ));
+  return SCH_FACTORY(g_object_new(SCH_TYPE_FACTORY, "config", config, NULL));
 }
-
 
 void
 sch_factory_set_config(SchFactory *factory, SchConfig *config)
 {
     SchFactoryPrivate *privat = SCH_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        if (privat->config != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->config != NULL) {
             /* g_object_unref(privat->config) */
         }
 
         privat->config = config;
 
-        if (privat->config != NULL)
-        {
+        if (privat->config != NULL) {
             /* g_object_ref(privat->config) */
         }
     }
@@ -202,10 +193,10 @@ sch_factory_set_property(GObject *object, guint property_id, const GValue *value
 {
     SchFactory *factory = SCH_FACTORY(object);
 
-    if (factory != NULL)
-    {
-        switch (property_id)
-        {
+    if (factory != NULL) {
+
+        switch (property_id) {
+
             case SCH_FACTORY_CONFIG:
                 sch_factory_set_config(factory, SCH_CONFIG(g_value_get_object(value)));
                 break;
@@ -215,4 +206,3 @@ sch_factory_set_property(GObject *object, guint property_id, const GValue *value
         }
     }
 }
-
