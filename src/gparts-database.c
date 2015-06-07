@@ -44,7 +44,6 @@ static void
 gparts_database_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 
-
 static void
 gparts_database_base_init(gpointer g_class)
 {
@@ -78,20 +77,20 @@ gparts_database_class_init(gpointer g_class, gpointer g_class_data)
 void
 gparts_database_connect(GPartsDatabase *database, GPartsConnectData* data, GError **error)
 {
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->connect == NULL)
-        {
+        else if (klasse->connect == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL connect() function pointer");
         }
-        else
-        {
+        else {
+
             klasse->connect(database, data, error);
         }
     }
@@ -102,20 +101,20 @@ gparts_database_connected(const GPartsDatabase *database)
 {
     gboolean connected = FALSE;
 
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->connected == NULL)
-        {
+        else if (klasse->connected == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL connected() function pointer");
         }
-        else
-        {
+        else {
+
             connected = klasse->connected(database);
         }
     }
@@ -132,20 +131,20 @@ gparts_database_connected_base(const GPartsDatabase *database)
 void
 gparts_database_disconnect(GPartsDatabase *database, GError **error)
 {
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->disconnect == NULL)
-        {
+        else if (klasse->disconnect == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL disconnect() function pointer");
         }
-        else
-        {
+        else {
+
             klasse->disconnect(database, error);
         }
     }
@@ -154,20 +153,20 @@ gparts_database_disconnect(GPartsDatabase *database, GError **error)
 void
 gparts_database_drop(GPartsDatabase *database, GError **error)
 {
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->drop == NULL)
-        {
+        else if (klasse->drop == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL drop() function pointer");
         }
-        else
-        {
+        else {
+
             klasse->drop(database, error);
         }
     }
@@ -176,13 +175,11 @@ gparts_database_drop(GPartsDatabase *database, GError **error)
 static void
 gparts_database_drop_base(GPartsDatabase *database, GError **error)
 {
-    g_set_error(
-        error,
-        g_quark_from_static_string( "gparts-database-error" ),
-        0,
-        "%s",
-        "Drop database functionality not implemented"
-        );
+  g_set_error( error,
+               g_quark_from_static_string( "gparts-database-error" ),
+               0,
+               "%s",
+               "Drop database functionality not implemented");
 }
 
 gboolean
@@ -190,20 +187,20 @@ gparts_database_droppable(const GPartsDatabase *database)
 {
     gboolean droppable = FALSE;
 
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->droppable == NULL)
-        {
+        else if (klasse->droppable == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL droppable() function pointer");
         }
-        else
-        {
+        else {
+
             droppable = klasse->droppable(database);
         }
     }
@@ -222,10 +219,10 @@ gparts_database_get_property(GObject *object, guint property_id, GValue *value, 
 {
     GPartsDatabase *database = GPARTS_DATABASE(object);
 
-    if (database != NULL)
-    {
-        switch ( property_id )
-        {
+    if (database != NULL) {
+
+        switch ( property_id ) {
+
             case GPARTS_DATABASE_CONNECTED:
                 g_value_set_boolean(value, gparts_database_connected(database));
                 break;
@@ -240,10 +237,10 @@ gparts_database_get_property(GObject *object, guint property_id, GValue *value, 
 GType
 gparts_database_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsDatabaseClass),    /* class_size */
             gparts_database_base_init,      /* base_init */
@@ -273,20 +270,20 @@ gparts_database_query(GPartsDatabase *database, const gchar *query, GError **err
 {
     GPartsDatabaseResult* result = NULL;
 
-    if (database != NULL)
-    {
+    if (database != NULL) {
+
         GPartsDatabaseClass *klasse = GPARTS_DATABASE_GET_CLASS(database);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
+
             g_critical("Unable to get GPartsDatabaseClass from parameter");
         }
-        else if (klasse->query == NULL)
-        {
+        else if (klasse->query == NULL) {
+
             g_critical("GPartsDatabaseClass contains NULL query() function pointer");
         }
-        else
-        {
+        else {
+
             result = klasse->query(database, query, error);
         }
     }
@@ -299,13 +296,12 @@ gparts_database_set_property(GObject *object, guint property_id, const GValue *v
 {
     GPartsDatabase *database = GPARTS_DATABASE(object);
 
-    if (database != NULL)
-    {
-        switch (property_id)
-        {
+    if (database != NULL) {
+
+        switch (property_id) {
+
             default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         }
     }
 }
-
