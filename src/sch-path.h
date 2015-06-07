@@ -79,7 +79,7 @@ sch_path_foreach(SchPath *path, GFunc func, gpointer user_data);
 
 /*! \brief Get the color of the path
  *
- *  \param [in] path The path 
+ *  \param [in] path The path
  *  \return The color index
  */
 int
@@ -87,15 +87,15 @@ sch_path_get_color(const SchPath *path);
 
 /*! \brief Get the fill style of the path
  *
- *  \param [in]  path  The path 
- *  \param [out] style The fill style of the path 
+ *  \param [in]  path  The path
+ *  \param [out] style The fill style of the path
  */
 void
 sch_path_get_fill_style(const SchPath *path, SchFillStyle *style);
 
 /*! \brief Get the line width of the path
  *
- *  \param [in] path The path 
+ *  \param [in] path The path
  *  \return The line width
  */
 int
