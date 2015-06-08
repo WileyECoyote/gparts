@@ -44,10 +44,8 @@ struct _GPartsMySQLResultClass
 };
 
 /*! \private */
-GType
+unsigned int
 gparts_mysql_result_get_type(void);
 
 GPartsMySQLResult*
 gparts_mysql_result_new(MYSQL_RES *result);
-
-
