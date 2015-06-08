@@ -46,15 +46,17 @@ struct _GPartsDatabaseClass
     void (*connect)(GPartsDatabase *database, GPartsConnectData* data, GError **error);
     gboolean (*connected)(const GPartsDatabase *database);
     void (*disconnect)(GPartsDatabase *database, GError **error);
-    GPartsDatabaseResult* (*query)(GPartsDatabase *database, const gchar *query, GError **error);
-    const gchar* (*get_name)(GPartsDatabase *database);
+
+    GPartsDatabaseResult* (*query)(GPartsDatabase *database, const char *query, GError **error);
+
+    const char* (*get_name)(GPartsDatabase *database);
 
     gboolean (*droppable)(const GPartsDatabase *database);
     void (*drop)(GPartsDatabase *database, GError **error);
 };
 
 /*! \private */
-GType
+unsigned int
 gparts_database_get_type(void);
 
 /*! \brief Establishes a connection to the database.
@@ -120,5 +122,5 @@ gparts_database_droppable(const GPartsDatabase *database);
  *  NULL.
  */
 GPartsDatabaseResult*
-gparts_database_query(GPartsDatabase *database, const gchar *query, GError **error);
+gparts_database_query(GPartsDatabase *database, const char *query, GError **error);
 
