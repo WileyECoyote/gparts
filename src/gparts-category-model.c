@@ -51,7 +51,7 @@ struct _GPartsCategoryModelPrivate
 {
     GPartsDatabase          *database;
     GPartsCategoryModelNode *root;
-    gint                    stamp;
+    int                     stamp;
 };
 
 #define GPARTS_CATEGORY_MODEL_GET_PRIVATE(object) G_TYPE_INSTANCE_GET_PRIVATE(object, GPARTS_TYPE_CATEGORY_MODEL, GPartsCategoryModelPrivate)
@@ -81,7 +81,7 @@ static void
 gparts_category_model_set_database(GObject *object, const GValue *value);
 
 static gboolean
-gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, gint n);
+gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int  n);
 /**
  *
  *
@@ -99,7 +99,7 @@ gparts_load_root(GPartsDatabase* database, GPartsCategoryModelNode **node)
 
     if ((*node)->result != NULL)
     {
-        gint rows = gparts_database_result_get_row_count((*node)->result);
+        int  rows = gparts_database_result_get_row_count((*node)->result);
 
         if (rows > 0)
         {
@@ -117,7 +117,7 @@ static void
 gparts_category_model_load_children(GPartsDatabase* database, GtkTreeIter *iter)
 {
     GPartsCategoryModelNode **child;
-    gint index;
+    int  index;
     GPartsCategoryModelNode *node;
 
     node = (GPartsCategoryModelNode*) iter->user_data;
@@ -246,7 +246,7 @@ gparts_category_model_get_field(GPartsCategoryModel* model, GtkTreeIter *iter, c
 
     if (node->result != NULL)
     {
-        gint index;
+        int  index;
         gboolean success;
 
         success = gparts_database_result_get_column_index(node->result, name, &index);
@@ -476,7 +476,7 @@ gparts_category_model_set_property(GObject *object, guint property_id, const GVa
  *
  */
 static GType
-gparts_category_model_get_column_type(GtkTreeModel *tree_model, gint index)
+gparts_category_model_get_column_type(GtkTreeModel *tree_model, int  index)
 {
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
@@ -494,10 +494,10 @@ gparts_category_model_get_iter(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkT
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
 
-    gint c =0;
-   gint d = gtk_tree_path_get_depth(path);
+    int  c =0;
+   int  d = gtk_tree_path_get_depth(path);
 
-    gint index = gtk_tree_path_get_indices(path)[c++];
+    int  index = gtk_tree_path_get_indices(path)[c++];
 
     GtkTreeIter pos;
 
@@ -515,7 +515,7 @@ gparts_category_model_get_iter(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkT
        gboolean success = gparts_category_model_iter_nth_child(tree_model, &pos, &zippy, index);
 
        if (!success) return FALSE;
-    } 
+    }
 
         *iter = pos;
 
@@ -538,10 +538,10 @@ gparts_category_model_get_flags(GtkTreeModel *tree_model)
  *
  *
  */
-static gint
+static int
 gparts_category_model_get_n_columns(GtkTreeModel *tree_model)
 {
-    gint columns = 0;
+    int  columns = 0;
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
     if (private->root->result != NULL)
@@ -574,7 +574,7 @@ gparts_category_model_get_path(GtkTreeModel *tree_model, GtkTreeIter *iter)
  *
  */
 static void
-gparts_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, gint column, GValue *value)
+gparts_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, int  column, GValue *value)
 {
     GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) iter->user_data;
 
@@ -618,7 +618,7 @@ gparts_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
     gparts_category_model_load_children(private->database, iter);
 
     GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) iter->user_data;
-    gint index = GPOINTER_TO_INT(iter->user_data2);
+    int  index = GPOINTER_TO_INT(iter->user_data2);
 
     GPartsCategoryModelNode **child = node->children + index;
 
@@ -653,7 +653,7 @@ gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
     {
         GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) iter->user_data;
 
-        gint rows = gparts_database_result_get_row_count(node->result);
+        int  rows = gparts_database_result_get_row_count(node->result);
 
         if (new_position < rows)
         {
@@ -677,7 +677,7 @@ gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise.
  */
 static gboolean
-gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, gint n)
+gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int  n)
 {
     GPartsCategoryModelNode *list;
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
@@ -697,9 +697,9 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
         g_assert(parent_list != NULL);
         g_assert(parent_list->result != NULL);
 
-        gint offset = GPOINTER_TO_INT(parent->user_data2);
+        int  offset = GPOINTER_TO_INT(parent->user_data2);
 
-        gint rows = gparts_database_result_get_row_count(parent_list->result);
+        int  rows = gparts_database_result_get_row_count(parent_list->result);
 
         g_assert(offset < rows);
 
@@ -708,7 +708,7 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 
     if (list != NULL && list->result != NULL)
     {
-        gint rows = gparts_database_result_get_row_count(list->result);
+        int  rows = gparts_database_result_get_row_count(list->result);
 
         if (n < rows)
         {
@@ -802,13 +802,13 @@ gparts_category_model_tree_model_init(GtkTreeModelIface *iface)
 void
 gparts_category_model_hide_columns(GtkTreeView *tree_view)
 {
-    gint index = 0;
+    int  index = 0;
     GtkTreeViewColumn *column;
 
     column = gtk_tree_view_get_column(tree_view, index++);
 
-    while (column != NULL)
-    {
+    while (column != NULL) {
+
         const gchar *name = gtk_tree_view_column_get_title(column);
         gboolean visible = (name != NULL) && (strcmp(name, "CategoryName") == 0);
 
