@@ -55,7 +55,7 @@ struct _GPViewDeviceCtrlPrivate
 };
 
 static void
-gpview_device_ctrl_class_init(gpointer g_class, gpointer g_class_data);
+gpview_device_ctrl_class_init(void *g_class, void *g_class_data);
 
 static void
 gpview_device_ctrl_create_cb(GtkAction *action, GPViewDeviceCtrl *ctrl);
@@ -70,13 +70,13 @@ static void
 gpview_device_ctrl_edit_cb(GtkAction *action, GPViewDeviceCtrl *ctrl);
 
 static void
-gpview_device_ctrl_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gpview_device_ctrl_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec);
 
 static void
-gpview_device_ctrl_init(GTypeInstance *instance, gpointer g_class);
+gpview_device_ctrl_init(GTypeInstance *instance, void *g_class);
 
 static void
-gpview_device_ctrl_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gpview_device_ctrl_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 gpview_device_ctrl_update_connected_cb(GObject *unused, GParamSpec *pspec, GPViewDeviceCtrl *ctrl);
@@ -84,9 +84,8 @@ gpview_device_ctrl_update_connected_cb(GObject *unused, GParamSpec *pspec, GPVie
 static void
 gpview_device_ctrl_update_ids_cb(GObject *unused, GParamSpec *pspec, GPViewDeviceCtrl *ctrl);
 
-static void
-gpview_device_ctrl_visit_cb(GtkAction *action, GPViewDeviceCtrl *ctrl);
-
+//static void
+//gpview_device_ctrl_visit_cb(GtkAction *action, GPViewDeviceCtrl *ctrl);
 
 
 static const GtkActionEntry gpview_device_ctrl_actions_connected[] =
@@ -129,7 +128,7 @@ static const GtkActionEntry gpview_device_ctrl_actions_single[] =
 
 
 static void
-gpview_device_ctrl_class_init(gpointer g_class, gpointer g_class_data)
+gpview_device_ctrl_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
 
@@ -152,8 +151,7 @@ gpview_device_ctrl_class_init(gpointer g_class, gpointer g_class_data)
             )
         );
 
-    g_object_class_install_property(
-        klasse,
+    g_object_class_install_property(klasse,
         GPVIEW_DEVICE_CTRL_DATABASE,
         g_param_spec_object(
             "database",
@@ -338,7 +336,7 @@ gpview_device_ctrl_get_form_factory(const GPViewDeviceCtrl *ctrl)
 }
 
 static void
-gpview_device_ctrl_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpview_device_ctrl_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec)
 {
     GPViewDeviceCtrl *view = GPVIEW_DEVICE_CTRL(object);
 
@@ -430,7 +428,7 @@ gpview_device_ctrl_get_ui_manager(const GPViewDeviceCtrl *ctrl)
 
 
 static void
-gpview_device_ctrl_init(GTypeInstance *instance, gpointer g_class)
+gpview_device_ctrl_init(GTypeInstance *instance, void *g_class)
 {
     GPViewDeviceCtrlPrivate *privat = GPVIEW_DEVICE_CTRL_GET_PRIVATE(instance);
 
@@ -602,7 +600,7 @@ gpview_device_ctrl_set_form_factory(GPViewDeviceCtrl *ctrl, GPFormFactory *facto
 
 
 static void
-gpview_device_ctrl_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gpview_device_ctrl_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec)
 {
     GPViewDeviceCtrl *view = GPVIEW_DEVICE_CTRL(object);
 
