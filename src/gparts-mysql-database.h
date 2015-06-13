@@ -28,7 +28,7 @@
 #define GPARTS_IS_MYSQL_DATABASE_CLASS(cls) (G_TYPE_CHECK_CLASS_TYPE((cls),GPARTS_TYPE_MYSQL_DATABASE))
 #define GPARTS_MYSQL_DATABASE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj),GPARTS_TYPE_MYSQL_DATABASE,GPartsMySQLDatabaseClass))
 
-typedef struct _GPartsMySQLDatabase GPartsMySQLDatabase;
+typedef struct _GPartsMySQLDatabase      GPartsMySQLDatabase;
 typedef struct _GPartsMySQLDatabaseClass GPartsMySQLDatabaseClass;
 
 /*! \extends GPartsDatabase */
@@ -44,7 +44,7 @@ struct _GPartsMySQLDatabaseClass
 };
 
 /*! \private */
-GType
+unsigned int
 gparts_mysql_database_get_type(void);
 
 GPartsMySQLDatabase*

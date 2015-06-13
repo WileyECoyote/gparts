@@ -42,7 +42,7 @@ struct _GPartsMySQLDatabasePrivate
 #define GPARTS_MYSQL_DATABASE_GET_PRIVATE(database) G_TYPE_INSTANCE_GET_PRIVATE(database,GPARTS_TYPE_MYSQL_DATABASE,GPartsMySQLDatabasePrivate);
 
 static void
-gparts_mysql_database_class_init(gpointer g_class, gpointer g_class_data);
+gparts_mysql_database_class_init(void *g_class, void *g_class_data);
 
 static void
 gparts_mysql_database_connect(GPartsDatabase *database, GPartsConnectData *data, GError **error);
@@ -63,16 +63,17 @@ static void
 gparts_mysql_database_finalize(GObject *object);
 
 static void
-gparts_mysql_database_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gparts_mysql_database_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec);
 
 static void
-gparts_mysql_database_instance_init(GTypeInstance *instance, gpointer g_class);
+gparts_mysql_database_instance_init(GTypeInstance *instance, void *g_class);
 
-GPartsMySQLResult*
-gparts_mysql_database_query(GPartsDatabase *database, const gchar *query, GError **error);
+//GPartsMySQLResult*
+GPartsDatabaseResult*
+gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError **error);
 
 static void
-gparts_mysql_database_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gparts_mysql_database_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec);
 
 /*! \brief Initialize class data.
  *
@@ -80,48 +81,43 @@ gparts_mysql_database_set_property(GObject *object, guint property_id, const GVa
  *  \param [in] g_class_data
  */
 static void
-gparts_mysql_database_class_init(gpointer g_class, gpointer g_class_data)
+gparts_mysql_database_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
-    GPartsDatabaseClass *klasse = GPARTS_DATABASE_CLASS(g_class);
+    GPartsDatabaseClass *class = GPARTS_DATABASE_CLASS(g_class);
 
-    g_type_class_add_private(
-        g_class,
-        sizeof(GPartsMySQLDatabasePrivate)
-        );
+    g_type_class_add_private(g_class, sizeof(GPartsMySQLDatabasePrivate));
 
     object_class->finalize     = gparts_mysql_database_finalize;
     object_class->get_property = gparts_mysql_database_get_property;
     object_class->set_property = gparts_mysql_database_set_property;
 
-    klasse->connect    = gparts_mysql_database_connect;
-    klasse->connected  = gparts_mysql_database_connected;
-    klasse->disconnect = gparts_mysql_database_disconnect;
-    klasse->query      = gparts_mysql_database_query;
+    class->connect    = gparts_mysql_database_connect;
+    class->connected  = gparts_mysql_database_connected;
+    class->disconnect = gparts_mysql_database_disconnect;
+    class->query      = gparts_mysql_database_query;
 
-    g_signal_new(
-        "database-connected",
-        G_TYPE_FROM_CLASS( g_class ),
-        G_SIGNAL_RUN_FIRST,
-        0,
-        NULL,
-        NULL,
-        g_cclosure_marshal_VOID__VOID,
-        G_TYPE_NONE,
-        0
-        );
+    g_signal_new("database-connected",
+                 G_TYPE_FROM_CLASS( g_class ),
+                 G_SIGNAL_RUN_FIRST,
+                 0,
+                 NULL,
+                 NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0
+    );
 
-    g_signal_new(
-        "database-disconnected",
-        G_TYPE_FROM_CLASS( g_class ),
-        G_SIGNAL_RUN_FIRST,
-        0,
-        NULL,
-        NULL,
-        g_cclosure_marshal_VOID__VOID,
-        G_TYPE_NONE,
-        0
-        );
+    g_signal_new("database-disconnected",
+                 G_TYPE_FROM_CLASS( g_class ),
+                 G_SIGNAL_RUN_FIRST,
+                 0,
+                 NULL,
+                 NULL,
+                 g_cclosure_marshal_VOID__VOID,
+                 G_TYPE_NONE,
+                 0
+    );
 }
 
 
@@ -252,7 +248,7 @@ gparts_mysql_database_finalize(GObject *object)
 }
 
 static void
-gparts_mysql_database_get_property( GObject* object, guint property_id, GValue* value, GParamSpec* param_spec )
+gparts_mysql_database_get_property( GObject* object, unsigned property_id, GValue* value, GParamSpec* param_spec )
 {
 }
 
@@ -302,7 +298,7 @@ GPartsMySQLDatabase* gparts_mysql_database_new()
  *  \param [out] error    An error, if any, using the GError protocol.
  */
 GPartsMySQLResult*
-gparts_mysql_database_query(GPartsDatabase *database, const gchar *query, GError **error)
+gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError **error)
 {
     MYSQL_RES *result;
     GPartsMySQLDatabasePrivate* private;
@@ -366,7 +362,7 @@ gparts_mysql_database_query(GPartsDatabase *database, const gchar *query, GError
  * @param error The error, if any, using standard GLib conventions.
  */
 static void
-gparts_mysql_database_set_property( GObject* object, guint property_id, const GValue* value, GParamSpec* param_spec )
+gparts_mysql_database_set_property( GObject* object, unsigned property_id, const GValue* value, GParamSpec* param_spec )
 {
     g_print( "Set property: %d\n", property_id );
 }
