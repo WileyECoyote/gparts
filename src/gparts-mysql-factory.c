@@ -20,7 +20,7 @@
 
 /*! \file gparts-database.c
  */
-
+#include <string.h>
 #include <glib-object.h>
 #include <mysql.h>
 
@@ -33,10 +33,10 @@
 static GPartsDatabase*
 gparts_mysql_factory_create_database(GPartsDatabaseFactory *factory, GError **error);
 
-static gint
+static int
 gparts_mysql_factory_get_flags(const GPartsDatabaseFactory *factory);
 
-static gchar*
+static char*
 gparts_mysql_factory_get_name(const GPartsDatabaseFactory *factory);
 
 static gboolean
@@ -62,10 +62,10 @@ gparts_mysql_factory_class_init(gpointer g_class, gpointer g_class_data)
 static GPartsDatabase*
 gparts_mysql_factory_create_database(GPartsDatabaseFactory *factory, GError **error)
 {
-    return gparts_mysql_database_new();
+    return (GPartsDatabase*)gparts_mysql_database_new();
 }
 
-static gint
+static int
 gparts_mysql_factory_get_flags(const GPartsDatabaseFactory *factory)
 {
    return
@@ -75,19 +75,15 @@ gparts_mysql_factory_get_flags(const GPartsDatabaseFactory *factory)
         GPARTS_DATABASE_TYPE_FLAGS_USES_DATABASE ;
 }
 
-static gchar*
+static char*
 gparts_mysql_factory_get_name(const GPartsDatabaseFactory *factory)
 {
     GString *name   = g_string_new(NULL);
-    glong   version = mysql_get_client_version();
+    long    version = mysql_get_client_version();
 
-    g_string_printf(
-        name,
-        "MySQL %d.%d.%d",
-        version / 10000,
-        (version / 100) % 100,
-        version % 100
-        );
+    g_string_printf(name,
+                    "MySQL %d.%d.%d",
+                    version / 10000,(version / 100) % 100, version % 100);
 
     return g_string_free(name, FALSE);
 }
@@ -97,8 +93,8 @@ gparts_mysql_factory_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsMySQLFactoryClass),    /* class_size */
             gparts_mysql_factory_base_init,     /* base_init */
@@ -112,12 +108,9 @@ gparts_mysql_factory_get_type(void)
             NULL                                /* value_table */
             };
 
-        type = g_type_register_static(
-            GPARTS_TYPE_DATABASE_FACTORY,
-            "gparts-mysql-factory",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(GPARTS_TYPE_DATABASE_FACTORY,
+                                      "gparts-mysql-factory",
+                                      &tinfo, 0);
     }
 
     return type;
@@ -129,18 +122,22 @@ gparts_mysql_factory_new(void)
     return GPARTS_MYSQL_FACTORY(g_object_new(GPARTS_TYPE_MYSQL_FACTORY, NULL));
 }
 
-static gboolean
-gparts_mysql_factory_validate_connect_data(const GPartsDatabaseFactory *factory, const GPartsConnectData *data)
+static int
+gparts_mysql_factory_validate_connect_data(const GPartsDatabaseFactory *factory,
+                                           const GPartsConnectData     *data)
 {
-    return (
-        (data != NULL) &&
-        (data->username != NULL) &&
-        (strlen(data->username) > 0) &&
-        (data->password != NULL) &&
-        (data->hostname != NULL ) &&
-        (strlen(data->hostname) > 0) &&
-        (data->database != NULL) &&
-        (strlen(data->database) > 0)
-        );
+  int result;
+
+  result = (
+    (data != NULL) &&
+    (data->username != NULL) &&
+    (strlen(data->username) > 0) &&
+    (data->password != NULL) &&
+    (data->hostname != NULL ) &&
+    (strlen(data->hostname) > 0) &&
+    (data->database != NULL) &&
+    (strlen(data->database) > 0)
+  );
+  return result;
 }
 
