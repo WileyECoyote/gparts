@@ -68,7 +68,6 @@ gparts_mysql_database_get_property(GObject *object, unsigned property_id, GValue
 static void
 gparts_mysql_database_instance_init(GTypeInstance *instance, void *g_class);
 
-//GPartsMySQLResult*
 GPartsDatabaseResult*
 gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError **error);
 
@@ -297,7 +296,7 @@ GPartsMySQLDatabase* gparts_mysql_database_new()
  *  \param [in]  query    The SQL query as a string.
  *  \param [out] error    An error, if any, using the GError protocol.
  */
-GPartsMySQLResult*
+GPartsDatabaseResult*
 gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError **error)
 {
     MYSQL_RES *result;
@@ -310,15 +309,14 @@ gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError 
     private = GPARTS_MYSQL_DATABASE_GET_PRIVATE( database );
     g_assert( private != NULL );
 
-    if (private->mysql == NULL)
-    {
+    if (private->mysql == NULL) {
         return NULL;
     }
 
     status = mysql_query(private->mysql, query);
 
-    if ( status != 0 )
-    {
+    if ( status != 0 ) {
+
         g_debug("Database error: %s", mysql_error(private->mysql));
 
         g_set_error(
@@ -334,8 +332,8 @@ gparts_mysql_database_query(GPartsDatabase *database, const char *query, GError 
 
     result = mysql_store_result(private->mysql);
 
-    if ( result == NULL )
-    {
+    if ( result == NULL ) {
+
         g_debug("Database error: %s", mysql_error(private->mysql));
 
         g_set_error(

@@ -49,4 +49,3 @@ gparts_mysql_database_get_type(void);
 
 GPartsMySQLDatabase*
 gparts_mysql_database_new();
-
