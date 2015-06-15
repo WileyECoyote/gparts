@@ -737,8 +737,6 @@ gparts_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *ite
 
     private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
-    g_debug("gparts_category_model_iter_n_children");
-
     return FALSE;
 
  //   return gtk_tree_model_iter_n_children(GTK_TREE_MODEL(private->tree_store), iter);
@@ -835,7 +833,3 @@ gparts_category_model_set_columns(GPartsCategoryModel* model, GtkTreeView *tree_
         gparts_category_model_hide_columns(tree_view);
     }
 }
-
-
-
-
