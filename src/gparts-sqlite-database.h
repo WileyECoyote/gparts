@@ -44,7 +44,7 @@ struct _GPartsSQLiteDatabaseClass
 };
 
 /*! \private */
-GType
+unsigned int
 gparts_sqlite_database_get_type(void);
 
 GPartsSQLiteDatabase*
