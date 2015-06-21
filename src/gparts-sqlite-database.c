@@ -66,7 +66,7 @@ gparts_sqlite_database_get_property(GObject *object, unsigned property_id, GValu
 static void
 gparts_sqlite_database_instance_init(GTypeInstance *instance, void *g_class);
 
-GPartsSQLiteResult*
+GPartsDatabaseResult*
 gparts_sqlite_database_query(GPartsDatabase *database, const char *query, GError **error);
 
 static void
@@ -81,7 +81,7 @@ static void
 gparts_sqlite_database_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
-    GPartsDatabaseClass *klass = GPARTS_DATABASE_CLASS(g_class);
+    GPartsDatabaseClass *class = GPARTS_DATABASE_CLASS(g_class);
 
     g_type_class_add_private(g_class, sizeof(GPartsSQLiteDatabasePrivate));
 
@@ -89,10 +89,10 @@ gparts_sqlite_database_class_init(void *g_class, void *g_class_data)
     object_class->get_property = gparts_sqlite_database_get_property;
     object_class->set_property = gparts_sqlite_database_set_property;
 
-    klass->connect    = gparts_sqlite_database_connect;
-    klass->connected  = gparts_sqlite_database_connected;
-    klass->disconnect = gparts_sqlite_database_disconnect;
-    klass->query      = gparts_sqlite_database_query;
+    class->connect    = gparts_sqlite_database_connect;
+    class->connected  = gparts_sqlite_database_connected;
+    class->disconnect = gparts_sqlite_database_disconnect;
+    class->query      = gparts_sqlite_database_query;
 }
 
 
@@ -241,7 +241,7 @@ GPartsSQLiteDatabase* gparts_sqlite_database_new()
  *  \param [in]  query    The SQL query as a string.
  *  \param [out] error    An error, if any, using the GError protocol.
  */
-GPartsSQLiteResult*
+GPartsDatabaseResult*
 gparts_sqlite_database_query(GPartsDatabase *database, const char *query, GError **error)
 {
     sqlite3_stmt *result;
@@ -279,7 +279,7 @@ gparts_sqlite_database_query(GPartsDatabase *database, const char *query, GError
         return NULL;
     }
 
-    return gparts_sqlite_result_new(result);
+    return (GPartsDatabaseResult*)gparts_sqlite_result_new(result);
 }
 
 /**
