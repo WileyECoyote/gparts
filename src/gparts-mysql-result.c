@@ -411,4 +411,3 @@ gparts_mysql_result_new(MYSQL_RES *result)
 
     return r;
 }
-
