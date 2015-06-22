@@ -46,9 +46,7 @@ struct _GPartsSQLiteFactoryClass
 };
 
 /*! \private */
-GType
-gparts_sqlite_factory_get_type(void);
+unsigned int         gparts_sqlite_factory_get_type(void);
 
-GPartsSQLiteFactory*
-gparts_sqlite_factory_new(void);
+GPartsSQLiteFactory *gparts_sqlite_factory_new(void);
 
