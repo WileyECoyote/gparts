@@ -33,16 +33,14 @@
 static GPartsDatabase*
 gparts_sqlite_factory_create_database(GPartsDatabaseFactory *factory, GError **error);
 
-static gint
+static int
 gparts_sqlite_factory_get_flags(const GPartsDatabaseFactory *factory);
 
-static gchar*
+static char*
 gparts_sqlite_factory_get_name(const GPartsDatabaseFactory *factory);
 
 static gboolean
 gparts_sqlite_factory_validate_connect_data(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
-
-
 
 static void
 gparts_sqlite_factory_base_init(gpointer g_class)
@@ -52,47 +50,43 @@ gparts_sqlite_factory_base_init(gpointer g_class)
 static void
 gparts_sqlite_factory_class_init(gpointer g_class, gpointer g_class_data)
 {
-    GPartsDatabaseFactoryClass *klasse = GPARTS_DATABASE_FACTORY_CLASS(g_class);
+    GPartsDatabaseFactoryClass *class = GPARTS_DATABASE_FACTORY_CLASS(g_class);
 
-    klasse->create_database       = gparts_sqlite_factory_create_database;
-    klasse->get_flags             = gparts_sqlite_factory_get_flags;
-    klasse->get_name              = gparts_sqlite_factory_get_name;
-    klasse->validate_connect_data = gparts_sqlite_factory_validate_connect_data;
+    class->create_database       = gparts_sqlite_factory_create_database;
+    class->get_flags             = gparts_sqlite_factory_get_flags;
+    class->get_name              = gparts_sqlite_factory_get_name;
+    class->validate_connect_data = gparts_sqlite_factory_validate_connect_data;
 }
 
 static GPartsDatabase*
 gparts_sqlite_factory_create_database(GPartsDatabaseFactory *factory, GError **error)
 {
-    return gparts_sqlite_database_new();
+    return (GPartsDatabase*)gparts_sqlite_database_new();
 }
 
-static gint
+static int
 gparts_sqlite_factory_get_flags(const GPartsDatabaseFactory *factory)
 {
     return GPARTS_DATABASE_TYPE_FLAGS_USES_FILENAME;
 }
 
-static gchar*
+static char*
 gparts_sqlite_factory_get_name(const GPartsDatabaseFactory *factory)
 {
     GString *name   = g_string_new(NULL);
 
-    g_string_printf(
-        name,
-        "SQLite %s",
-        sqlite3_version
-        );
+    g_string_printf(name, "SQLite %s", sqlite3_version);
 
     return g_string_free(name, FALSE);
 }
 
-GType
+unsigned int
 gparts_sqlite_factory_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsSQLiteFactoryClass),    /* class_size */
             gparts_sqlite_factory_base_init,     /* base_init */
@@ -106,12 +100,9 @@ gparts_sqlite_factory_get_type(void)
             NULL                                 /* value_table */
             };
 
-        type = g_type_register_static(
-            GPARTS_TYPE_DATABASE_FACTORY,
-            "gparts-sqlite-factory",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(GPARTS_TYPE_DATABASE_FACTORY,
+                                      "gparts-sqlite-factory",
+                                      &tinfo, 0);
     }
 
     return type;
