@@ -33,6 +33,7 @@
 #include "gpform.h"
 #include "gpview.h"
 
+#include "gpartsui-forward.h"
 #include "gparts-result-model.h"
 #include "gparts-category-model.h"
 
@@ -684,12 +685,12 @@ gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 
     g_assert(iter != NULL);
 
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
+
         list = private->root;
     }
-    else
-    {
+    else {
+
         g_assert(parent->stamp == private->stamp);
 
         GPViewCategoryModelNode *parent_list = (GPViewCategoryModelNode*) parent->user_data;
@@ -706,12 +707,12 @@ gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
         list = *(parent_list->children + offset);
     }
 
-    if (list != NULL && list->result != NULL)
-    {
+    if (list != NULL && list->result != NULL) {
+
         int rows = gparts_database_result_get_row_count(list->result);
 
-        if (n < rows)
-        {
+        if (n < rows) {
+
             iter->stamp = private->stamp;
             iter->user_data = list;
             iter->user_data2 = GINT_TO_POINTER(n);
@@ -735,7 +736,7 @@ gpview_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *ite
 {
 //    GPViewCategoryModelPrivate *private;
 
-    private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
+//    private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
     g_debug("gpview_category_model_iter_n_children");
 
