@@ -38,7 +38,7 @@ struct _GPartsResultModelClass
     GObjectClass parent;
 };
 
-GType
+unsigned int
 gparts_result_model_get_type(void);
 
 GPartsResultModel*

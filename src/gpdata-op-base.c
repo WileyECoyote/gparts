@@ -40,7 +40,7 @@ typedef struct _GPDataOPBasePrivate GPDataOPBasePrivate;
 
 struct _GPDataOPBasePrivate
 {
-    gchar *xml_name;
+    char *xml_name;
 };
 
 
@@ -63,18 +63,21 @@ gpdata_op_base_init(GTypeInstance *instance, gpointer g_class);
 static void
 gpdata_op_base_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
+/*
 static void
 gpdata_op_base_check_cb(GPDataOPBase *base, xmlTextReader *reader, GError **error);
+*/
 
+/*
 static void
 gpdata_op_base_parse_cb(GPDataOPBase *base, xmlTextReader *reader, GPDataOPBuildable *object, GError **error);
-
+*/
 
 void
 gpdata_op_base_check(GPDataOPBase *base, xmlTextReader *reader, GError **error)
 {
-    if (base != NULL)
-    {
+    if (base != NULL) {
+
         GPDataOPBaseClass *klasse = GPDATA_OP_BASE_CLASS(base);
 
         if (klasse == NULL)
@@ -92,23 +95,23 @@ gpdata_op_base_check(GPDataOPBase *base, xmlTextReader *reader, GError **error)
     }
 }
 
+/*
 static void
 gpdata_op_base_check_cb(GPDataOPBase *base, xmlTextReader *reader, GError **error)
 {
-    if (reader == NULL)
-    {
+    if (reader == NULL) {
 
     }
     else if (xmlTextReaderNodeType(reader) != XML_READER_TYPE_ELEMENT)
     {
 
     }
-    else
-    {
+    else {
+
         GPDataOPBasePrivate *privat = GPDATA_OP_BASE_GET_PRIVATE(base);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
 //            const xmlChar *a = xmlTextReaderConstValue(reader);
 //            xmlChar *b = xmlCharStrdup(privat->xml_name);
 //
@@ -120,9 +123,10 @@ gpdata_op_base_check_cb(GPDataOPBase *base, xmlTextReader *reader, GError **erro
         }
     }
 }
+*/
 
 static void
-gpdata_op_base_class_init(gpointer g_class, gpointer g_class_data)
+gpdata_op_base_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
 
@@ -158,8 +162,8 @@ gpdata_op_base_finalize(GObject *object)
 {
     GPDataOPBasePrivate *privat = GPDATA_OP_BASE_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->xml_name);
         privat->xml_name = NULL;
     }
@@ -172,10 +176,10 @@ gpdata_op_base_get_property(GObject *object, guint property_id, GValue *value, G
 {
     GPDataOPBase *factory = GPDATA_OP_BASE(object);
 
-    if (factory != NULL)
-    {
-        switch (property_id)
-        {
+    if (factory != NULL) {
+
+        switch (property_id) {
+
             case GPDATA_OP_BASE_XML_NAME:
                 g_value_take_string(value, gpdata_op_base_get_xml_name(factory));
                 break;
@@ -191,8 +195,8 @@ gpdata_op_base_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPDataOPBaseClass),    /* class_size */
             NULL,                         /* base_init */
@@ -217,14 +221,14 @@ gpdata_op_base_get_type(void)
     return type;
 }
 
-gchar*
+char*
 gpdata_op_base_get_xml_name(const GPDataOPBase *factory)
 {
     GPDataOPBasePrivate *privat = GPDATA_OP_BASE_GET_PRIVATE(factory);
     char *xml_name = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         xml_name = g_strdup(privat->xml_name);
     }
 
@@ -237,8 +241,8 @@ gpdata_op_base_init(GTypeInstance *instance, gpointer g_class)
 {
     GPDataOPBasePrivate *privat = GPDATA_OP_BASE_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         /* \todo Use install location for deployed version */
 
         privat->xml_name = g_build_path(
@@ -256,52 +260,42 @@ gpdata_op_base_init(GTypeInstance *instance, gpointer g_class)
 void
 gpdata_op_base_parse(GPDataOPBase *base, xmlTextReader *reader, GPDataOPBuildable *object, GError **error)
 {
-    if (base != NULL)
-    {
+    if (base != NULL) {
+
         GPDataOPBaseClass *klasse = GPDATA_OP_BASE_CLASS(base);
 
-        if (klasse == NULL)
-        {
+        if (klasse == NULL) {
             g_critical("Unable to get GPDataOPBaseClass from parameter");
         }
-        else if (klasse->parse == NULL)
-        {
+        else if (klasse->parse == NULL) {
             g_critical("GPDataOPBaseClass contains NULL parse() function pointer");
         }
-        else
-        {
+        else {
             klasse->parse(base, reader, object, error);
         }
     }
 }
 
+/*
 static void
 gpdata_op_base_parse_cb(GPDataOPBase *base, xmlTextReader *reader, GPDataOPBuildable *object, GError **error)
 {
-    if (reader == NULL)
-    {
+    if (xmlTextReaderNodeType(reader) != XML_READER_TYPE_ELEMENT) {
 
     }
-    else if (xmlTextReaderNodeType(reader) != XML_READER_TYPE_ELEMENT)
-    {
 
-    }
-    else
-    {
-
-    }
 }
-
+*/
 
 static void
 gpdata_op_base_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
     GPDataOPBase *factory = GPDATA_OP_BASE(object);
 
-    if (factory != NULL)
-    {
-        switch (property_id)
-        {
+    if (factory != NULL) {
+
+        switch (property_id) {
+
             case GPDATA_OP_BASE_XML_NAME:
                 gpdata_op_base_set_xml_name(factory, g_value_get_string(value));
                 break;
@@ -317,8 +311,8 @@ gpdata_op_base_set_xml_name(GPDataOPBase *factory, const gchar *xml_name)
 {
     GPDataOPBasePrivate *privat = GPDATA_OP_BASE_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->xml_name);
 
         privat->xml_name = g_strdup(xml_name);
@@ -326,4 +320,3 @@ gpdata_op_base_set_xml_name(GPDataOPBase *factory, const gchar *xml_name)
         g_object_notify(G_OBJECT(factory), "xml-name");
     }
 }
-
