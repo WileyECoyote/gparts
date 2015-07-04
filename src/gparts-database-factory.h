@@ -40,14 +40,15 @@ struct _GPartsDatabaseFactoryClass
 {
     GObjectClass parent;
 
-    GPartsDatabase* (*create_database)(GPartsDatabaseFactory *factory, GError **error);
-    gchar* (*get_name)(const GPartsDatabaseFactory *factory);
-    gint (*get_flags)(const GPartsDatabaseFactory *factory);
-    gboolean (*validate_connect_data)(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
+    GPartsDatabase *(*create_database)(GPartsDatabaseFactory *factory, GError **error);
+
+    char *(*get_name)(const GPartsDatabaseFactory *factory);
+    int   (*get_flags)(const GPartsDatabaseFactory *factory);
+    void *(*validate_connect_data)(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
 };
 
 /*! \private */
-GType
+unsigned int
 gparts_database_factory_get_type(void);
 
 /*! \brief Create a database interface object
@@ -72,7 +73,7 @@ gparts_database_factory_create_database(GPartsDatabaseFactory *factory, GError *
  *  \param [in] factory This factory.
  *  \return A pointer to a string identifying the database.
  */
-gchar*
+char*
 gparts_database_factory_get_name(const GPartsDatabaseFactory *factory);
 
 /*! \brief Get the connect data flags for the database.
@@ -86,7 +87,7 @@ gparts_database_factory_get_name(const GPartsDatabaseFactory *factory);
  *  \param [in] factory This factory.
  *  \return The connect data flags for the database.
  */
-gint
+int
 gparts_database_factory_get_flags(const GPartsDatabaseFactory *factory);
 
 /*! \brief Validate connect-data for databases produced by this factory.
@@ -97,9 +98,9 @@ gparts_database_factory_get_flags(const GPartsDatabaseFactory *factory);
  *  Performs simple checks on the data in connect-data.
  *
  *  \param [in] factory This factory.
- *  \retval TRUE The connect-data is valid.
- *  \retval FALSE The connect-data is invalid.
+ *  \retval TRUE The connect-data is valid or FALSE if the connect-data
+ *               is invalid.
  */
-gboolean
+int
 gparts_database_factory_validate_connect_data(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
 
