@@ -27,48 +27,46 @@ typedef struct _MiscMacroExpandData MiscMacroExpandData;
 
 struct _MiscMacroExpandData
 {
-    const GHashTable *table;
+    GHashTable *table;
 };
 
 static gboolean
 misc_macro_expand_cb(const GMatchInfo *info, GString *result, gpointer data);
 
 
-
-gchar*
-misc_macro_expand(const GRegex* regex, const gchar *string, const GHashTable *table)
+char*
+misc_macro_expand(const GRegex* regex, const char *string, const GHashTable *table)
 {
-    MiscMacroExpandData data;
+  //MiscMacroExpandData data;
 
-    data.table = table;
+  //data.table = table;
 
-    return g_regex_replace_eval(
-        regex,                   /* regex */
-        string,                  /* string */
-        -1,                      /* string_len */
-        0,                       /* start_position */
-        0,                       /* match_options */
-        misc_macro_expand_cb,    /* eval */
-        &table,                  /* user_data */
-        NULL                     /* error */
-        );
+  return g_regex_replace_eval(regex,                   /* regex */
+                              string,                  /* string */
+                              -1,                      /* string_len */
+                              0,                       /* start_position */
+                              0,                       /* match_options */
+                              misc_macro_expand_cb,    /* eval */
+                              &table,                  /* user_data */
+                              NULL                     /* error */
+  );
 }
 
 static gboolean
-misc_macro_expand_cb(const GMatchInfo *info, GString *result, gpointer user_data)
+misc_macro_expand_cb(const GMatchInfo *info, GString *result, void *user_data)
 {
-    gchar *value = NULL;
+    char *value = NULL;
 
-    if (user_data != NULL)
-    {
+    if (user_data != NULL) {
+
         MiscMacroExpandData *data = (MiscMacroExpandData*) user_data;
 
-        if (data->table != NULL)
-        {
-            gchar *name = g_match_info_fetch(info, 1);
+        if (data->table != NULL) {
 
-            if (name != NULL)
-            {
+            char *name = g_match_info_fetch(info, 1);
+
+            if (name != NULL) {
+
                 value = g_hash_table_lookup(data->table, name);
 
                 g_free(name);
@@ -76,13 +74,13 @@ misc_macro_expand_cb(const GMatchInfo *info, GString *result, gpointer user_data
         }
     }
 
-    if (value != NULL)
-    {
+    if (value != NULL) {
+
         g_string_append(result, value);
     }
-    else
-    {
-        gchar *macro = g_match_info_fetch(info, 0);
+    else {
+
+        char *macro = g_match_info_fetch(info, 0);
 
         g_string_append(result, macro);
 
@@ -93,7 +91,7 @@ misc_macro_expand_cb(const GMatchInfo *info, GString *result, gpointer user_data
 }
 
 void
-misc_macro_find(const GRegex *regex, const gchar *string, GHashTable *table)
+misc_macro_find(const GRegex *regex, const char *string, GHashTable *table)
 {
     GMatchInfo *info;
 
@@ -101,7 +99,7 @@ misc_macro_find(const GRegex *regex, const gchar *string, GHashTable *table)
 
     while (g_match_info_matches(info))
     {
-        gchar *name = g_match_info_fetch(info, 1);
+        char *name = g_match_info_fetch(info, 1);
 
         if (!g_hash_table_lookup_extended(table, name, NULL, NULL))
         {
