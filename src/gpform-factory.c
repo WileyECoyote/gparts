@@ -44,9 +44,9 @@ typedef struct _GPFormFactoryPrivate GPFormFactoryPrivate;
 struct _GPFormFactoryPrivate
 {
     GtkWindow *dialog_parent;
-    gchar     *form_id;
-    gchar     *image_path;
-    gchar     *xml_path;
+    char      *form_id;
+    char      *image_path;
+    char      *xml_path;
 };
 
 
@@ -74,116 +74,105 @@ gpform_factory_set_property(GObject *object, guint property_id, const GValue *va
 static void
 gpform_factory_class_init(gpointer g_class, gpointer g_class_data)
 {
-    GObjectClass *klasse = G_OBJECT_CLASS(g_class);
+  GObjectClass *class = G_OBJECT_CLASS(g_class);
 
-    g_type_class_add_private(klasse, sizeof(GPFormFactoryPrivate));
+  g_type_class_add_private(class, sizeof(GPFormFactoryPrivate));
 
-    klasse->dispose  = gpform_factory_dispose;
-    klasse->finalize = gpform_factory_finalize;
+  class->dispose  = gpform_factory_dispose;
+  class->finalize = gpform_factory_finalize;
 
-    klasse->get_property = gpform_factory_get_property;
-    klasse->set_property = gpform_factory_set_property;
+  class->get_property = gpform_factory_get_property;
+  class->set_property = gpform_factory_set_property;
 
-    g_object_class_install_property(
-        klasse,
-        GPFORM_FACTORY_DIALOG_PARENT,
-        g_param_spec_object(
-            "dialog-parent",
-            "Dialog Parent",
-            "Dialog Parent",
-            GTK_TYPE_WINDOW,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(class,
+                                  GPFORM_FACTORY_DIALOG_PARENT,
+                                  g_param_spec_object( "dialog-parent",
+                                                       "Dialog Parent",
+                                                       "Dialog Parent",
+                                                       GTK_TYPE_WINDOW,
+                                                       G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+                                  )
+  );
 
 
-    g_object_class_install_property(
-        klasse,
-        GPFORM_FACTORY_FORM_ID,
-        g_param_spec_string(
-            "form-id",
-            "Form ID",
-            "Form ID",
-            NULL,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(class,
+                                  GPFORM_FACTORY_FORM_ID,
+                                  g_param_spec_string("form-id",
+                                                      "Form ID",
+                                                      "Form ID",
+                                                      NULL,
+                                                      G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+                                  )
+  );
 
-    g_object_class_install_property(
-        klasse,
-        GPFORM_FACTORY_IMAGE_PATH,
-        g_param_spec_string(
-            "image-path",
-            "Image Path",
-            "Image Path",
-            NULL,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(class,
+                                  GPFORM_FACTORY_IMAGE_PATH,
+                                  g_param_spec_string("image-path",
+                                                      "Image Path",
+                                                      "Image Path",
+                                                      NULL,
+                                                      G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+                                  )
+  );
 
-    g_object_class_install_property(
-        klasse,
-        GPFORM_FACTORY_XML_PATH,
-        g_param_spec_string(
-            "xml-path",
-            "XML path",
-            "XML path",
-            NULL,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(class,
+                                  GPFORM_FACTORY_XML_PATH,
+                                  g_param_spec_string("xml-path",
+                                                      "XML path",
+                                                      "XML path",
+                                                      NULL,
+                                                      G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
+                                  )
+  );
 
-    /* Ensure other classes are loaded into the type system */
-    /* to allow dynamic instantiation.                      */
+  /* Ensure other classes are loaded into the type system */
+  /* to allow dynamic instantiation.                      */
 
-    GPFORM_TYPE_UI_COMBO;
-    GPFORM_TYPE_UI_DIALOG;
-    GPFORM_TYPE_UI_ENTRY;
-    GPFORM_TYPE_UI_IMAGE;
-    GPFORM_TYPE_UI_LABEL;
+  GPFORM_TYPE_UI_COMBO;
+  GPFORM_TYPE_UI_DIALOG;
+  GPFORM_TYPE_UI_ENTRY;
+  GPFORM_TYPE_UI_IMAGE;
+  GPFORM_TYPE_UI_LABEL;
 }
 
 GPFormUIDialog*
 gpform_factory_create_form(const GPFormFactory *factory, const char *filename)
 {
-    GPFormUIDialog *dialog = NULL;
-    GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
+  GPFormUIDialog *dialog = NULL;
 
-    if (privat != NULL)
-    {
-        GtkBuilder *builder = gtk_builder_new();
-        gchar *filepath = g_build_filename(privat->xml_path, filename, NULL);
+  GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-        if ((builder != NULL) && (filepath != NULL))
-        {
-            GError* error = NULL;
-            guint status;
+  if (privat != NULL) {
 
-            status = gtk_builder_add_from_file(
-                builder,
-                filepath,
-                &error
-                );
+    GtkBuilder *builder  = gtk_builder_new();
+    char       *filepath = g_build_filename(privat->xml_path, filename, NULL);
 
-            dialog = GPFORM_UI_DIALOG(gtk_builder_get_object(builder, privat->form_id));
-        }
+    if ((builder != NULL) && (filepath != NULL)) {
 
-        if (builder != NULL)
-        {
-            g_object_unref(builder);
-        }
+      GError *err = NULL;
 
-        builder = NULL;
+      if (!gtk_builder_add_from_file(builder, filepath, &err)) {
+        fprintf(stderr, "gtk_builder encounted an error: '%s'", err->message);
+        g_clear_error (&err);
+      }
 
-        g_free(filepath);
-
-        gtk_window_set_transient_for(
-            GTK_WINDOW(dialog),
-            privat->dialog_parent
-            );
+      dialog = GPFORM_UI_DIALOG(gtk_builder_get_object(builder, privat->form_id));
     }
 
-    return dialog;
+    if (builder != NULL) {
+
+      g_object_unref(builder);
+    }
+
+    builder = NULL;
+
+    g_free(filepath);
+
+    gtk_window_set_transient_for(GTK_WINDOW(dialog),
+                                 privat->dialog_parent);
+  }
+
+  return dialog;
 }
 
 static void
@@ -192,8 +181,8 @@ gpform_factory_dispose(GObject *object)
 
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         misc_object_unref(privat->dialog_parent);
         privat->dialog_parent = NULL;
     }
@@ -206,8 +195,8 @@ gpform_factory_finalize(GObject *object)
 {
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->form_id);
         privat->form_id = NULL;
 
@@ -226,16 +215,16 @@ gpform_factory_get_dialog_parent(const GPFormFactory *factory)
 {
     GtkWindow *parent = NULL;
 
-    if (factory != NULL)
-    {
+    if (factory != NULL) {
+
         GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             parent = privat->dialog_parent;
 
-            if (parent != NULL)
-            {
+            if (parent != NULL) {
+
                 g_object_ref(parent);
             }
         }
@@ -249,10 +238,10 @@ gpform_factory_get_property(GObject *object, guint property_id, GValue *value, G
 {
     GPFormFactory *factory = GPFORM_FACTORY(object);
 
-    if (factory != NULL)
-    {
-        switch (property_id)
-        {
+    if (factory != NULL) {
+
+        switch (property_id) {
+
             case GPFORM_FACTORY_DIALOG_PARENT:
                 g_value_take_object(value, gpform_factory_get_dialog_parent(factory));
                 break;
@@ -275,35 +264,34 @@ gpform_factory_get_property(GObject *object, guint property_id, GValue *value, G
     }
 }
 
-GType
+unsigned int
 gpform_factory_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+  static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
-        static const GTypeInfo tinfo = {
-            sizeof(GPFormFactoryClass),    /* class_size */
-            NULL,                          /* base_init */
-            NULL,                          /* base_finalize */
-            gpform_factory_class_init,     /* class_init */
-            NULL,                          /* class_finalize */
-            NULL,                          /* class_data */
-            sizeof(GPFormFactory),         /* instance_size */
-            0,                             /* n_preallocs */
-            gpform_factory_init,           /* instance_init */
-            NULL                           /* value_table */
-            };
+  if (type == G_TYPE_INVALID) {
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "GPFormFactory",
-            &tinfo,
-            0
-            );
-    }
+    static const GTypeInfo tinfo = {
+      sizeof(GPFormFactoryClass),    /* class_size */
+      NULL,                          /* base_init */
+      NULL,                          /* base_finalize */
+      gpform_factory_class_init,     /* class_init */
+      NULL,                          /* class_finalize */
+      NULL,                          /* class_data */
+      sizeof(GPFormFactory),         /* instance_size */
+      0,                             /* n_preallocs */
+      gpform_factory_init,           /* instance_init */
+      NULL                           /* value_table */
+    };
 
-    return type;
+    type = g_type_register_static(G_TYPE_OBJECT,
+                                  "GPFormFactory",
+                                  &tinfo,
+                                  0
+    );
+  }
+
+  return type;
 }
 
 void
@@ -311,17 +299,17 @@ gpform_factory_set_dialog_parent(GPFormFactory *factory, GtkWindow *parent)
 {
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        if (privat->dialog_parent != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->dialog_parent != NULL) {
+
             g_object_unref(privat->dialog_parent);
         }
 
         privat->dialog_parent = parent;
 
-        if (privat->dialog_parent != NULL)
-        {
+        if (privat->dialog_parent != NULL) {
+
             g_object_ref(privat->dialog_parent);
         }
     }
@@ -332,10 +320,10 @@ gpform_factory_set_property(GObject *object, guint property_id, const GValue *va
 {
     GPFormFactory *factory = GPFORM_FACTORY(object);
 
-    if (factory != NULL)
-    {
-        switch (property_id)
-        {
+    if (factory != NULL) {
+
+        switch (property_id) {
+
             case GPFORM_FACTORY_DIALOG_PARENT:
                 gpform_factory_set_dialog_parent(factory, g_value_get_object(value));
                 break;
@@ -364,8 +352,8 @@ gpform_factory_get_form_id(const GPFormFactory *factory)
     char *form_id = NULL;
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         form_id = g_strdup(privat->form_id);
     }
 
@@ -378,8 +366,8 @@ gpform_factory_get_image_path(const GPFormFactory *factory)
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
     char *image_path = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         image_path = g_strdup(privat->image_path);
     }
 
@@ -392,8 +380,8 @@ gpform_factory_get_xml_path(const GPFormFactory *factory)
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
     char *xml_path = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         xml_path = g_strdup(privat->xml_path);
     }
 
@@ -403,35 +391,31 @@ gpform_factory_get_xml_path(const GPFormFactory *factory)
 static void
 gpform_factory_init(GTypeInstance *instance, gpointer g_class)
 {
-    GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(instance);
+  GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
-        privat->form_id = g_strdup("main");
+  if (privat != NULL) {
 
-        /* \todo Use install location for deployed version */
+    privat->form_id = g_strdup("main");
 
-        privat->image_path = g_build_path(
-            G_DIR_SEPARATOR_S,
-            ".",
-            /* DATADIR, */
-            /* PACKAGE_NAME, */
-            /* "image", */
-            NULL
-            );
+    /* \todo Use install location for deployed version */
 
-        privat->xml_path = g_build_path(
-            G_DIR_SEPARATOR_S,
-            "..",
-            "xml",
-            "forms",
-            /* DATADIR, */
-            /* PACKAGE_NAME, */
-            /* "xml", */
-            /* "forms", */
-            NULL
-            );
-    }
+    privat->image_path = g_build_path(G_DIR_SEPARATOR_S,
+                                      ".",
+                                      /* DATADIR, */
+                                      /* PACKAGE_NAME, */
+                                      /* "image", */
+                                      NULL);
+
+    privat->xml_path = g_build_path(G_DIR_SEPARATOR_S,
+                                    "..",
+                                    "xml",
+                                    "forms",
+                                    /* DATADIR, */
+                                    /* PACKAGE_NAME, */
+                                    /* "xml", */
+                                    /* "forms", */
+                                    NULL);
+  }
 }
 
 GPFormFactory*
@@ -443,31 +427,31 @@ gpform_factory_new(void)
 void
 gpform_factory_set_form_id(GPFormFactory *factory, const char *form_id)
 {
-    GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
+  GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        g_free(privat->form_id);
+  if (privat != NULL) {
 
-        privat->form_id = g_strdup(form_id);
+    g_free(privat->form_id);
 
-        g_object_notify(G_OBJECT(factory), "form-id");
-    }
+    privat->form_id = g_strdup(form_id);
+
+    g_object_notify(G_OBJECT(factory), "form-id");
+  }
 }
 
 void
 gpform_factory_set_image_path(GPFormFactory *factory, const char *image_path)
 {
-    GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
+  GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        g_free(privat->image_path);
+  if (privat != NULL) {
 
-        privat->image_path = g_strdup(image_path);
+    g_free(privat->image_path);
 
-        g_object_notify(G_OBJECT(factory), "image-path");
-    }
+    privat->image_path = g_strdup(image_path);
+
+    g_object_notify(G_OBJECT(factory), "image-path");
+  }
 }
 
 void
@@ -475,8 +459,8 @@ gpform_factory_set_xml_path(GPFormFactory *factory, const char *xml_path)
 {
     GPFormFactoryPrivate *privat = GPFORM_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->xml_path);
 
         privat->xml_path = g_strdup(xml_path);
