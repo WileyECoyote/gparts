@@ -400,10 +400,10 @@ gparts_mysql_result_get_type(void)
  *  \param [in] result The MySQL result.
  *  \return A new GPartsMySQLResult.
  */
-GPartsMySQLResult*
+GPartsDatabaseResult*
 gparts_mysql_result_new(MYSQL_RES *result)
 {
-    GPartsMySQLResult *r = g_object_new(GPARTS_TYPE_MYSQL_RESULT, NULL);
+    GPartsDatabaseResult *r = g_object_new(GPARTS_TYPE_MYSQL_RESULT, NULL);
 
     GPartsMySQLResultPrivate *private = GPARTS_MYSQL_RESULT_GET_PRIVATE(r);
 
