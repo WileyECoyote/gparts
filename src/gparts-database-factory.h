@@ -44,7 +44,7 @@ struct _GPartsDatabaseFactoryClass
 
     char *(*get_name)(const GPartsDatabaseFactory *factory);
     int   (*get_flags)(const GPartsDatabaseFactory *factory);
-    void *(*validate_connect_data)(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
+    int   (*validate_connect_data)(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
 };
 
 /*! \private */

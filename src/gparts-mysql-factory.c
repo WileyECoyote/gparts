@@ -39,17 +39,17 @@ gparts_mysql_factory_get_flags(const GPartsDatabaseFactory *factory);
 static char*
 gparts_mysql_factory_get_name(const GPartsDatabaseFactory *factory);
 
-static gboolean
+static int
 gparts_mysql_factory_validate_connect_data(const GPartsDatabaseFactory *factory, const GPartsConnectData *data);
 
 
 static void
-gparts_mysql_factory_base_init(gpointer g_class)
+gparts_mysql_factory_base_init(void *g_class)
 {
 }
 
 static void
-gparts_mysql_factory_class_init(gpointer g_class, gpointer g_class_data)
+gparts_mysql_factory_class_init(void *g_class, void *g_class_data)
 {
     GPartsDatabaseFactoryClass *klasse = GPARTS_DATABASE_FACTORY_CLASS(g_class);
 
