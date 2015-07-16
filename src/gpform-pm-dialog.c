@@ -28,25 +28,23 @@
 #include "gpform.h"
 
 
-
 static void
-gpform_pm_dialog_class_init(gpointer g_class, gpointer g_class_data);
-
+gpform_pm_dialog_class_init(void *g_class, void *g_class_data);
 
 
 static void
-gpform_pm_dialog_class_init(gpointer g_class, gpointer g_class_data)
+gpform_pm_dialog_class_init(void *g_class, void *g_class_data)
 {
-    GObjectClass *klasse = G_OBJECT_CLASS(g_class);
+   /*  GObjectClass *klasse = G_OBJECT_CLASS(g_class); */
 }
 
-GType
+unsigned int
 gpform_pm_dialog_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPFormPMDialogClass),    /* class_size */
             NULL,                           /* base_init */
@@ -70,4 +68,3 @@ gpform_pm_dialog_get_type(void)
 
     return type;
 }
-
