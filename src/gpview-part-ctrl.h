@@ -54,5 +54,10 @@ void
 gpview_part_ctrl_set_current_view(GPViewPartCtrl *ctrl, GPViewPartView *view);
 
 void
+gpview_part_ctrl_set_form_factory(GPViewPartCtrl *ctrl, GPFormFactory *factory);
+
+void
 gpview_part_ctrl_set_ui_manager(GPViewPartCtrl *ctrl, GtkUIManager *manager);
 
+void
+gpview_part_ctrl_set_database(GPViewPartCtrl *ctrl, GPartsDatabase *database);
