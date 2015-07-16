@@ -27,15 +27,15 @@
 void
 misc_object_chain_dispose(GObject *object)
 {
-    GObjectClass *klasse = g_type_class_peek(object);
+    GObjectClass *class = g_type_class_peek((unsigned)object);
 
-    if (klasse != NULL)
-    {
-        GObjectClass *parent_klasse = g_type_class_peek_parent(klasse);
+    if (class != NULL) {
 
-        if (parent_klasse != NULL)
-        {
-            parent_klasse->dispose(object);
+        GObjectClass *parent_class = g_type_class_peek_parent(class);
+
+        if (parent_class != NULL) {
+
+            parent_class->dispose(object);
         }
     }
 }
@@ -43,25 +43,24 @@ misc_object_chain_dispose(GObject *object)
 void
 misc_object_chain_finalize(GObject *object)
 {
-    GObjectClass *klasse = g_type_class_peek(object);
+    GObjectClass *class = g_type_class_peek((unsigned)object);
 
-    if (klasse != NULL)
-    {
-        GObjectClass *parent_klasse = g_type_class_peek_parent(klasse);
+    if (class != NULL) {
 
-        if (parent_klasse != NULL)
-        {
-            parent_klasse->finalize(object);
+        GObjectClass *parent_class = g_type_class_peek_parent(class);
+
+        if (parent_class != NULL) {
+
+            parent_class->finalize(object);
         }
     }
 
 }
 
 void
-misc_object_unref(gpointer object)
+misc_object_unref(void *object)
 {
-    if (object != NULL)
-    {
+    if (object != NULL) {
         g_object_unref(object);
     }
 }
