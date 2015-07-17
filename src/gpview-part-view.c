@@ -150,7 +150,7 @@ gpview_part_view_device_changed_cb(GtkTreeSelection *selection, GPViewPartView *
         {
             GStrv devices = NULL;
             SchDrawing *drawing = NULL;
-            gint index;
+            int index;
             if (gpview_result_adapter_get_column_index(privat->device_adapter, "SymbolName", &index))
             {
                 devices = gpview_result_adapter_get_fields(
@@ -214,7 +214,7 @@ gpview_part_view_part_changed_cb(GtkTreeSelection *selection, GPViewPartView *vi
         if (privat != NULL)
         {
             GStrv devices = NULL;
-            gint index;
+            int index;
             GPartsDatabaseResult *result = NULL;
 
             if (gpview_result_adapter_get_column_index(privat->part_adapter, "DeviceID", &index))
@@ -410,10 +410,10 @@ gpview_part_view_dispose(GObject *object)
 }
 
 
-gchar*
+char*
 gpview_part_view_get_create_form(const GPViewPartView *view)
 {
-    gchar *form = NULL;
+    char *form = NULL;
 
     if (view != NULL)
     {
@@ -433,16 +433,16 @@ gpview_part_view_get_drawing(const GPViewPartView *view)
 {
     SchDrawing *drawing = NULL;
 
-    if (view != NULL)
-    {
+    if (view != NULL) {
+
         GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             drawing = privat->drawing;
 
-            if (drawing != NULL)
-            {
+            if (drawing != NULL) {
+
                 g_object_ref(drawing);
             }
         }
@@ -451,17 +451,17 @@ gpview_part_view_get_drawing(const GPViewPartView *view)
     return drawing;
 }
 
-gchar*
+char*
 gpview_part_view_get_edit_form(const GPViewPartView *view)
 {
-    gchar *form = NULL;
+    char *form = NULL;
 
-    if (view != NULL)
-    {
+    if (view != NULL) {
+
         GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             form = gpview_category_widget_get_edit_form(privat->category_widget);
         }
     }
@@ -474,23 +474,23 @@ gpview_part_view_get_property(GObject *object, guint property_id, GValue *value,
 {
     GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         }
     }
 }
 
-GType
+unsigned int
 gpview_part_view_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPViewPartViewClass),    /* class_size */
             NULL,                           /* base_init */
@@ -510,12 +510,8 @@ gpview_part_view_get_type(void)
             NULL                                     /* interface_data */
             };
 
-        type = g_type_register_static(
-            GTK_TYPE_HPANED,
-            "GPViewPartView",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(GTK_TYPE_HPANED, "GPViewPartView",
+                                      &tinfo, 0);
 
         g_type_add_interface_static(type, GPVIEW_TYPE_VIEW_INTERFACE, &iinfo);
     }
@@ -526,20 +522,18 @@ gpview_part_view_get_type(void)
 GStrv
 gpview_part_view_get_websites(const GPViewPartView *view)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
-    GStrv websites = NULL;
+  GPViewPartViewPrivate *private = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+  GStrv websites = NULL;
 
-    if (privat != NULL)
-    {
-        gint index;
+  if (private != NULL) {
 
-//        if (gpview_result_adapter_get_column_index(privat->adapter, "Website", &index))
+    //    int index;
+    ;
+    //    if (gpview_result_adapter_get_column_index(privat->adapter, "Website", &index))
     //    {
-  //          websites = gpview_result_adapter_get_fields(privat->adapter, privat->selection, index);
-      //  }
-    }
-
-    return websites;
+      //          websites = gpview_result_adapter_get_fields(privat->adapter, privat->selection, index);
+  }
+  return websites;
 }
 
 static void
@@ -547,8 +541,8 @@ gpview_part_view_init(GTypeInstance *instance, gpointer g_class)
 {
     GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GtkHPaned         *hpaned;
         GtkScrolledWindow *scrolled;
         GtkVPaned         *vpaned;
@@ -564,26 +558,16 @@ gpview_part_view_init(GTypeInstance *instance, gpointer g_class)
 
         privat->part_selection = gtk_tree_view_get_selection(privat->part_tree);
 
-        gtk_tree_selection_set_mode(
-            privat->part_selection,
-            GTK_SELECTION_MULTIPLE
-            );
+        gtk_tree_selection_set_mode(privat->part_selection, GTK_SELECTION_MULTIPLE);
 
-        scrolled = gtk_scrolled_window_new(
-            NULL,    /* hadjustment */
-            NULL     /* vadjustment */
-            );
+        scrolled = gtk_scrolled_window_new( NULL /* hadjustment, */ NULL /* vadjustment */);
 
-        gtk_scrolled_window_set_policy(
-            GTK_SCROLLED_WINDOW(instance),
-            GTK_POLICY_AUTOMATIC,   /* hscrollbar_policy */
-            GTK_POLICY_AUTOMATIC    /* vscrollbar_policy */
-            );
+        gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(instance),
+                                        GTK_POLICY_AUTOMATIC,   /* hscrollbar_policy */
+                                        GTK_POLICY_AUTOMATIC    /* vscrollbar_policy */
+                                      );
 
-        gtk_container_add(
-            GTK_CONTAINER(scrolled),
-            GTK_WIDGET(privat->part_tree)
-            );
+        gtk_container_add(GTK_CONTAINER(scrolled), GTK_WIDGET(privat->part_tree));
 
         privat->drawing_view = schgui_drawing_view_new();
 
@@ -591,17 +575,11 @@ gpview_part_view_init(GTypeInstance *instance, gpointer g_class)
 
         privat->device_selection = gtk_tree_view_get_selection(privat->device_tree);
 
-        gtk_tree_selection_set_mode(
-            privat->device_selection,
-            GTK_SELECTION_BROWSE
-            );
+        gtk_tree_selection_set_mode(privat->device_selection, GTK_SELECTION_BROWSE);
 
         vpaned = GTK_VPANED(gtk_vpaned_new());
 
-        gtk_paned_set_position(
-            GTK_PANED(vpaned),
-            240
-            );
+        gtk_paned_set_position(GTK_PANED(vpaned), 240);
 
         gtk_container_add(
             GTK_CONTAINER(vpaned),
@@ -894,7 +872,7 @@ gpview_part_view_update_cb(GObject *unused, GParamSpec *pspec, GPViewPartView *v
         if (privat->database != NULL)
         {
             GPartsDatabaseResult *result = NULL;
-            gchar *view_name = gpview_category_widget_get_view_name(privat->category_widget);
+            char *view_name = gpview_category_widget_get_view_name(privat->category_widget);
 
             if (view_name != NULL)
             {

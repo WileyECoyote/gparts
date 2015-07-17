@@ -54,6 +54,12 @@ gpview_part_view_get_type(void);
 GPViewPartCtrl*
 gpview_part_view_get_controller(const GPViewPartView *view);
 
+char*
+gpview_part_view_get_create_form(const GPViewPartView *view);
+
+SchDrawing*
+gpview_part_view_get_drawing(const GPViewPartView *view);
+
 /*! \brief Get the selected company IDs
  *
  *  Use g_strfreev() on the returned pointer when no longer needed.
@@ -96,4 +102,3 @@ gpview_part_view_new_with_controller(GPViewPartCtrl *ctrl);
  */
 void
 gpview_part_view_set_controller(GPViewPartView *view, GPViewPartCtrl *ctrl);
-
