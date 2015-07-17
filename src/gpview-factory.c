@@ -67,13 +67,13 @@ static void
 gpview_factory_finalize(GObject *object);
 
 static void
-gpview_factory_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gpview_factory_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec);
 
 static void
 gpview_factory_init(GTypeInstance *instance, gpointer g_class);
 
 static void
-gpview_factory_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gpview_factory_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec);
 
 
 
@@ -271,7 +271,7 @@ gpview_factory_finalize(GObject *object)
 
 
 static void
-gpview_factory_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpview_factory_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec)
 {
     GPViewFactoryPrivate *privat = GPVIEW_FACTORY_GET_PRIVATE(object);
 
@@ -393,17 +393,17 @@ gpview_factory_set_form_factory(GPViewFactory *factory, GPFormFactory *form_fact
 {
     GPViewFactoryPrivate *privat = GPVIEW_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        if (privat->form_factory != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->form_factory != NULL) {
+
             g_object_unref(privat->form_factory);
         }
 
         privat->form_factory = form_factory;
 
-        if (privat->form_factory != NULL)
-        {
+        if (privat->form_factory != NULL) {
+
             g_object_ref(privat->form_factory);
         }
 
@@ -420,14 +420,14 @@ gpview_factory_set_form_factory(GPViewFactory *factory, GPFormFactory *form_fact
 }
 
 static void
-gpview_factory_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gpview_factory_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec)
 {
     GPViewFactory *view = GPVIEW_FACTORY(object);
 
-    if (view != NULL)
-    {
-        switch (property_id)
-        {
+    if (view != NULL) {
+
+        switch (property_id) {
+
             case GPVIEW_FACTORY_DATABASE:
                 gpview_factory_set_database(view, g_value_get_object(value));
                 break;
@@ -451,17 +451,17 @@ gpview_factory_set_ui_manager(GPViewFactory *factory, GtkUIManager *manager)
 {
     GPViewFactoryPrivate *privat = GPVIEW_FACTORY_GET_PRIVATE(factory);
 
-    if (privat != NULL)
-    {
-        if (privat->ui_manager != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->ui_manager != NULL) {
+
             g_object_unref(privat->ui_manager);
         }
 
         privat->ui_manager = manager;
 
-        if (privat->ui_manager != NULL)
-        {
+        if (privat->ui_manager != NULL) {
+
             g_object_ref(privat->ui_manager);
         }
 
@@ -476,4 +476,3 @@ gpview_factory_set_ui_manager(GPViewFactory *factory, GtkUIManager *manager)
         g_object_notify(G_OBJECT(factory), "ui-manager");
     }
 }
-
