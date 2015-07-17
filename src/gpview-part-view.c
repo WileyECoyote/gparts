@@ -122,19 +122,19 @@ gpview_part_view_activate(GPViewViewInterface *widget)
     }
     else
     {
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat == NULL)
+        if (priv == NULL)
         {
-            g_critical("Unable to obtain private data for a GPViewPartView");
+            g_critical("Unable to obtain priv data for a GPViewPartView");
         }
-        else if (privat->controller == NULL)
+        else if (priv->controller == NULL)
         {
             g_critical("GPViewPartView has a NULL controller");
         }
         else
         {
-            gpview_part_ctrl_set_current_view(privat->controller, view);
+            gpview_part_ctrl_set_current_view(priv->controller, view);
         }
     }
 }
@@ -142,65 +142,65 @@ gpview_part_view_activate(GPViewViewInterface *widget)
 static void
 gpview_part_view_device_changed_cb(GtkTreeSelection *selection, GPViewPartView *view)
 {
-    if (view != NULL)
-    {
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+  if (view != NULL) {
 
-        if (privat != NULL)
-        {
-            GStrv devices = NULL;
-            SchDrawing *drawing = NULL;
-            int index;
-            if (gpview_result_adapter_get_column_index(privat->device_adapter, "SymbolName", &index))
-            {
-                devices = gpview_result_adapter_get_fields(
-                    privat->device_adapter,
-                    privat->device_selection,
-                    index
-                    );
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+
+    if (priv != NULL) {
+
+      GStrv devices = NULL;
+      SchDrawing *drawing = NULL;
+      int index;
+      if (gpview_result_adapter_get_column_index(priv->device_adapter, "SymbolName", &index))
+      {
+        devices = gpview_result_adapter_get_fields(
+          priv->device_adapter,
+          priv->device_selection,
+          index
+        );
+      }
+
+
+      if (devices != NULL) {
+
+        if (g_strv_length(devices) == 1) {
+
+          SchComponent *component;
+          SchLoader    *loader = sch_loader_get_default();
+          SchDrawing   *symbol = NULL;
+
+          g_debug("Device = %s", *devices);
+
+          if (loader != NULL) {
+
+            symbol = sch_loader_load_symbol(loader, *devices, NULL);
+          }
+
+          component = sch_component_instantiate(sch_config_new(), symbol);
+          misc_object_unref(symbol);
+
+          if (component != NULL) {
+
+            if (priv->part_table != NULL) {
+
+              GRegex *regex = misc_macro_new_regex();
+              sch_shape_expand_macros(SCH_SHAPE(component), regex, priv->part_table);
+              g_regex_unref(regex);
             }
 
-
-            if (devices != NULL)
-            {
-                if (g_strv_length(devices) == 1)
-                {
-                    SchComponent *component;
-                    SchLoader    *loader = sch_loader_get_default();
-                    SchDrawing   *symbol = NULL;
-
-                    g_debug("Device = %s", *devices);
-
-                    if (loader != NULL)
-                    {
-                        symbol = sch_loader_load_symbol(loader, *devices, NULL);
-                    }
-
-                    component = sch_component_instantiate(sch_config_new(), symbol);
-                    misc_object_unref(symbol);
-
-                    if (component != NULL)
-                    {
-                        if (privat->part_table != NULL)
-                        {
-                            GRegex *regex = misc_macro_new_regex();
-                            sch_shape_expand_macros(SCH_SHAPE(component), regex, privat->part_table);
-                            g_regex_unref(regex);
-                        }
-
-                        drawing = sch_drawing_new();
-                        sch_drawing_append_shape(drawing, SCH_SHAPE(component));
-                        g_object_unref(component);
-                    }
-                }
-
-                g_strfreev(devices);
-            }
-
-            gpview_part_view_set_drawing(view, drawing);
-            misc_object_unref(drawing);
+            drawing = sch_drawing_new();
+            sch_drawing_append_shape(drawing, SCH_SHAPE(component));
+            g_object_unref(component);
+          }
         }
+
+        g_strfreev(devices);
+      }
+
+      gpview_part_view_set_drawing(view, drawing);
+      misc_object_unref(drawing);
     }
+  }
 }
 
 
@@ -209,19 +209,19 @@ gpview_part_view_part_changed_cb(GtkTreeSelection *selection, GPViewPartView *vi
 {
     if (view != NULL)
     {
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL)
+        if (priv != NULL)
         {
             GStrv devices = NULL;
             int index;
             GPartsDatabaseResult *result = NULL;
 
-            if (gpview_result_adapter_get_column_index(privat->part_adapter, "DeviceID", &index))
+            if (gpview_result_adapter_get_column_index(priv->part_adapter, "DeviceID", &index))
             {
                 devices = gpview_result_adapter_get_fields(
-                    privat->part_adapter,
-                    privat->part_selection,
+                    priv->part_adapter,
+                    priv->part_selection,
                     index
                     );
             }
@@ -234,7 +234,7 @@ gpview_part_view_part_changed_cb(GtkTreeSelection *selection, GPViewPartView *vi
 
                     g_string_printf(query, "SELECT * FROM SymbolV WHERE DeviceID = '%s'", *devices);
 
-                    result = gparts_database_query(privat->database, query->str, NULL);
+                    result = gparts_database_query(priv->database, query->str, NULL);
                     g_string_free(query, TRUE);
                 }
 
@@ -245,18 +245,18 @@ gpview_part_view_part_changed_cb(GtkTreeSelection *selection, GPViewPartView *vi
             misc_object_unref(result);
 
 
-            if (gtk_tree_selection_count_selected_rows(privat->part_selection) == 1)
+            if (gtk_tree_selection_count_selected_rows(priv->part_selection) == 1)
             {
                 gtk_tree_selection_selected_foreach(
-                    privat->part_selection,
+                    priv->part_selection,
                     (GtkTreeSelectionForeachFunc) xxx,
                     view
                     );
             }
             else
             {
-                g_hash_table_unref(privat->part_table);
-                privat->part_table = NULL;
+                g_hash_table_unref(priv->part_table);
+                priv->part_table = NULL;
             }
         }
     }
@@ -265,12 +265,12 @@ gpview_part_view_part_changed_cb(GtkTreeSelection *selection, GPViewPartView *vi
 static void
 xxx(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, GPViewPartView *view)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
-    {
-        g_hash_table_unref(privat->part_table);
-        privat->part_table = gpview_result_adapter_get_table(privat->part_adapter, iter);
+    if (priv != NULL) {
+
+        g_hash_table_unref(priv->part_table);
+        priv->part_table = gpview_result_adapter_get_table(priv->part_adapter, iter);
     }
 
     //gpview_part_view_set_table(view, table);
@@ -374,19 +374,19 @@ gpview_part_view_deactivate(GPViewViewInterface *widget)
     }
     else
     {
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat == NULL)
+        if (priv == NULL)
         {
-            g_critical("Unable to obtain private data for a GPViewPartView");
+            g_critical("Unable to obtain priv data for a GPViewPartView");
         }
-        else if (privat->controller == NULL)
+        else if (priv->controller == NULL)
         {
             g_critical("UPViewCompanyView has a NULL controller");
         }
         else
         {
-            gpview_part_ctrl_set_current_view(privat->controller, NULL);
+            gpview_part_ctrl_set_current_view(priv->controller, NULL);
         }
     }
 }
@@ -395,15 +395,15 @@ gpview_part_view_deactivate(GPViewViewInterface *widget)
 static void
 gpview_part_view_dispose(GObject *object)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(object);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(object);
 
-    if (privat != NULL)
+    if (priv != NULL)
     {
-        misc_object_unref(privat->controller);
-        privat->controller = NULL;
+        misc_object_unref(priv->controller);
+        priv->controller = NULL;
 
-        misc_object_unref(privat->database);
-        privat->database = NULL;
+        misc_object_unref(priv->database);
+        priv->database = NULL;
     }
 
     misc_object_chain_dispose(object);
@@ -417,11 +417,11 @@ gpview_part_view_get_create_form(const GPViewPartView *view)
 
     if (view != NULL)
     {
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL)
+        if (priv != NULL)
         {
-            form = gpview_category_widget_get_create_form(privat->category_widget);
+            form = gpview_category_widget_get_create_form(priv->category_widget);
         }
     }
 
@@ -435,11 +435,11 @@ gpview_part_view_get_drawing(const GPViewPartView *view)
 
     if (view != NULL) {
 
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL) {
+        if (priv != NULL) {
 
-            drawing = privat->drawing;
+            drawing = priv->drawing;
 
             if (drawing != NULL) {
 
@@ -458,11 +458,11 @@ gpview_part_view_get_edit_form(const GPViewPartView *view)
 
     if (view != NULL) {
 
-        GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+        GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-        if (privat != NULL) {
+        if (priv != NULL) {
 
-            form = gpview_category_widget_get_edit_form(privat->category_widget);
+            form = gpview_category_widget_get_edit_form(priv->category_widget);
         }
     }
 
@@ -472,9 +472,9 @@ gpview_part_view_get_edit_form(const GPViewPartView *view)
 static void
 gpview_part_view_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(object);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(object);
 
-    if (privat != NULL) {
+    if (priv != NULL) {
 
         switch (property_id) {
 
@@ -522,129 +522,93 @@ gpview_part_view_get_type(void)
 GStrv
 gpview_part_view_get_websites(const GPViewPartView *view)
 {
-  GPViewPartViewPrivate *private = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+  GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
   GStrv websites = NULL;
 
-  if (private != NULL) {
+  if (priv != NULL) {
 
     //    int index;
     ;
-    //    if (gpview_result_adapter_get_column_index(privat->adapter, "Website", &index))
+    //    if (gpview_result_adapter_get_column_index(priv->adapter, "Website", &index))
     //    {
-      //          websites = gpview_result_adapter_get_fields(privat->adapter, privat->selection, index);
+      //          websites = gpview_result_adapter_get_fields(priv->adapter, priv->selection, index);
   }
   return websites;
 }
 
 static void
-gpview_part_view_init(GTypeInstance *instance, gpointer g_class)
+gpview_part_view_init(GTypeInstance *instance, void *g_class)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(instance);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(instance);
 
-    if (privat != NULL) {
+    if (priv != NULL) {
 
-        GtkHPaned         *hpaned;
-        GtkScrolledWindow *scrolled;
-        GtkVPaned         *vpaned;
+        GtkHPaned *hpaned;
+        GtkWidget *scrolled;
+        GtkVPaned *vpaned;
 
-        privat->category_widget = gpview_category_widget_new();
+        priv->category_widget = gpview_category_widget_new();
 
-        gtk_container_add(
-            GTK_CONTAINER(instance),
-            GTK_WIDGET(privat->category_widget)
-            );
+        gtk_container_add(GTK_CONTAINER(instance), GTK_WIDGET(priv->category_widget));
 
-        privat->part_tree = GTK_TREE_VIEW(gtk_tree_view_new());
+        priv->part_tree = GTK_TREE_VIEW(gtk_tree_view_new());
 
-        privat->part_selection = gtk_tree_view_get_selection(privat->part_tree);
+        priv->part_selection = gtk_tree_view_get_selection(priv->part_tree);
 
-        gtk_tree_selection_set_mode(privat->part_selection, GTK_SELECTION_MULTIPLE);
+        gtk_tree_selection_set_mode(priv->part_selection, GTK_SELECTION_MULTIPLE);
 
-        scrolled = gtk_scrolled_window_new( NULL /* hadjustment, */ NULL /* vadjustment */);
+        scrolled = gtk_scrolled_window_new( NULL /* hadjustment */, NULL /* vadjustment */);
 
         gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(instance),
                                         GTK_POLICY_AUTOMATIC,   /* hscrollbar_policy */
                                         GTK_POLICY_AUTOMATIC    /* vscrollbar_policy */
                                       );
 
-        gtk_container_add(GTK_CONTAINER(scrolled), GTK_WIDGET(privat->part_tree));
+        gtk_container_add(GTK_CONTAINER(scrolled), GTK_WIDGET(priv->part_tree));
 
-        privat->drawing_view = schgui_drawing_view_new();
+        priv->drawing_view = schgui_drawing_view_new();
 
-        privat->device_tree = GTK_TREE_VIEW(gtk_tree_view_new());
+        priv->device_tree = GTK_TREE_VIEW(gtk_tree_view_new());
 
-        privat->device_selection = gtk_tree_view_get_selection(privat->device_tree);
+        priv->device_selection = gtk_tree_view_get_selection(priv->device_tree);
 
-        gtk_tree_selection_set_mode(privat->device_selection, GTK_SELECTION_BROWSE);
+        gtk_tree_selection_set_mode(priv->device_selection, GTK_SELECTION_BROWSE);
 
         vpaned = GTK_VPANED(gtk_vpaned_new());
 
         gtk_paned_set_position(GTK_PANED(vpaned), 240);
 
-        gtk_container_add(
-            GTK_CONTAINER(vpaned),
-            GTK_WIDGET(privat->drawing_view)
-            );
+        gtk_container_add(GTK_CONTAINER(vpaned), GTK_WIDGET(priv->drawing_view));
 
-        gtk_container_add(
-            GTK_CONTAINER(vpaned),
-            GTK_WIDGET(privat->device_tree)
-            );
+        gtk_container_add(GTK_CONTAINER(vpaned), GTK_WIDGET(priv->device_tree));
 
         hpaned = GTK_HPANED(gtk_hpaned_new());
 
-        gtk_paned_set_position(
-            GTK_PANED(hpaned),
-            400
-            );
+        gtk_paned_set_position(GTK_PANED(hpaned), 400);
 
-        gtk_container_add(
-            GTK_CONTAINER(hpaned),
-            GTK_WIDGET(scrolled)
-            );
+        gtk_container_add(GTK_CONTAINER(hpaned), GTK_WIDGET(scrolled));
 
-        gtk_container_add(
-            GTK_CONTAINER(hpaned),
-            GTK_WIDGET(vpaned)
-            );
+        gtk_container_add(GTK_CONTAINER(hpaned), GTK_WIDGET(vpaned));
 
-        gtk_container_add(
-            GTK_CONTAINER(instance),
-            GTK_WIDGET(hpaned)
-            );
+        gtk_container_add(GTK_CONTAINER(instance), GTK_WIDGET(hpaned));
 
-        gtk_paned_set_position(
-            GTK_PANED(instance),
-            200
-            );
+        gtk_paned_set_position(GTK_PANED(instance), 200);
 
-        g_signal_connect(
-            privat->device_selection,
-            "changed",
-            G_CALLBACK(gpview_part_view_device_changed_cb),
-            instance
-            );
+        g_signal_connect(priv->device_selection, "changed",
+                         G_CALLBACK(gpview_part_view_device_changed_cb),
+                         instance);
 
-        g_signal_connect(
-            privat->part_selection,
-            "changed",
-            G_CALLBACK(gpview_part_view_part_changed_cb),
-            instance
-            );
+        g_signal_connect(priv->part_selection, "changed",
+                         G_CALLBACK(gpview_part_view_part_changed_cb),
+                         instance);
 
-        g_signal_connect(
-            privat->category_widget,
-            "notify::view-name",
-            G_CALLBACK(gpview_part_view_update_cb),
-            instance
-            );
+        g_signal_connect(priv->category_widget, "notify::view-name",
+                         G_CALLBACK(gpview_part_view_update_cb),
+                         instance);
 
-        g_signal_connect(
-            instance,
-            "notify::database",
-            G_CALLBACK(gpview_part_view_update_cb),
-            instance
-            );
+        g_signal_connect(instance, "notify::database",
+                         G_CALLBACK(gpview_part_view_update_cb),
+                         instance);
     }
 }
 
@@ -666,39 +630,37 @@ gpview_part_view_new()
 GPViewPartView*
 gpview_part_view_new_with_controller(GPViewPartCtrl *ctrl)
 {
-    return GPVIEW_PART_VIEW(g_object_new(
-        GPVIEW_TYPE_PART_VIEW,
-        "controller", ctrl,
-        NULL
-        ));
+    return GPVIEW_PART_VIEW(g_object_new(GPVIEW_TYPE_PART_VIEW,
+                                         "controller", ctrl,
+                                         NULL));
 }
 
 void
 gpview_part_view_set_controller(GPViewPartView *view, GPViewPartCtrl *ctrl)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
-    {
-        if (privat->controller != NULL)
-        {
+    if (priv != NULL) {
+
+        if (priv->controller != NULL) {
+
             //g_signal_handlers_disconnect_by_func(
-            //    privat->database,
+            //    priv->database,
             //    G_CALLBACK(gpview_part_view_notify_connected_cb),
             //    view
             //    );
 
-            g_object_unref(privat->controller);
+            g_object_unref(priv->controller);
         }
 
-        privat->controller = ctrl;
+        priv->controller = ctrl;
 
-        if (privat->controller != NULL)
-        {
-            g_object_ref(privat->controller);
+        if (priv->controller != NULL) {
+
+            g_object_ref(priv->controller);
 
             //g_signal_connect(
-            //    privat->database,
+            //    priv->database,
             //    "notify::connected",
             //    G_CALLBACK(gpview_part_view_notify_connected_cb),
             //    view
@@ -712,69 +674,60 @@ gpview_part_view_set_controller(GPViewPartView *view, GPViewPartCtrl *ctrl)
 void
 gpview_part_view_set_database(GPViewPartView *view, GPartsDatabase *database)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+  GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
-    {
-        if (privat->database != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->database,
-                G_CALLBACK(gpview_part_view_update_cb),
-                view
-                );
+  if (priv != NULL) {
 
-            g_object_unref(privat->database);
-        }
+    if (priv->database != NULL) {
 
-        privat->database = database;
+      g_signal_handlers_disconnect_by_func(priv->database,
+                                           G_CALLBACK(gpview_part_view_update_cb),
+                                           view);
 
-        if (privat->database != NULL)
-        {
-            g_object_ref(privat->database);
-
-            g_signal_connect(
-                privat->database,
-                "notify::connected",
-                G_CALLBACK(gpview_part_view_update_cb),
-                view
-                );
-        }
-
-        gpview_category_widget_set_database(
-            privat->category_widget,
-            privat->database
-            );
-
-        g_object_notify(G_OBJECT(view), "database");
+      g_object_unref(priv->database);
     }
+
+    priv->database = database;
+
+    if (priv->database != NULL) {
+
+      g_object_ref(priv->database);
+
+      g_signal_connect(priv->database, "notify::connected",
+                       G_CALLBACK(gpview_part_view_update_cb), view);
+    }
+
+    gpview_category_widget_set_database(priv->category_widget, priv->database);
+
+    g_object_notify(G_OBJECT(view), "database");
+  }
 }
 
 static void
 gpview_part_view_set_device_result(GPViewPartView *view, GPartsDatabaseResult *result)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
+    if (priv != NULL)
     {
-        misc_object_unref(privat->device_adapter);
-        misc_object_unref(privat->device_result);
+        misc_object_unref(priv->device_adapter);
+        misc_object_unref(priv->device_result);
 
-        privat->device_adapter = NULL;
-        privat->device_result = result;
+        priv->device_adapter = NULL;
+        priv->device_result = result;
 
-        if (privat->device_result != NULL)
+        if (priv->device_result != NULL)
         {
-            g_object_ref(privat->device_result);
+            g_object_ref(priv->device_result);
 
-            privat->device_adapter = gpview_result_adapter_new(privat->device_result);
+            priv->device_adapter = gpview_result_adapter_new(priv->device_result);
 
-            if (privat->device_adapter != NULL)
+            if (priv->device_adapter != NULL)
             {
-                gpview_result_adapter_adjust_columns(privat->device_adapter, privat->device_tree);
+                gpview_result_adapter_adjust_columns(priv->device_adapter, priv->device_tree);
             }
 
-            gtk_tree_view_set_model(privat->device_tree, GTK_TREE_MODEL(privat->device_adapter));
+            gtk_tree_view_set_model(priv->device_tree, GTK_TREE_MODEL(priv->device_adapter));
         }
 
         g_object_notify(G_OBJECT(view), "device-result");
@@ -785,22 +738,22 @@ gpview_part_view_set_device_result(GPViewPartView *view, GPartsDatabaseResult *r
 static void
 gpview_part_view_set_drawing(GPViewPartView *view, SchDrawing *drawing)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
+    if (priv != NULL)
     {
-        misc_object_unref(privat->drawing);
+        misc_object_unref(priv->drawing);
 
-        privat->drawing = drawing;
+        priv->drawing = drawing;
 
-        if (privat->drawing != NULL)
+        if (priv->drawing != NULL)
         {
-            g_object_ref(privat->drawing);
+            g_object_ref(priv->drawing);
         }
 
-        if (privat->drawing_view != NULL)
+        if (priv->drawing_view != NULL)
         {
-            schgui_drawing_view_set_drawing(privat->drawing_view, privat->drawing);
+            schgui_drawing_view_set_drawing(priv->drawing_view, priv->drawing);
         }
 
         g_object_notify(G_OBJECT(view), "drawing");
@@ -834,28 +787,28 @@ gpview_part_view_set_property(GObject *object, guint property_id, const GValue *
 static void
 gpview_part_view_set_part_result(GPViewPartView *view, GPartsDatabaseResult *result)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
+    if (priv != NULL)
     {
-        misc_object_unref(privat->part_adapter);
-        misc_object_unref(privat->part_result);
+        misc_object_unref(priv->part_adapter);
+        misc_object_unref(priv->part_result);
 
-        privat->part_adapter = NULL;
-        privat->part_result = result;
+        priv->part_adapter = NULL;
+        priv->part_result = result;
 
-        if (privat->part_result != NULL)
+        if (priv->part_result != NULL)
         {
-            g_object_ref(privat->part_result);
+            g_object_ref(priv->part_result);
 
-            privat->part_adapter = gpview_result_adapter_new(privat->part_result);
+            priv->part_adapter = gpview_result_adapter_new(priv->part_result);
 
-            if (privat->part_adapter != NULL)
+            if (priv->part_adapter != NULL)
             {
-                gpview_result_adapter_adjust_columns(privat->part_adapter, privat->part_tree);
+                gpview_result_adapter_adjust_columns(priv->part_adapter, priv->part_tree);
             }
 
-            gtk_tree_view_set_model(privat->part_tree, GTK_TREE_MODEL(privat->part_adapter));
+            gtk_tree_view_set_model(priv->part_tree, GTK_TREE_MODEL(priv->part_adapter));
         }
 
         g_object_notify(G_OBJECT(view), "part-result");
@@ -865,14 +818,14 @@ gpview_part_view_set_part_result(GPViewPartView *view, GPartsDatabaseResult *res
 static void
 gpview_part_view_update_cb(GObject *unused, GParamSpec *pspec, GPViewPartView *view)
 {
-    GPViewPartViewPrivate *privat = GPVIEW_PART_VIEW_GET_PRIVATE(view);
+    GPViewPartViewPrivate *priv = GPVIEW_PART_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
+    if (priv != NULL)
     {
-        if (privat->database != NULL)
+        if (priv->database != NULL)
         {
             GPartsDatabaseResult *result = NULL;
-            char *view_name = gpview_category_widget_get_view_name(privat->category_widget);
+            char *view_name = gpview_category_widget_get_view_name(priv->category_widget);
 
             if (view_name != NULL)
             {
@@ -881,7 +834,7 @@ gpview_part_view_update_cb(GObject *unused, GParamSpec *pspec, GPViewPartView *v
                 g_string_printf(query, "SELECT * FROM %s", view_name);
                 g_free(view_name);
 
-                result = gparts_database_query(privat->database, query->str, NULL);
+                result = gparts_database_query(priv->database, query->str, NULL);
                 g_string_free(query, TRUE);
             }
 
