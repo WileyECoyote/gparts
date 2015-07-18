@@ -42,7 +42,15 @@ struct _GPartsConnectControllerPrivate
     GtkFileChooser  *file_dialog;
     GtkDialog       *login_dialog;
 
+#if GTK_MAJOR_VERSION < 3
+gtk_combo_box_text_get_active_text
     GtkComboBoxText *engine_combo;
+
+#else
+
+    GtkComboBoxText *engine_combo;
+#endif
+
     GtkEntry        *user_name_entry;
     GtkEntry        *password_entry;
     GtkEntry        *server_entry;
@@ -285,15 +293,20 @@ gparts_connect_controller_get_connect_data(GPartsConnectController *controller)
     return data;
 }
 
-gchar*
+char*
 gparts_connect_controller_get_database_type(GPartsConnectController *controller)
 {
-    gchar *type = NULL;
+    char *type = NULL;
     GPartsConnectControllerPrivate *privat = GPARTS_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        type = g_strdup(gtk_combo_box_text_get_active_text(privat->engine_combo));
+    if (privat != NULL) {
+
+#if GTK_MAJOR_VERSION < 3
+       type = g_strdup(gtk_combo_box_get_active_text(privat->engine_combo));
+#else
+       type = g_strdup(gtk_combo_box_text_get_active_text(privat->engine_combo));
+#endif
+
     }
 
     return type;
@@ -303,8 +316,8 @@ gparts_connect_controller_get_database_type(GPartsConnectController *controller)
 static void
 gparts_connect_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    switch (property_id)
-    {
+    switch (property_id) {
+
         case GPARTS_CONNECT_CONTROLLER_PROPID_CONNECT_DATA:
             g_value_take_boxed(value, gparts_connect_controller_get_connect_data(GPARTS_CONNECT_CONTROLLER(object)));
             break;
@@ -323,8 +336,8 @@ gparts_connect_controller_instance_init(GTypeInstance *instance, gpointer g_clas
 {
     GPartsConnectControllerPrivate *privat = GPARTS_CONNECT_CONTROLLER_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GtkWidget *button;
         GtkWidget *content;
         GtkWidget *entry;
@@ -521,7 +534,7 @@ gparts_connect_controller_select_file_cb(GtkTreeSelection *selection, GPartsConn
 
         if (result == GTK_RESPONSE_OK)
         {
-            gchar *filename = gtk_file_chooser_get_filename(privat->file_dialog);
+            char *filename = gtk_file_chooser_get_filename(privat->file_dialog);
 
             gtk_entry_set_text(privat->filename_entry, filename);
 
