@@ -84,10 +84,10 @@ gpview_footprint_ctrl_update_connected_cb(GObject *unused, GParamSpec *pspec, GP
 static void
 gpview_footprint_ctrl_update_ids_cb(GObject *unused, GParamSpec *pspec, GPViewFootprintCtrl *ctrl);
 
+/*
 static void
 gpview_footprint_ctrl_visit_cb(GtkAction *action, GPViewFootprintCtrl *ctrl);
-
-
+*/
 
 static const GtkActionEntry gpview_footprint_ctrl_actions_connected[] =
 {
