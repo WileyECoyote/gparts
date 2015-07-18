@@ -196,27 +196,25 @@ gpview_part_ctrl_create_cb(GtkAction *action, GPViewPartCtrl *ctrl)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GPFormUIDialog *dialog = NULL;
         gchar          *form;
 
             g_debug("gpview_part_ctrl_create_cb");
         form = gpview_part_view_get_create_form(privat->current_view);
 
-        if (form != NULL)
-        {
+        if (form != NULL) {
+
             g_debug("Form name: %s", form);
             dialog = gpform_factory_create_form(privat->form_factory, form);
             g_free(form);
         }
 
-        if (dialog != NULL)
-        {
-            gtk_window_set_transient_for(
-                GTK_WINDOW(dialog),
-                GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(privat->current_view)))
-                );
+        if (dialog != NULL) {
+
+            gtk_window_set_transient_for(GTK_WINDOW(dialog),
+                                         GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(privat->current_view))));
 
             gtk_widget_show_all(GTK_WIDGET(dialog));
 
@@ -227,14 +225,13 @@ gpview_part_ctrl_create_cb(GtkAction *action, GPViewPartCtrl *ctrl)
     }
 }
 
-
 static void
 gpview_part_ctrl_dispose(GObject *object)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         misc_object_unref(privat->clipboard);
         privat->clipboard = NULL;
 
@@ -261,14 +258,14 @@ gpview_part_ctrl_delete_cb(GtkAction *action, GPViewPartCtrl *ctrl)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GPFormUIDialog *dialog;
 
         dialog = gpform_factory_create_form(privat->form_factory, "company-delete.xml");
 
-        if (dialog != NULL)
-        {
+        if (dialog != NULL) {
+
             gtk_widget_show_all(GTK_WIDGET(dialog));
 
             /*gint result =*/ gtk_dialog_run(GTK_DIALOG(dialog));
@@ -277,7 +274,6 @@ gpview_part_ctrl_delete_cb(GtkAction *action, GPViewPartCtrl *ctrl)
         }
     }
 }
-
 
 static void
 gpview_part_ctrl_edit_cb(GtkAction *action, GPViewPartCtrl *ctrl)
@@ -291,10 +287,10 @@ gpview_part_ctrl_get_property(GObject *object, guint property_id, GValue *value,
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         }
@@ -302,13 +298,13 @@ gpview_part_ctrl_get_property(GObject *object, guint property_id, GValue *value,
 }
 
 
-GType
+unsigned int
 gpview_part_ctrl_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPViewPartCtrlClass),    /* class_size */
             NULL,                              /* base_init */
@@ -328,12 +324,7 @@ gpview_part_ctrl_get_type(void)
             NULL                               /* interface_data */
             };
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "GPViewPartCtrl",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(G_TYPE_OBJECT,"GPViewPartCtrl",&tinfo, 0);
 
         g_type_add_interface_static(type, GTK_TYPE_BUILDABLE, &iinfo);
     }
@@ -347,8 +338,8 @@ gpview_part_ctrl_init(GTypeInstance *instance, gpointer g_class)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->action_group[0] = gtk_action_group_new("company-action-group-0");
 
         gtk_action_group_add_actions(
@@ -420,48 +411,38 @@ gpview_part_ctrl_new(void)
     return GPVIEW_PART_CTRL(g_object_new(GPVIEW_TYPE_PART_CTRL, NULL));
 }
 
-
 GPViewPartCtrl*
 gpview_part_ctrl_new_with_manager(GtkUIManager *manager)
 {
-    return GPVIEW_PART_CTRL(g_object_new(
-        GPVIEW_TYPE_PART_CTRL,
-        "ui-manager", manager,
-        NULL
-        ));
+    return GPVIEW_PART_CTRL(g_object_new(GPVIEW_TYPE_PART_CTRL,
+                                         "ui-manager", manager,
+                                         NULL));
 }
-
 
 void
 gpview_part_ctrl_set_current_view(GPViewPartCtrl *ctrl, GPViewPartView *view)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
-        if (privat->current_view != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->current_view,
-                G_CALLBACK(gpview_part_ctrl_update_2_cb),
-                ctrl
-                );
+    if (privat != NULL) {
+
+        if (privat->current_view != NULL) {
+
+            g_signal_handlers_disconnect_by_func(privat->current_view,
+                                                 G_CALLBACK(gpview_part_ctrl_update_2_cb),
+                                                 ctrl);
 
             g_object_unref(privat->current_view);
         }
 
         privat->current_view = view;
 
-        if (privat->current_view != NULL)
-        {
+        if (privat->current_view != NULL) {
+
             g_object_ref(privat->current_view);
 
-            g_signal_connect(
-                privat->current_view,
-                "notify::drawing",
-                G_CALLBACK(gpview_part_ctrl_update_2_cb),
-                ctrl
-                );
+            g_signal_connect(privat->current_view, "notify::drawing",
+                             G_CALLBACK(gpview_part_ctrl_update_2_cb), ctrl);
         }
 
         g_object_notify(G_OBJECT(ctrl), "current-view");
@@ -524,17 +505,17 @@ gpview_part_ctrl_set_form_factory(GPViewPartCtrl *ctrl, GPFormFactory *factory)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
-        if (privat->form_factory != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->form_factory != NULL) {
+
             g_object_unref(privat->form_factory);
         }
 
         privat->form_factory = factory;
 
-        if (privat->form_factory != NULL)
-        {
+        if (privat->form_factory != NULL) {
+
             g_object_ref(privat->form_factory);
         }
 
@@ -549,10 +530,10 @@ gpview_part_ctrl_set_property(GObject *object, guint property_id, const GValue *
 {
     GPViewPartCtrl *view = GPVIEW_PART_CTRL(object);
 
-    if (view != NULL)
-    {
-        switch (property_id)
-        {
+    if (view != NULL) {
+
+        switch (property_id) {
+
             case GPVIEW_PART_CTRL_CURRENT_VIEW:
                 gpview_part_ctrl_set_current_view(view, g_value_get_object(value));
                 break;
@@ -577,10 +558,10 @@ gpview_part_ctrl_set_ui_manager(GPViewPartCtrl *ctrl, GtkUIManager *ui_manager)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
-        if (privat->ui_manager != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->ui_manager != NULL) {
+
             gtk_ui_manager_remove_action_group(
                 privat->ui_manager,
                 privat->action_group[2]
@@ -601,8 +582,8 @@ gpview_part_ctrl_set_ui_manager(GPViewPartCtrl *ctrl, GtkUIManager *ui_manager)
 
         privat->ui_manager = ui_manager;
 
-        if (privat->ui_manager != NULL)
-        {
+        if (privat->ui_manager != NULL) {
+
             g_object_ref(privat->ui_manager);
 
             gtk_ui_manager_insert_action_group(
@@ -634,8 +615,8 @@ gpview_part_ctrl_update_0_cb(GObject *unused, GParamSpec *pspec, GPViewPartCtrl 
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         gtk_action_group_set_sensitive(
             privat->action_group[0],
             gparts_database_connected(privat->database)
@@ -649,10 +630,10 @@ gpview_part_ctrl_update_1_cb(GObject *unused, GParamSpec *pspec, GPViewPartCtrl 
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
-        gboolean visible = (privat->current_view != NULL);
-        gboolean sensitive = visible && gparts_database_connected(privat->database);
+    if (privat != NULL) {
+
+        int visible   = (privat->current_view != NULL);
+        int sensitive = visible && gparts_database_connected(privat->database);
 
         gtk_action_group_set_sensitive(
             privat->action_group[1],
@@ -672,8 +653,8 @@ gpview_part_ctrl_update_2_cb(GObject *unused, GParamSpec *pspec, GPViewPartCtrl 
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         gboolean visible = (privat->current_view != NULL);
         SchDrawing *drawing = gpview_part_view_get_drawing(privat->current_view);
         gboolean sensitive = visible && (drawing != NULL);
@@ -700,8 +681,8 @@ gpview_part_ctrl_copy_cb(GtkAction *action, GPViewPartCtrl *ctrl)
 {
     GPViewPartCtrlPrivate *privat = GPVIEW_PART_CTRL_GET_PRIVATE(ctrl);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         SchDrawing *drawing = gpview_part_view_get_drawing(privat->current_view);
 
         schgui_clipboard_copy_drawing(privat->clipboard, drawing);
