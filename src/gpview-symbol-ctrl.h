@@ -102,6 +102,10 @@ gpview_symbol_ctrl_get_ui_manager(const GPViewSymbolCtrl *ctrl);
 void
 gpview_symbol_ctrl_set_current_view(GPViewSymbolCtrl *ctrl, GPViewSymbolView *view);
 
+
+void
+gpview_symbol_ctrl_set_form_factory(GPViewSymbolCtrl *ctrl, GPFormFactory *factory);
+
 /*! \brief Set the database for this controller
  *
  *  \param [in] ctrl The controller.
@@ -117,4 +121,3 @@ gpview_symbol_ctrl_set_database(GPViewSymbolCtrl *ctrl, GPartsDatabase *database
  */
 void
 gpview_symbol_ctrl_set_ui_manager(GPViewSymbolCtrl *view, GtkUIManager *manager);
-
