@@ -69,7 +69,7 @@ static void
 gpform_ui_image_class_init(gpointer g_class, gpointer g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
-    GPFormUIImageClass *klasse1 = GPFORM_UI_IMAGE_CLASS(g_class);
+    /*GPFormUIImageClass *klasse1 = GPFORM_UI_IMAGE_CLASS(g_class); */
 
     g_type_class_add_private(klasse, sizeof(GPFormUIImagePrivate));
 
