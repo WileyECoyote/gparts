@@ -44,29 +44,29 @@ struct _SchLoaderClass
 };
 
 void
-sch_loader_add_component_library(SchLoader *loader, gchar *library);
+sch_loader_add_component_library(SchLoader *loader, char *library);
 
 SchLoader*
 sch_loader_get_default(void);
 
-gchar**
+char**
 sch_loader_get_component_libraries(GObject *object);
 
 GType
 sch_loader_get_type(void);
 
 SchDrawing*
-sch_loader_load_drawing(SchLoader *loader, const gchar *filename, GError **error);
+sch_loader_load_drawing(SchLoader *loader, const char *filename, GError **error);
 
 SchDrawing*
-sch_loader_load_symbol(SchLoader *loader, const gchar *filename, GError **error);
+sch_loader_load_symbol(SchLoader *loader, const char *filename, GError **error);
 
-gchar*
+char*
 sch_loader_find_symbol_file(SchLoader *loader, const char *filename);
 
 FILE*
 sch_loader_open_symbol_file(SchLoader *loader, const char *filename, const char *mode);
 
 void
-sch_loader_set_component_libraries(GObject *object, gchar **name);
+sch_loader_set_component_libraries(GObject *object, char **name);
 
