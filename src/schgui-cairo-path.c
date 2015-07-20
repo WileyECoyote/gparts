@@ -1,7 +1,7 @@
 /* gEDA - GPL Electronic Design Automation
  * gparts - gEDA Parts Manager
- * Copyright (C) 2010 Edward C. Hennessy
- * Copyright (C) 2010 gEDA Contributors (see ChangeLog for details)
+ * Copyright (C) 2010-2015 Edward C. Hennessy
+ * Copyright (C) 2010-2015 gEDA Contributors (see ChangeLog for details)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
  */
 
-/*! \file schgui-cairo-pin.c
+/*! \file schgui-cairo-path.c
  */
 
 #include <math.h>
@@ -69,7 +69,7 @@ schgui_cairo_path_rotate(SchGUICairoDrawItem *item, double dt);
 
 static void
 schgui_cairo_path_translate(SchGUICairoDrawItem *item, double dx, double dy);
- 
+
 
 void
 schgui_cairo_path_append_rev(SchPathCommand *command, SchGUICairoPath *path)
@@ -118,7 +118,7 @@ schgui_cairo_path_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *
 
             geom_bounds_expand(&temp, &temp, privat->width);
 
-            geom_bounds_union(bounds, bounds, &temp);            
+            geom_bounds_union(bounds, bounds, &temp);
         }
     }
 #endif
