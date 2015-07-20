@@ -53,7 +53,7 @@ static void
 schgui_cairo_path_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds);
 
 static void
-schgui_cairo_path_class_init(gpointer g_class, gpointer g_class_data);
+schgui_cairo_path_class_init(void *g_class, void *g_class_data);
 
 static void
 schgui_cairo_path_draw(SchGUICairoDrawItem *item, cairo_t *cairo);
@@ -76,8 +76,8 @@ schgui_cairo_path_append_rev(SchPathCommand *command, SchGUICairoPath *path)
 {
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(path);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->commands = g_slist_append(privat->commands, sch_path_command_copy(command));
     }
 }
@@ -85,6 +85,7 @@ schgui_cairo_path_append_rev(SchPathCommand *command, SchGUICairoPath *path)
 static void
 schgui_cairo_path_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds)
 {
+
 #if 0
     if (bounds != NULL)
     {
@@ -125,7 +126,7 @@ schgui_cairo_path_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *
 }
 
 static void
-schgui_cairo_path_class_init(gpointer g_class, gpointer g_class_data)
+schgui_cairo_path_class_init(void *g_class, void *g_class_data)
 {
     SchGUICairoDrawItemClass *i_klasse = SCHGUI_CAIRO_DRAW_ITEM_CLASS(g_class);
     GObjectClass             *o_klasse = G_OBJECT_CLASS(g_class);
@@ -144,12 +145,12 @@ schgui_cairo_path_class_init(gpointer g_class, gpointer g_class_data)
 static void
 schgui_cairo_path_draw(SchGUICairoDrawItem *item, cairo_t *cairo)
 {
-    if (cairo != NULL)
-    {
+    if (cairo != NULL) {
+
         SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(item);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             GSList *node;
             SchPathCommand *command;
 
@@ -159,12 +160,12 @@ schgui_cairo_path_draw(SchGUICairoDrawItem *item, cairo_t *cairo)
 
             node = privat->commands;
 
-            while (node != NULL)
-            {
+            while (node != NULL) {
+
                 command = SCH_PATH_COMMAND(node->data);
 
-                switch (command->type)
-                {
+                switch (command->type) {
+
                     case SCH_PATH_COMMAND_INVALID:
                         g_debug("SchGUICairoPath: invalid path command");
                         break;
@@ -214,8 +215,7 @@ schgui_cairo_path_draw(SchGUICairoDrawItem *item, cairo_t *cairo)
                 node = g_slist_next(node);
             }
 
-            if (privat->solid)
-            {
+            if (privat->solid) {
                 cairo_fill_preserve(cairo);
             }
 
@@ -229,12 +229,12 @@ schgui_cairo_path_finalize(GObject *object)
 {
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->commands;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             sch_path_command_free(SCH_PATH_COMMAND(node->data));
 
             node = g_slist_next(node);
@@ -253,8 +253,8 @@ schgui_cairo_path_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchGUICairoPathClass),    /* class_size */
             NULL,                            /* base_init */
@@ -284,19 +284,18 @@ schgui_cairo_path_mirror_y(SchGUICairoDrawItem *item)
 {
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->commands;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             //sch_path_command_mirror_y(SCH_PATH_COMMAND(node->data));
 
             node = g_slist_next(node);
         }
     }
 }
-
 
 SchGUICairoPath*
 schgui_cairo_path_new(const SchPath *shape, SchGUIDrawingCfg *config)
@@ -305,11 +304,10 @@ schgui_cairo_path_new(const SchPath *shape, SchGUIDrawingCfg *config)
 
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
-        GeomLine              line;
+    if (privat != NULL) {
+
         MiscGUIColor          color;
-	SchFillStyle          fill_style;
+        SchFillStyle          fill_style;
         int                   index;
         double                item_width;
         int                   shape_width;
@@ -333,25 +331,23 @@ schgui_cairo_path_new(const SchPath *shape, SchGUIDrawingCfg *config)
 
         privat->solid = (fill_style.type == SCH_FILL_STYLE_FILL_TYPE_SOLID);
 
-        sch_path_foreach(shape, schgui_cairo_path_append_rev, item);
+        sch_path_foreach(shape, (GFunc)schgui_cairo_path_append_rev, item);
     }
 
     return item;
 }
-
-
 
 static void
 schgui_cairo_path_rotate(SchGUICairoDrawItem *item, double dt)
 {
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->commands;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             sch_path_command_rotate(SCH_PATH_COMMAND(node->data), dt);
 
             node = g_slist_next(node);
@@ -364,12 +360,12 @@ schgui_cairo_path_translate(SchGUICairoDrawItem *item, double dx, double dy)
 {
     SchGUICairoPathPrivate *privat = SCHGUI_CAIRO_PATH_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->commands;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             sch_path_command_translate(SCH_PATH_COMMAND(node->data), dx, dy);
 
             node = g_slist_next(node);
