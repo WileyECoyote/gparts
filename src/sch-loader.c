@@ -32,6 +32,7 @@
 #include <gio/gio.h>
 
 #include "sch.h"
+#include "misc-object.h"
 
 #define SCH_LOADER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj),SCH_TYPE_LOADER,SchLoaderPrivate))
 
@@ -736,7 +737,7 @@ process_component(FILE *file, gchar **tokens)
     {
         long lines = 1;
         char *tail;
-       
+
         if (g_strv_length(tokens) > 6)
         {
             //g_debug( *(tokens + 6) );
@@ -753,15 +754,15 @@ process_component(FILE *file, gchar **tokens)
                 symbol = g_object_new(SCH_TYPE_DRAWING, NULL);
                 process_embedded(file, symbol);
                 //sch_component_get_insertion_point(component, &x, &y);
-                //sch_drawing_translate(symbol, -x, -y); 
+                //sch_drawing_translate(symbol, -x, -y);
                 //sch_component_get_orientation(component, &angle, &mirror);
-                //sch_drawing_rotate(symbol, -angle); 
-                
+                //sch_drawing_rotate(symbol, -angle);
+
                 sch_component_get_insertion_point(component, &x, &y);
                 sch_component_get_orientation(component, &angle, &mirror);
 
                 geom_transform_init(&transform);
-                geom_transform_translate(&transform, -x, -y); 
+                geom_transform_translate(&transform, -x, -y);
                 geom_transform_rotate(&transform, -angle);
 
                 sch_drawing_transform(symbol, &transform);
@@ -781,7 +782,7 @@ process_component(FILE *file, gchar **tokens)
 
                 sch_component_set_drawing(component, symbol);
                 g_object_unref(symbol);
- 
+
             }
         }
     }
@@ -939,7 +940,7 @@ process_path(FILE *file, gchar **tokens)
     {
         long lines;
         char *tail;
-        
+
         lines = strtol(*(tokens + 13), &tail, 10);
 
         if (*(tokens + 13) == tail)
@@ -960,7 +961,7 @@ process_path(FILE *file, gchar **tokens)
 
             process_path_commands(path, line);
 
-            g_free(line);    
+            g_free(line);
         }
     }
 
@@ -1005,7 +1006,7 @@ process_text(FILE *file, gchar **tokens)
     {
         long lines = 1;
         char *tail;
-       
+
         if (g_strv_length(tokens) > 9)
         {
             lines = strtol(*(tokens + 9), &tail, 10);
@@ -1019,7 +1020,7 @@ process_text(FILE *file, gchar **tokens)
                 /* out of range */
             }
         }
-        
+
         {
             long index;
             SchMultiline *multiline = g_object_new(SCH_TYPE_MULTILINE, NULL);
@@ -1028,7 +1029,7 @@ process_text(FILE *file, gchar **tokens)
             {
                 gchar *line = read_line(file);
                 sch_multiline_append(multiline, line);
-                g_free(line);    
+                g_free(line);
             }
 
             sch_text_set_multiline(text, multiline);
@@ -1176,7 +1177,7 @@ set_value(GValue *value, const char *string)
     {
         long number;
         char *tail;
-        
+
         number = strtol(string, &tail, 10);
         g_value_set_int(value, number);
 
@@ -1267,7 +1268,7 @@ process_path_commands(SchPath *path, const char* string)
         0,
         NULL
         );
-        
+
     if (re != NULL)
     {
         GMatchInfo *match_info;
@@ -1283,11 +1284,11 @@ process_path_commands(SchPath *path, const char* string)
                 case 'C':
                     process_path_command_curveto(path, match_info);
                     break;
-                
+
                 case 'L':
                     process_path_command_lineto(path, match_info);
                     break;
-                
+
                 case 'M':
                     process_path_command_moveto(path, match_info);
                     break;
@@ -1295,7 +1296,7 @@ process_path_commands(SchPath *path, const char* string)
                 case 'z':
                     process_path_command_closepath(path, match_info);
                     break;
-                
+
                 deafult:
                     break;
             }
@@ -1423,7 +1424,7 @@ process_path_command_moveto(SchPath *path, GMatchInfo *match_info)
         g_free (a);
 
         sch_path_append(path, &command);
-    
+
         command.type = SCH_PATH_COMMAND_LINETO_ABS;
     }
 
