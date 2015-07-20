@@ -277,6 +277,7 @@ sch_path_finalize(GObject *object)
 }
 
 void
+sch_path_foreach(const SchPath *path, GFunc func, void *user_data)
 {
     if (func != NULL) {
 

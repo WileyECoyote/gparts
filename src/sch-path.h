@@ -75,7 +75,7 @@ sch_path_count(const SchPath *path);
  *  \param [in] user_data
  */
 void
-sch_path_foreach(SchPath *path, GFunc func, gpointer user_data);
+sch_path_foreach(const SchPath *path, GFunc func, void *user_data);
 
 /*! \brief Get the color of the path
  *
