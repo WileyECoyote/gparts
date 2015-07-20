@@ -28,7 +28,7 @@
 #include <gtk/gtk.h>
 
 #include "schgui.h"
-
+#include "misc-object.h"
 
 #define SCHGUI_CAIRO_PATH_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj),SCHGUI_TYPE_CAIRO_PATH,SchGUICairoPathPrivate))
 
