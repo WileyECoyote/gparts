@@ -68,61 +68,63 @@ sch_loader_init(GTypeInstance *instance, gpointer g_class);
 static void
 sch_loader_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
+/*
 static FILE*
 open_drawing(SchLoader *loader, const char *filename);
+*/
 
 static GObject*
-process_arc(FILE *file, gchar **tokens);
+process_arc(FILE *file, char **tokens);
 
 static void
-process_attributes(FILE *file, gchar **tokens, GObject *object);
+process_attributes(FILE *file, char **tokens, GObject *object);
 
 static GObject*
-process_box(FILE *file, gchar **tokens);
+process_box(FILE *file, char **tokens);
 
 static GObject*
-process_bus(FILE *file, gchar **tokens);
+process_bus(FILE *file, char **tokens);
 
 static GObject*
-process_circle(FILE *file, gchar **tokens);
+process_circle(FILE *file, char **tokens);
 
 static GObject*
-process_component(FILE *file, gchar **tokens);
+process_component(FILE *file, char **tokens);
 
 static void
 process_embedded(FILE *file, SchDrawing *drawing);
 
 static GObject*
-process_line(FILE *file, gchar **tokens);
+process_line(FILE *file, char **tokens);
 
 static GObject*
-process_net(FILE *file, gchar **tokens);
+process_net(FILE *file, char **tokens);
 
 static GObject*
-process_object(FILE *file, gchar **tokens);
+process_object(FILE *file, char **tokens);
 
 static GObject*
-process_path(FILE *file, gchar **tokens);
+process_path(FILE *file, char **tokens);
 
 static GObject*
-process_picture(FILE *file, gchar **tokens);
+process_picture(FILE *file, char **tokens);
 
 static GObject*
-process_pin(FILE *file, gchar **tokens);
+process_pin(FILE *file, char **tokens);
 
 static GObject*
-process_text(FILE *file, gchar **tokens);
+process_text(FILE *file, char **tokens);
 
 static void
-process_version(FILE *file, gchar **tokens);
+process_version(FILE *file, char **tokens);
 
 static void
 read_file(SchDrawing *drawing, FILE *file, GError **error);
 
-static gchar*
+static char*
 read_line(FILE *file);
 
-static gchar*
+static char*
 read_lines(FILE *file, int count);
 
 static void
@@ -130,44 +132,41 @@ process_path_commands(SchPath *path, const char* string);
 
 
 void
-sch_loader_add_component_library(SchLoader *loader, gchar *library)
+sch_loader_add_component_library(SchLoader *loader, char *library)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(loader);
+    SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(loader);
 
-    if (privat != NULL)
-    {
+    if (priv != NULL) {
+
         char *name = g_strdup(library);
 
         g_debug("New library %s", name);
 
-        g_array_append_val(privat->component_libraries, name);
+        g_array_append_val(priv->component_libraries, name);
     }
 }
 
 static void
 sch_loader_class_init(gpointer g_class, gpointer g_class_data)
 {
-    GObjectClass *klasse = G_OBJECT_CLASS(g_class);
+    GObjectClass *class = G_OBJECT_CLASS(g_class);
 
-    g_type_class_add_private(klasse, sizeof(SchLoaderPrivate));
+    g_type_class_add_private(class, sizeof(SchLoaderPrivate));
 
-    klasse->dispose  = sch_loader_dispose;
-    klasse->finalize = sch_loader_finalize;
+    class->dispose  = sch_loader_dispose;
+    class->finalize = sch_loader_finalize;
 
-    klasse->get_property = sch_loader_get_property;
-    klasse->set_property = sch_loader_set_property;
+    class->get_property = sch_loader_get_property;
+    class->set_property = sch_loader_set_property;
 
-    g_object_class_install_property(
-        klasse,
-        SCH_LOADER_COMPONENT_LIBRARIES,
-        g_param_spec_boxed(
-            "component-libraries",
-            "component-libraries",
-            "component-libraries",
-            G_TYPE_STRV,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(class, SCH_LOADER_COMPONENT_LIBRARIES,
+                                    g_param_spec_boxed("component-libraries",
+                                                       "component-libraries",
+                                                       "component-libraries",
+                                                       G_TYPE_STRV,
+                                                       G_PARAM_LAX_VALIDATION |
+                                                       G_PARAM_READWRITE |
+                                                       G_PARAM_STATIC_STRINGS));
 }
 
 static void
@@ -179,11 +178,7 @@ sch_loader_dispose(GObject *object)
 static void
 sch_loader_finalize(GObject *object)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(object);
-
-    if (privat != NULL)
-    {
-    }
+    //SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(object);
 
     misc_object_chain_finalize(object);
 }
@@ -193,23 +188,23 @@ sch_loader_get_default(void)
 {
     static SchLoader *factory = NULL;
 
-    if (factory == NULL)
-    {
+    if (factory == NULL) {
+
         factory = SCH_LOADER(g_object_new(SCH_TYPE_LOADER, NULL));
     }
 
     return factory;
 }
 
-gchar**
+char**
 sch_loader_get_component_libraries(GObject *object)
 {
     char **libraries = NULL;
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(object);
+    SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        libraries = g_strdupv(privat->component_libraries->data);
+    if (priv != NULL) {
+
+        libraries = g_strdupv(&priv->component_libraries->data);
     }
 
     return libraries;
@@ -218,29 +213,29 @@ sch_loader_get_component_libraries(GObject *object)
 static void
 sch_loader_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(object);
+  SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
-            case SCH_LOADER_COMPONENT_LIBRARIES:
-                g_value_take_boxed(value, sch_loader_get_component_libraries(object));
-                break;
+  if (priv != NULL) {
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+    switch (property_id) {
+
+      case SCH_LOADER_COMPONENT_LIBRARIES:
+        g_value_take_boxed(value, sch_loader_get_component_libraries(object));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
-GType
+unsigned int
 sch_loader_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchLoaderClass),    /* class_size */
             NULL,                      /* base_init */
@@ -254,12 +249,7 @@ sch_loader_get_type(void)
             NULL                       /* value_table */
             };
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "SchLoader",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(G_TYPE_OBJECT,"SchLoader",&tinfo,0);
     }
 
     return type;
@@ -269,24 +259,24 @@ sch_loader_get_type(void)
 static void
 sch_loader_init(GTypeInstance *instance, gpointer g_class)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(instance);
+    SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
-        privat->component_libraries = g_array_new(TRUE, FALSE, sizeof(gchar*));
+    if (priv != NULL) {
+
+        priv->component_libraries = g_array_new(TRUE, FALSE, sizeof(char*));
     }
 }
 
 SchDrawing*
-sch_loader_load_drawing(SchLoader *loader, const gchar *filename, GError **error)
+sch_loader_load_drawing(SchLoader *loader, const char *filename, GError **error)
 {
     SchDrawing *drawing = NULL;
     FILE       *file;
 
     file = fopen(filename, "r");
 
-    if (file != NULL)
-    {
+    if (file != NULL) {
+
         drawing = g_object_new(SCH_TYPE_DRAWING, NULL);
 
         sch_drawing_set_filename(drawing, filename);
@@ -295,8 +285,8 @@ sch_loader_load_drawing(SchLoader *loader, const gchar *filename, GError **error
 
         fclose(file);
     }
-    else
-    {
+    else {
+
         //g_set_error(
         //    error,
         //    GPARTS_MYSQL_DATABASE_ERROR,
@@ -312,15 +302,15 @@ sch_loader_load_drawing(SchLoader *loader, const gchar *filename, GError **error
 }
 
 SchDrawing*
-sch_loader_load_symbol(SchLoader *loader, const gchar *filename, GError **error)
+sch_loader_load_symbol(SchLoader *loader, const char *filename, GError **error)
 {
     SchDrawing *drawing = NULL;
     FILE       *file;
 
     file = sch_loader_open_symbol_file(loader, filename, "r");
 
-    if (file != NULL)
-    {
+    if (file != NULL) {
+
         drawing = g_object_new(SCH_TYPE_DRAWING, NULL);
 
         sch_drawing_set_filename(drawing, filename);
@@ -329,8 +319,8 @@ sch_loader_load_symbol(SchLoader *loader, const gchar *filename, GError **error)
 
         fclose(file);
     }
-    else
-    {
+    else {
+
         //g_set_error(
         //    error,
         //    GPARTS_MYSQL_DATABASE_ERROR,
@@ -345,22 +335,22 @@ sch_loader_load_symbol(SchLoader *loader, const gchar *filename, GError **error)
     return drawing;
 }
 
-gchar*
+char*
 sch_loader_find_symbol_file(SchLoader *loader, const char *filename)
 {
-    gchar *path = NULL;
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(loader);
+    char *path = NULL;
+    SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(loader);
 
-    if (privat != NULL)
-    {
-        const char **dir = privat->component_libraries->data;
+    if (priv != NULL) {
 
-        while (*dir != NULL)
-        {
+        char **dir = &priv->component_libraries->data;
+
+        while (*dir != NULL) {
+
             path = g_build_filename(*dir, filename, NULL);
 
-            if (g_file_test(path, G_FILE_TEST_IS_REGULAR))
-            {
+            if (g_file_test(path, G_FILE_TEST_IS_REGULAR)) {
+
                 break;
             }
 
@@ -374,76 +364,78 @@ sch_loader_find_symbol_file(SchLoader *loader, const char *filename)
     return path;
 }
 
-
 FILE*
 sch_loader_open_symbol_file(SchLoader *loader, const char *filename, const char *mode)
 {
-    FILE *file = NULL;
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(loader);
+  FILE *file = NULL;
+  SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(loader);
 
-    if (privat != NULL)
-    {
-        const char **dir = privat->component_libraries->data;
+  if (priv != NULL) {
 
-        while (*dir != NULL)
-        {
-            gchar *path = g_build_filename(*dir, filename, NULL);
+    char **dir = &priv->component_libraries->data;
 
-            file = fopen(path, mode);
-            g_free(path);
+    while (*dir != NULL) {
 
-            if ((file != NULL) || (errno != ENOENT))
-            {
-                break;
-            }
+      char *path = g_build_filename(*dir, filename, NULL);
 
-            dir++;
-        }
+      file = fopen(path, mode);
+      g_free(path);
+
+      if ((file != NULL) || (errno != ENOENT)) {
+
+        break;
+      }
+
+      dir++;
     }
+  }
 
-    return file;
+  return file;
 }
 
 void
 sch_loader_set_component_libraries(GObject *object, char **libraries)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(object);
+  SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        char **temp = libraries;
+  if (priv != NULL) {
 
-        g_strfreev(g_array_free(privat->component_libraries, FALSE));
+    char **temp = libraries;
 
-        privat->component_libraries = g_array_new(TRUE, FALSE, sizeof(gchar*));
-
-        while (*temp != NULL)
-        {
-            g_array_append_val(privat->component_libraries, *temp);
-
-            temp++;
-        }
-
+    if (priv->component_libraries) {
+      temp = (char**)g_array_free(priv->component_libraries, FALSE);
+      g_strfreev(temp);
     }
+
+    priv->component_libraries = g_array_new(TRUE, FALSE, sizeof(char*));
+
+    while (*temp != NULL) {
+
+      g_array_append_val(priv->component_libraries, *temp);
+
+      temp++;
+    }
+
+  }
 }
 
 static void
-sch_loader_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_loader_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec)
 {
-    SchLoaderPrivate *privat = SCH_LOADER_GET_PRIVATE(object);
+  SchLoaderPrivate *priv = SCH_LOADER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
-            case SCH_LOADER_COMPONENT_LIBRARIES:
-                sch_loader_set_component_libraries(object, g_value_get_boxed(value));
-                break;
+  if (priv != NULL) {
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+    switch (property_id) {
+
+      case SCH_LOADER_COMPONENT_LIBRARIES:
+        sch_loader_set_component_libraries(object, g_value_get_boxed(value));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 struct PARAM
@@ -618,11 +610,11 @@ static const struct PARAM text_params[] =
 
 
 void
-process_params(GObject *object, gchar **token, const struct PARAM paramv[], gint paramc);
+process_params(GObject *object, char **token, const struct PARAM paramv[], int paramc);
 
 
 static GObject*
-process_arc(FILE *file, gchar **tokens)
+process_arc(FILE *file, char **tokens)
 {
     SchArc *arc;
 
@@ -636,56 +628,62 @@ process_arc(FILE *file, gchar **tokens)
 }
 
 static void
-process_attributes(FILE *file, gchar **tokens, GObject *object)
+process_attributes(FILE *file, char **tokens, GObject *object)
 {
-    SchAttributes *attrs = sch_shape_get_attributes(object);
+  SchShape *shape = (SchShape*)object;
 
-    gchar *line = read_line(file);
+  SchAttributes *attrs = sch_shape_get_attributes(shape);
 
-    while (line != NULL)
-    {
-        GObject *attribute;
-        gchar **token = g_strsplit_set(line, " \t", 0);
+  char *line = read_line(file);
 
-        g_free(line);
-        line = NULL;
+  while (line != NULL) {
 
-        if ((token != NULL) && (*token != NULL))
-        {
-            switch (**token)
-            {
-                case '{':
-                    /* error */
-                    break;
+    GObject *attribute;
+    char **token = g_strsplit_set(line, " \t", 0);
 
-                case '}':
-                    break;
+    g_free(line);
+    line = NULL;
 
-                default:
-                    attribute = process_object(file, token);
-                    if (attribute != NULL)
-                    {
-                        if (attrs != NULL)
-                        {
-                            sch_attributes_append(attrs, attribute);
-                        }
-                        g_object_unref(attribute);
-                    }
-                    line = read_line(file);
+    if ((token != NULL) && (*token != NULL)) {
+
+      switch (**token) {
+
+        case '{':
+          /* error */
+          break;
+
+        case '}':
+          break;
+
+        default:
+
+          attribute = process_object(file, token);
+
+          if (attribute != NULL) {
+
+            if (attrs != NULL) {
+              SchShape *sch = (SchShape *)attribute;
+              sch_attributes_append(attrs, sch);
             }
-        }
 
-        g_strfreev(token);
+            g_object_unref(attribute);
+          }
+
+          line = read_line(file);
+      }
     }
 
-    if (attrs != NULL)
-    {
-        g_object_unref(attrs);
-    }
+    g_strfreev(token);
+  }
+
+  if (attrs != NULL) {
+
+    g_object_unref(attrs);
+  }
 }
 
 static  GObject*
-process_box(FILE *file, gchar **tokens)
+process_box(FILE *file, char **tokens)
 {
     SchBox *box;
 
@@ -699,7 +697,7 @@ process_box(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_bus(FILE *file, gchar **tokens)
+process_bus(FILE *file, char **tokens)
 {
     SchBus *bus;
 
@@ -714,7 +712,7 @@ process_bus(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_circle(FILE *file, gchar **tokens)
+process_circle(FILE *file, char **tokens)
 {
     SchCircle *circle;
 
@@ -728,117 +726,117 @@ process_circle(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_component(FILE *file, gchar **tokens)
+process_component(FILE *file, char **tokens)
 {
-    SchComponent *component = sch_component_new(NULL);
+  SchComponent *component = sch_component_new(NULL);
 
-    process_params(G_OBJECT(component), tokens, component_params, 8);
+  process_params(G_OBJECT(component), tokens, component_params, 8);
 
-    if (tokens != NULL)
-    {
-        long lines = 1;
-        char *tail;
+  if (tokens != NULL) {
 
-        if (g_strv_length(tokens) > 6)
-        {
-            //g_debug( *(tokens + 6) );
+//    long lines = 1;
+//    char *tail;
 
-            if (strncmp(*(tokens+6), "EMBEDDED", 8) == 0)
-            {
-                SchDrawing *symbol;
-                int x;
-                int y;
-                int angle;
-                int mirror;
-                GeomTransform transform;
+    if (g_strv_length(tokens) > 6) {
+      //g_debug( *(tokens + 6) );
 
-                symbol = g_object_new(SCH_TYPE_DRAWING, NULL);
-                process_embedded(file, symbol);
-                //sch_component_get_insertion_point(component, &x, &y);
-                //sch_drawing_translate(symbol, -x, -y);
-                //sch_component_get_orientation(component, &angle, &mirror);
-                //sch_drawing_rotate(symbol, -angle);
+      if (strncmp(*(tokens+6), "EMBEDDED", 8) == 0) {
 
-                sch_component_get_insertion_point(component, &x, &y);
-                sch_component_get_orientation(component, &angle, &mirror);
+        SchDrawing *symbol;
+        int x;
+        int y;
+        int angle;
+        int mirror;
+        GeomTransform transform;
 
-                geom_transform_init(&transform);
-                geom_transform_translate(&transform, -x, -y);
-                geom_transform_rotate(&transform, -angle);
+        symbol = g_object_new(SCH_TYPE_DRAWING, NULL);
+        process_embedded(file, symbol);
+        //sch_component_get_insertion_point(component, &x, &y);
+        //sch_drawing_translate(symbol, -x, -y);
+        //sch_component_get_orientation(component, &angle, &mirror);
+        //sch_drawing_rotate(symbol, -angle);
 
-                sch_drawing_transform(symbol, &transform);
+        sch_component_get_insertion_point(component, &x, &y);
+        sch_component_get_orientation(component, &angle, &mirror);
 
-                sch_component_set_drawing(component, symbol);
-                g_object_unref(symbol);
-            }
-            else
-            {
-                SchLoader  *loader = sch_loader_get_default();
-                SchDrawing *symbol = NULL;
+        geom_transform_init(&transform);
+        geom_transform_translate(&transform, -x, -y);
+        geom_transform_rotate(&transform, -angle);
 
-                if (loader != NULL)
-                {
-                    symbol = sch_loader_load_symbol(loader, *(tokens+6), NULL);;
-                }
+        sch_drawing_transform(symbol, &transform);
 
-                sch_component_set_drawing(component, symbol);
-                g_object_unref(symbol);
+        sch_component_set_drawing(component, symbol);
+        g_object_unref(symbol);
+      }
+      else {
 
-            }
+        SchLoader  *loader = sch_loader_get_default();
+        SchDrawing *symbol = NULL;
+
+        if (loader != NULL) {
+
+          symbol = sch_loader_load_symbol(loader, *(tokens+6), NULL);;
         }
-    }
 
-    return component;
+        sch_component_set_drawing(component, symbol);
+        g_object_unref(symbol);
+
+      }
+    }
+  }
+
+  return G_OBJECT(component);
 }
 
 static void
 process_embedded(FILE *file, SchDrawing *drawing)
 {
-    gchar *line = read_line(file);
+  char *line = read_line(file);
 
-    while (line != NULL)
-    {
-        gchar **token = g_strsplit_set(line, " \t", 0);
-        g_free(line);
+  while (line != NULL) {
 
-        if (*token != NULL)
-        {
-            if (**token != ']')
-            {
-                GObject *object;
+    char **token = g_strsplit_set(line, " \t", 0);
+    g_free(line);
 
-                switch (**token)
-                {
-                    case '{':
-                        process_attributes(file, token, NULL);
-                        break;
+    if (*token != NULL) {
 
-                    default:
-                        //g_debug("Process object (begin)");
-                        object = process_object(file, token);
-                        if (object != NULL)
-                        {
-                            sch_drawing_append_shape(drawing, object);
-                            g_object_unref(object);
-                        }
-                        //g_debug("Process object (end)");
-                }
+      if (**token != ']') {
 
-                line = read_line(file);
+        GObject *object;
+
+        switch (**token) {
+
+          case '{':
+            process_attributes(file, token, NULL);
+            break;
+
+          default:
+            //g_debug("Process object (begin)");
+            object = process_object(file, token);
+
+            if (object != NULL) {
+
+              sch_drawing_append_shape(drawing, (SchShape*) object);
+              g_object_unref(object);
             }
-            else
-            {
-                line = NULL;
-            }
+            //g_debug("Process object (end)");
+          }
+
+          line = read_line(file);
         }
+        else {
 
-        g_strfreev(token);
+          line = NULL;
+        }
+      }
+
+      g_strfreev(token);
     }
-}
+  }
 
 
 static GObject*
-process_line(FILE *file, gchar **tokens)
+process_line(FILE *file, char **tokens)
 {
     SchLine *line;
 
@@ -852,7 +850,7 @@ process_line(FILE *file, gchar **tokens)
 }
 
 static  GObject*
-process_net(FILE *file, gchar **tokens)
+process_net(FILE *file, char **tokens)
 {
      SchNet *net;
 
@@ -867,14 +865,14 @@ process_net(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_object(FILE *file, gchar **tokens)
+process_object(FILE *file, char **tokens)
 {
-    GObject *object;
+    GObject *object = NULL;
 
-    if (*tokens != NULL)
-    {
-        switch (**tokens)
-        {
+    if (*tokens != NULL) {
+
+        switch (**tokens) {
+
             case 'A':
                 object = process_arc(file, tokens);
                 break;
@@ -930,48 +928,45 @@ process_object(FILE *file, gchar **tokens)
 }
 
 static  GObject*
-process_path(FILE *file, gchar **tokens)
+process_path(FILE *file, char **tokens)
 {
-    SchPath *path = sch_path_new(NULL);
+  GObject *path = (GObject*)sch_path_new(NULL);
 
-    process_params(G_OBJECT(path), tokens, path_params, 14);
+  process_params(path, tokens, path_params, 14);
 
-    //g_debug("Process path");
-    if ((tokens != NULL) && (g_strv_length(tokens) > 13))
-    {
-        long lines;
-        char *tail;
+  //g_debug("Process path");
+  if ((tokens != NULL) && (g_strv_length(tokens) > 13)) {
 
-        lines = strtol(*(tokens + 13), &tail, 10);
+    long lines;
+    char *tail;
 
-        if (*(tokens + 13) == tail)
-        {
-            /* invalid */
-        }
-        else if (lines < 1 || lines > 999)
-        {
-            /* out of range */
-        }
-        else
-        {
-            gchar *line = read_lines(file, lines);
+    lines = strtol(*(tokens + 13), &tail, 10);
 
-            g_debug("Got some path stuff");
-            g_debug("%d", lines);
-            g_debug("%s", line);
+    if (*(tokens + 13) == tail) {
 
-            process_path_commands(path, line);
-
-            g_free(line);
-        }
+      /* invalid */
     }
+    else if (lines < 1 || lines > 999) {
 
+      /* out of range */
+    }
+    else {
 
-    return path;
+      char *line = read_lines(file, lines);
+
+      fprintf(stderr, "Got some path stuff lines<%lu>, line<%s>\n",lines, line);
+
+      process_path_commands((SchPath *)path, line);
+
+      g_free(line);
+    }
+  }
+
+  return path;
 }
 
 static GObject*
-process_picture(FILE *file, gchar **tokens)
+process_picture(FILE *file, char **tokens)
 {
     //g_debug("Process picture");
 
@@ -979,7 +974,7 @@ process_picture(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_pin(FILE *file, gchar **tokens)
+process_pin(FILE *file, char **tokens)
 {
     SchPin *pin;
 
@@ -993,56 +988,56 @@ process_pin(FILE *file, gchar **tokens)
 }
 
 static GObject*
-process_text(FILE *file, gchar **tokens)
+process_text(FILE *file, char **tokens)
 {
-    SchText *text;
+  SchText *text;
 
-    //g_debug("Process text");
+  //g_debug("Process text");
 
-    text = sch_text_new(NULL);
+  text = sch_text_new(NULL);
 
-    process_params(G_OBJECT(text), tokens, text_params, 10);
+  process_params(G_OBJECT(text), tokens, text_params, 10);
 
-    if (tokens != NULL)
-    {
-        long lines = 1;
-        char *tail;
+  if (tokens != NULL) {
 
-        if (g_strv_length(tokens) > 9)
-        {
-            lines = strtol(*(tokens + 9), &tail, 10);
+    long lines = 1;
+    char *tail;
 
-            if (*(tokens + 9) == tail)
-            {
-                /* invalid */
-            }
-            else if (lines < 1 || lines > 999)
-            {
-                /* out of range */
-            }
-        }
+    if (g_strv_length(tokens) > 9) {
 
-        {
-            long index;
-            SchMultiline *multiline = g_object_new(SCH_TYPE_MULTILINE, NULL);
+      lines = strtol(*(tokens + 9), &tail, 10);
 
-            for (index=0; index<lines; index++)
-            {
-                gchar *line = read_line(file);
-                sch_multiline_append(multiline, line);
-                g_free(line);
-            }
+      if (*(tokens + 9) == tail) {
 
-            sch_text_set_multiline(text, multiline);
-            g_object_unref(multiline);
-        }
+        /* invalid */
+      }
+      else if (lines < 1 || lines > 999) {
+
+        /* out of range */
+      }
     }
 
-    return G_OBJECT(text);
+    {
+      long index;
+      SchMultiline *multiline = g_object_new(SCH_TYPE_MULTILINE, NULL);
+
+      for (index=0; index<lines; index++) {
+
+        char *line = read_line(file);
+        sch_multiline_append(multiline, line);
+        g_free(line);
+      }
+
+      sch_text_set_multiline(text, multiline);
+      g_object_unref(multiline);
+    }
+  }
+
+  return G_OBJECT(text);
 }
 
 static void
-process_version(FILE *file, gchar **tokens)
+process_version(FILE *file, char **tokens)
 {
     //g_debug("Process version");
 }
@@ -1051,48 +1046,48 @@ process_version(FILE *file, gchar **tokens)
 
 /*! \brief Reads a line from a file
  */
-static gchar*
+static char*
 read_line(FILE *file)
 {
-    gchar *result = NULL;
+  char *result = NULL;
 
-    if (!feof(file))
-    {
-        gint c = fgetc(file);
-        GString *line = g_string_sized_new(10);
+  if (!feof(file)) {
 
-        while (!ferror(file) && !feof(file) && (c != '\n'))
-        {
-            g_string_append_c(line, c);
-            c = fgetc(file);
-        }
+    int c = fgetc(file);
+    GString *line = g_string_sized_new(10);
 
-        result = g_string_free(line, ferror(file));
-    }
+    while (!ferror(file) && !feof(file) && (c != '\n')) {
 
-    return result;
+      g_string_append_c(line, c);
+      c = fgetc(file);
+  }
+
+  result = g_string_free(line, ferror(file));
+}
+
+return result;
 }
 
 /*! \brief Reads a line from a file
  */
-static gchar*
+static char*
 read_lines(FILE *file, int count)
 {
-    gchar *result = NULL;
+    char *result = NULL;
 
-    if (!feof(file) && (count > 0))
-    {
-        gint c = fgetc(file);
+    if (!feof(file) && (count > 0)) {
+
+        int c = fgetc(file);
         GString *line = g_string_sized_new(10);
 
-        while (!ferror(file) && !feof(file))
-        {
-            if (c == '\n')
-            {
+        while (!ferror(file) && !feof(file)) {
+
+            if (c == '\n') {
+
                 count--;
 
-                if (count <= 0)
-                {
+                if (count <= 0) {
+
                     break;
                 }
             }
@@ -1112,70 +1107,67 @@ read_lines(FILE *file, int count)
 static void
 read_file(SchDrawing *drawing, FILE *file, GError **error)
 {
-    gchar *line = read_line(file);
-    GObject *object = NULL;
+  char *line = read_line(file);
+  GObject *object = NULL;
 
-    while (line != NULL)
-    {
-        //g_debug("Hello inside read file");
+  while (line != NULL) {
 
-        gchar **token = g_strsplit_set(line, " \t", 0);
-        g_free(line);
+    //g_debug("Hello inside read file");
 
-        if (*token != NULL)
-        {
+    char **token = g_strsplit_set(line, " \t", 0);
+    g_free(line);
 
-            switch (**token)
-            {
-                case 'v':
-                    process_version(file, token);
-                    break;
+    if (*token != NULL) {
 
-                case '{':
-                    process_attributes(file, token, object);
-                    break;
+      switch (**token) {
 
-                case '}':
-                    /* error */
-                    break;
+        case 'v':
+          process_version(file, token);
+          break;
 
-                default:
-                    //g_debug("Process object (begin)");
-                    if (object != NULL)
-                    {
-                        g_object_unref(object);
-                    }
-                    object = process_object(file, token);
-                    if (object != NULL)
-                    {
-                        sch_drawing_append_shape(drawing, object);
-                    }
-                    //g_debug("Process object (end)");
-            }
-        }
+        case '{':
+          process_attributes(file, token, object);
+          break;
 
-        g_strfreev(token);
-        line = read_line(file);
+        case '}':
+          /* error */
+          break;
+
+        default:
+          //g_debug("Process object (begin)");
+
+          if (object != NULL) {
+
+            g_object_unref(object);
+          }
+
+          object = process_object(file, token);
+
+          if (object != NULL) {
+            sch_drawing_append_shape(drawing, (SchShape*)object);
+          }
+          //g_debug("Process object (end)");
+      }
     }
 
-    if (object != NULL)
-    {
-        g_object_unref(object);
-    }
+    g_strfreev(token);
+    line = read_line(file);
+  }
+
+  if (object != NULL) {
+    g_object_unref(object);
+  }
 }
-
-
-
 
 void
 set_value(GValue *value, const char *string)
 {
-    if (G_VALUE_TYPE(value) == G_TYPE_STRING)
-    {
+    if (G_VALUE_TYPE(value) == G_TYPE_STRING) {
+
         g_value_set_string(value, string);
     }
-    else if (G_VALUE_TYPE(value) == G_TYPE_INT)
-    {
+    else if (G_VALUE_TYPE(value) == G_TYPE_INT) {
+
         long number;
         char *tail;
 
@@ -1191,61 +1183,59 @@ set_value(GValue *value, const char *string)
        //     g_value_set_int(value, number);
        // }
     }
-    else
-    {
+    else {
+
         g_warning("Unknown type");
     }
 }
 
 void
-process_params(GObject *object, gchar **token, const struct PARAM paramv[], gint paramc)
+process_params(GObject *object, char **token, const struct PARAM paramv[], int paramc)
 {
-    GObjectClass *object_class = G_OBJECT_GET_CLASS(object);
+  GObjectClass *object_class = G_OBJECT_GET_CLASS(object);
 
-    if (object_class != NULL)
-    {
-        gint index;
+  if (object_class != NULL) {
 
-        for (index=0; index<paramc; index++)
-        {
-            const char *name = paramv[index].name;
+    int index;
 
-            if (name != NULL)
-            {
-                GParamSpec *pspec = g_object_class_find_property(object_class, name);
-                GValue value = {0};
+    for (index=0; index<paramc; index++) {
 
-                if (pspec == NULL)
-                {
-                    g_warning("    Unknown property %s", name);
-                    continue;
-                }
+      const char *name = paramv[index].name;
 
-                if ((pspec->flags & G_PARAM_WRITABLE) == 0)
-                {
-                    g_warning("    Property not writable %s", name);
-                    continue;
-                }
+      if (name != NULL) {
 
-                if (token[index] == NULL)
-                {
-                    g_warning("    Not enough parameters");
-                    break;
-                }
+        GParamSpec *pspec = g_object_class_find_property(object_class, name);
+        GValue value = {0};
 
-                g_value_init(&value, G_PARAM_SPEC_VALUE_TYPE(pspec));
-                set_value(&value, token[index]);
+        if (pspec == NULL) {
 
-                //g_debug("    Assigning parameter %s", name);
-
-                g_object_set_property(object, name, &value);
-                g_value_unset(&value);
-            }
+          g_warning("    Unknown property %s", name);
+          continue;
         }
+
+        if ((pspec->flags & G_PARAM_WRITABLE) == 0) {
+
+          g_warning("    Property not writable %s", name);
+          continue;
+        }
+
+        if (token[index] == NULL) {
+
+          g_warning("    Not enough parameters");
+          break;
+        }
+
+        g_value_init(&value, G_PARAM_SPEC_VALUE_TYPE(pspec));
+        set_value(&value, token[index]);
+
+        //g_debug("    Assigning parameter %s", name);
+
+        g_object_set_property(object, name, &value);
+        g_value_unset(&value);
+      }
     }
+  }
 }
-
-
 
 static void
 process_path_command_closepath(SchPath *path, GMatchInfo *match_info);
@@ -1263,59 +1253,56 @@ process_path_command_moveto(SchPath *path, GMatchInfo *match_info);
 static void
 process_path_commands(SchPath *path, const char* string)
 {
-    GRegex *re = g_regex_new(
-        "([MmLlCcZz])([[:space:]]*([0-9]+)([[:space:]]*[,]?[[:space:]]*([0-9]+))*)*",
-        0,
-        0,
-        NULL
-        );
+  GRegex *re = g_regex_new(
+    "([MmLlCcZz])([[:space:]]*([0-9]+)([[:space:]]*[,]?[[:space:]]*([0-9]+))*)*",
+                           0,0,NULL);
 
-    if (re != NULL)
-    {
-        GMatchInfo *match_info;
+  if (re != NULL) {
 
-        g_regex_match(re, string, 0, &match_info);
+    GMatchInfo *match_info;
 
-        while (g_match_info_matches (match_info))
-        {
-            gchar *word = g_match_info_fetch (match_info, 0);
+    g_regex_match(re, string, 0, &match_info);
 
-            switch (*word)
-            {
-                case 'C':
-                    process_path_command_curveto(path, match_info);
-                    break;
+    while (g_match_info_matches (match_info)) {
 
-                case 'L':
-                    process_path_command_lineto(path, match_info);
-                    break;
+      char *word = g_match_info_fetch (match_info, 0);
 
-                case 'M':
-                    process_path_command_moveto(path, match_info);
-                    break;
+      switch (*word) {
 
-                case 'z':
-                    process_path_command_closepath(path, match_info);
-                    break;
+        case 'C':
+          process_path_command_curveto(path, match_info);
+          break;
 
-                deafult:
-                    break;
-            }
+        case 'L':
+          process_path_command_lineto(path, match_info);
+          break;
 
-            g_free (word);
-            g_match_info_next (match_info, NULL);
-        }
+        case 'M':
+          process_path_command_moveto(path, match_info);
+          break;
 
-        g_match_info_free(match_info);
+        case 'z':
+          process_path_command_closepath(path, match_info);
+          break;
 
-        g_regex_unref(re);
+        default:
+          break;
+      }
+
+      g_free (word);
+      g_match_info_next (match_info, NULL);
     }
+
+    g_match_info_free(match_info);
+
+    g_regex_unref(re);
+  }
 }
 
 static void
 process_path_command_closepath(SchPath *path, GMatchInfo *match_info)
 {
-    gchar *word = g_match_info_fetch (match_info, 0);
+    char *word = g_match_info_fetch (match_info, 0);
     SchPathCommand command;
 
     g_debug("Closepath: %s", word);
@@ -1330,7 +1317,7 @@ process_path_command_closepath(SchPath *path, GMatchInfo *match_info)
 static void
 process_path_command_curveto(SchPath *path, GMatchInfo *match_info)
 {
-    gchar *word = g_match_info_fetch (match_info, 0);
+    char *word = g_match_info_fetch (match_info, 0);
     SchPathCommand command;
     int i;
     int count = g_match_info_get_match_count(match_info);
@@ -1340,9 +1327,9 @@ process_path_command_curveto(SchPath *path, GMatchInfo *match_info)
     command.type = SCH_PATH_COMMAND_CURVETO_ABS;
 
 
-    for (i=0; (i+13)<count; i++)
-    {
-        gchar *a = g_match_info_fetch (match_info, i+3);
+    for (i=0; (i+13)<count; i++) {
+
+        char *a = g_match_info_fetch (match_info, i+3);
         command.curveto.x[0] = atoi(a);
         g_free (a);
 
@@ -1376,7 +1363,7 @@ process_path_command_curveto(SchPath *path, GMatchInfo *match_info)
 static void
 process_path_command_lineto(SchPath *path, GMatchInfo *match_info)
 {
-    gchar *word = g_match_info_fetch (match_info, 0);
+    char *word = g_match_info_fetch (match_info, 0);
     SchPathCommand command;
     int i;
     int count = g_match_info_get_match_count(match_info);
@@ -1386,9 +1373,9 @@ process_path_command_lineto(SchPath *path, GMatchInfo *match_info)
     command.type = SCH_PATH_COMMAND_LINETO_ABS;
 
 
-    for (i=0; (i+5)<count; i++)
-    {
-        gchar *a = g_match_info_fetch (match_info, i+3);
+    for (i=0; (i+5)<count; i++) {
+
+        char *a = g_match_info_fetch (match_info, i+3);
         command.lineto.x = atoi(a);
         g_free (a);
 
@@ -1405,7 +1392,7 @@ process_path_command_lineto(SchPath *path, GMatchInfo *match_info)
 static void
 process_path_command_moveto(SchPath *path, GMatchInfo *match_info)
 {
-    gchar *word = g_match_info_fetch (match_info, 0);
+    char *word = g_match_info_fetch (match_info, 0);
     SchPathCommand command;
     int i;
     int count = g_match_info_get_match_count(match_info);
@@ -1414,9 +1401,9 @@ process_path_command_moveto(SchPath *path, GMatchInfo *match_info)
 
     command.type = SCH_PATH_COMMAND_MOVETO_ABS;
 
-    for (i=0; (i+5)<count; i++)
-    {
-        gchar *a = g_match_info_fetch (match_info, i+3);
+    for (i=0; (i+5)<count; i++) {
+
+        char *a = g_match_info_fetch (match_info, i+3);
         command.lineto.x = atoi(a);
         g_free (a);
 
@@ -1431,4 +1418,3 @@ process_path_command_moveto(SchPath *path, GMatchInfo *match_info)
 
     g_free (word);
 }
-
