@@ -62,7 +62,7 @@ static GType
 gpview_result_adapter_get_column_type(GtkTreeModel *tree_adapter, int index);
 
 static void
-gpview_result_adapter_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gpview_result_adapter_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec);
 
 static GtkTreeModelFlags
 gpview_result_adapter_get_flags(GtkTreeModel *tree_adapter);
@@ -101,7 +101,7 @@ static gboolean
 gpview_result_adapter_iter_parent(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *child);
 
 static void
-gpview_result_adapter_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gpview_result_adapter_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 gpview_result_adapter_set_result(GPViewResultAdapter *adapter, GPartsDatabaseResult *result);
@@ -156,7 +156,7 @@ gpview_result_adapter_finalize(GObject *object)
 }
 
 gboolean
-gpview_result_adapter_get_column_index(GPViewResultAdapter *result_adapter, const gchar *name, int *index)
+gpview_result_adapter_get_column_index(GPViewResultAdapter *result_adapter, const char *name, int *index)
 {
     gboolean success = FALSE;
 
@@ -193,11 +193,11 @@ gpview_result_adapter_get_column_type(GtkTreeModel *tree_adapter, int index)
     return type;
 }
 
-gchar*
-gpview_result_adapter_get_field(GPViewResultAdapter *model, GtkTreeIter *iter, const gchar *name)
+char*
+gpview_result_adapter_get_field(GPViewResultAdapter *model, GtkTreeIter *iter, const char *name)
 {
     GPViewResultAdapterPrivate *privat = GPVIEW_RESULT_ADAPTER_GET_PRIVATE(model);
-    gchar *result = NULL;
+    char *result = NULL;
 
     if ((privat != NULL) && (privat->result != NULL))
     {
@@ -375,7 +375,7 @@ gpview_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, Gt
  *
  */
 static void
-gpview_result_adapter_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpview_result_adapter_get_property(GObject *object, unsigned property_id, GValue *value, GParamSpec *pspec)
 {
     GPViewResultAdapterPrivate *privat = GPVIEW_RESULT_ADAPTER_GET_PRIVATE(object);
 
@@ -406,8 +406,8 @@ gpview_result_adapter_get_table(GPViewResultAdapter *adapter, GtkTreeIter *iter)
 
     for (index=0; index<columns; index++) {
 
-        const gchar *name;
-        gchar *value;
+        char *name;
+        char *value;
 
         g_value_init(&title, G_TYPE_STRING);
         gparts_database_result_get_column_value(privat->result, index, &title);
@@ -451,10 +451,10 @@ gpview_result_adapter_get_iter(GtkTreeModel *tree_adapter, GtkTreeIter *iter, Gt
 
     int index = gtk_tree_path_get_indices(path)[0];
 
-    guint rows = gparts_database_result_get_row_count(private->result);
+    unsigned rows = gparts_database_result_get_row_count(private->result);
 
-    if (index < rows)
-    {
+    if (index < rows) {
+
         iter->stamp = private->stamp;
         iter->user_data = GUINT_TO_POINTER(index);
 
@@ -605,17 +605,17 @@ gpview_result_adapter_instance_init(GTypeInstance* instance, gpointer g_class)
  *  \retval TRUE  if successful and iter is valid.
  *  \retval FALSE if otherwise and the iter will not be valid.
  */
-/*static*/ gboolean
+/*static*/ int
 gpview_result_adapter_iter_children(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent)
 {
-    gboolean success = FALSE;
+    int success = FALSE;
 
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
+
         GPViewResultAdapterPrivate *privat = GPVIEW_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             iter->stamp = privat->stamp;
             iter->user_data = GINT_TO_POINTER(0);
 
@@ -650,8 +650,8 @@ gpview_result_adapter_iter_has_child(GtkTreeModel *tree_adapter, GtkTreeIter *it
 static gboolean
 gpview_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 {
-    guint new_position;
-    guint old_position;
+    unsigned new_position;
+    unsigned old_position;
     GPViewResultAdapterPrivate *private = GPVIEW_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
     g_assert(iter != NULL);
@@ -663,7 +663,7 @@ gpview_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 
     if (new_position > old_position)
     {
-        guint rows = gparts_database_result_get_row_count(private->result);
+        unsigned rows = gparts_database_result_get_row_count(private->result);
 
         if (new_position < rows)
         {
@@ -728,7 +728,7 @@ gpview_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *it
 
         if (privat != NULL)
         {
-            guint rows = gparts_database_result_get_row_count(privat->result);
+            unsigned rows = gparts_database_result_get_row_count(privat->result);
 
             if (n < rows)
             {
@@ -858,7 +858,7 @@ gpview_result_adapter_adjust_columns(const GPViewResultAdapter *adapter, GtkTree
 }
 
 static void
-gpview_result_adapter_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gpview_result_adapter_set_property(GObject *object, unsigned property_id, const GValue *value, GParamSpec *pspec)
 {
     switch ( property_id )
     {
