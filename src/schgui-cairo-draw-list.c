@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "schgui.h"
+#include "misc-object.h"
 
 #define SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj),SCHGUI_TYPE_CAIRO_DRAW_LIST,SchGUICairoDrawListPrivate))
 
@@ -39,8 +40,10 @@ struct _SchGUICairoDrawListPrivate
 static void
 schgui_cairo_draw_list_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds);
 
+/*
 static void
 schgui_cairo_draw_list_dispose(GObject *object);
+*/
 
 static void
 schgui_cairo_draw_list_draw(SchGUICairoDrawItem *item, cairo_t *cairo);
@@ -58,12 +61,12 @@ schgui_cairo_draw_list_translate(SchGUICairoDrawItem *item, double dx, double dy
 void
 schgui_cairo_draw_list_append(SchGUICairoDrawList *list, SchGUICairoDrawItem* item)
 {
-    if (item != NULL)
-    {
+    if (item != NULL) {
+
         SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(list);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             privat->items = g_slist_append(privat->items, item);
 
             g_object_ref(item);
@@ -76,12 +79,12 @@ schgui_cairo_draw_list_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBou
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             schgui_cairo_draw_item_bounds(SCHGUI_CAIRO_DRAW_ITEM(node->data), cairo, bounds);
 
             node = g_slist_next(node);
@@ -92,29 +95,29 @@ schgui_cairo_draw_list_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBou
 static void
 schgui_cairo_draw_list_class_init(gpointer g_class, gpointer g_class_data)
 {
-    SchGUICairoDrawItemClass *item_klasse = SCHGUI_CAIRO_DRAW_ITEM_CLASS(g_class);
+    SchGUICairoDrawItemClass *item_class = SCHGUI_CAIRO_DRAW_ITEM_CLASS(g_class);
 
     g_type_class_add_private(G_OBJECT_CLASS(g_class), sizeof(SchGUICairoDrawListPrivate));
 
-    item_klasse->bounds    = schgui_cairo_draw_list_bounds;
-    item_klasse->draw      = schgui_cairo_draw_list_draw;
-    item_klasse->mirror_y  = schgui_cairo_draw_list_mirror_y;
-    item_klasse->rotate    = schgui_cairo_draw_list_rotate;
-    item_klasse->translate = schgui_cairo_draw_list_translate;
+    item_class->bounds    = schgui_cairo_draw_list_bounds;
+    item_class->draw      = schgui_cairo_draw_list_draw;
+    item_class->mirror_y  = schgui_cairo_draw_list_mirror_y;
+    item_class->rotate    = schgui_cairo_draw_list_rotate;
+    item_class->translate = schgui_cairo_draw_list_translate;
 }
 
-
+/*
 static void
 schgui_cairo_draw_list_dispose(GObject *object)
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             g_object_unref(node->data);
 
             node = g_slist_next(node);
@@ -127,18 +130,19 @@ schgui_cairo_draw_list_dispose(GObject *object)
 
     misc_object_chain_dispose(object);
 }
+*/
 
 static void
 schgui_cairo_draw_list_draw(SchGUICairoDrawItem *item, cairo_t *cairo)
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             schgui_cairo_draw_item_draw(SCHGUI_CAIRO_DRAW_ITEM(node->data), cairo);
 
             node = g_slist_next(node);
@@ -146,13 +150,13 @@ schgui_cairo_draw_list_draw(SchGUICairoDrawItem *item, cairo_t *cairo)
     }
 }
 
-GType
+unsigned int
 schgui_cairo_draw_list_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID)  {
+
         static const GTypeInfo tinfo = {
             sizeof(SchGUICairoDrawListClass),     /* class_size */
             NULL,                                 /* base_init */
@@ -166,12 +170,8 @@ schgui_cairo_draw_list_get_type(void)
             NULL                                  /* value_table */
             };
 
-        type = g_type_register_static(
-            SCHGUI_TYPE_CAIRO_DRAW_ITEM,
-            "SchGUICairoDrawList",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(SCHGUI_TYPE_CAIRO_DRAW_ITEM,
+                                      "SchGUICairoDrawList", &tinfo, 0);
     }
 
     return type;
@@ -182,12 +182,12 @@ schgui_cairo_draw_list_mirror_y(SchGUICairoDrawItem *item)
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             schgui_cairo_draw_item_mirror_y(SCHGUI_CAIRO_DRAW_ITEM(node->data));
 
             node = g_slist_next(node);
@@ -198,12 +198,12 @@ schgui_cairo_draw_list_mirror_y(SchGUICairoDrawItem *item)
 void
 schgui_cairo_draw_list_prepend(SchGUICairoDrawList *list, SchGUICairoDrawItem* item)
 {
-    if (item != NULL)
-    {
+    if (item != NULL) {
+
         SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(list);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             privat->items = g_slist_prepend(privat->items, item);
 
             g_object_ref(item);
@@ -216,12 +216,12 @@ schgui_cairo_draw_list_rotate(SchGUICairoDrawItem *item, double dt)
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             schgui_cairo_draw_item_rotate(SCHGUI_CAIRO_DRAW_ITEM(node->data), dt);
 
             node = g_slist_next(node);
@@ -234,12 +234,12 @@ schgui_cairo_draw_list_translate(SchGUICairoDrawItem *item, double dx, double dy
 {
     SchGUICairoDrawListPrivate *privat = SCHGUI_CAIRO_DRAW_LIST_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->items;
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             schgui_cairo_draw_item_translate(SCHGUI_CAIRO_DRAW_ITEM(node->data), dx, dy);
 
             node = g_slist_next(node);
