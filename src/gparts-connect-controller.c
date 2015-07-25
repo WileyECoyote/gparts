@@ -42,14 +42,7 @@ struct _GPartsConnectControllerPrivate
     GtkFileChooser  *file_dialog;
     GtkDialog       *login_dialog;
 
-#if GTK_MAJOR_VERSION < 3
-gtk_combo_box_text_get_active_text
     GtkComboBoxText *engine_combo;
-
-#else
-
-    GtkComboBoxText *engine_combo;
-#endif
 
     GtkEntry        *user_name_entry;
     GtkEntry        *password_entry;
@@ -296,20 +289,16 @@ gparts_connect_controller_get_connect_data(GPartsConnectController *controller)
 char*
 gparts_connect_controller_get_database_type(GPartsConnectController *controller)
 {
-    char *type = NULL;
-    GPartsConnectControllerPrivate *privat = GPARTS_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  char *type = NULL;
+  GPartsConnectControllerPrivate *privat = GPARTS_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL) {
+  if (privat != NULL) {
 
-#if GTK_MAJOR_VERSION < 3
-       type = g_strdup(gtk_combo_box_get_active_text(privat->engine_combo));
-#else
-       type = g_strdup(gtk_combo_box_text_get_active_text(privat->engine_combo));
-#endif
+    type = g_strdup(gtk_combo_box_text_get_active_text(privat->engine_combo));
 
-    }
+  }
 
-    return type;
+  return type;
 
 }
 
