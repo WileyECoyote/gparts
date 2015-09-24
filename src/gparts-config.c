@@ -212,17 +212,17 @@ gparts_config_set_database_types(GPartsConfig *config, GPartsDatabaseType *types
 {
     GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(config);
 
-    if (privat != NULL)
-    {
-        if (privat->database_types != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->database_types != NULL) {
+
             g_object_unref(privat->database_types);
         }
 
         privat->database_types = types;
 
-        if (privat->database_types != NULL)
-        {
+        if (privat->database_types != NULL) {
+
             g_object_ref(privat->database_types);
         }
 

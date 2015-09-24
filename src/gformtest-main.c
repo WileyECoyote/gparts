@@ -28,7 +28,8 @@
 #include "gpdata.h"
 #include "gpform.h"
 
-    GPFormUIDialog *dialog = NULL;
+GPFormUIDialog *dialog = NULL;
+
 static void
 destroy_cb(GtkWidget* widget, gpointer data)
 {
@@ -47,20 +48,14 @@ int main(int argc, char* argv[])
 
     factory = gpform_factory_new();
 
-    if (factory != NULL)
-    {
+    if (factory != NULL) {
+
         dialog = gpform_factory_create_form(factory, "../xml/forms/inductor-add.xml");
     }
 
-    if (dialog != NULL)
-    {
+    if (dialog != NULL) {
 
-        g_signal_connect(
-            G_OBJECT(dialog),
-            "response",
-            G_CALLBACK(destroy_cb),
-            NULL
-            );
+        g_signal_connect(G_OBJECT(dialog), "response", G_CALLBACK(destroy_cb), NULL);
 
         gtk_widget_show_all(GTK_WIDGET(dialog));
 
@@ -82,4 +77,3 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
