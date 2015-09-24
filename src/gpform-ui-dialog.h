@@ -91,9 +91,9 @@ gpform_ui_dialog_get_model_name(const GPFormUIDialog *dialog);
  *  pointer to free the resources associated with the GdkPixbuf.
  *
  *  \param [in] dialog The widget to snapshot
- *  \return A GdkPixbuf containing the image of the dialog box.
+ *  \return TRUE if the image was successfully written.
  */
-GdkPixbuf*
+int
 gpform_ui_dialog_get_snapshot(const GPFormUIDialog* dialog);
 
 /*! \brief Set the help spec

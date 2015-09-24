@@ -42,9 +42,9 @@ typedef struct _GPFormUIDialogPrivate GPFormUIDialogPrivate;
 
 struct _GPFormUIDialogPrivate
 {
-    gchar          *help_spec;
+    char          *help_spec;
     GPFormPMDialog *model;
-    gchar          *model_name;
+    char          *model_name;
 };
 
 
@@ -65,7 +65,7 @@ static void
 gpform_ui_dialog_init(GTypeInstance *instance, gpointer g_class);
 
 static void
-gpform_ui_dialog_response_cb(GPFormUIDialog *dialog, gint response_id, gpointer user_data);
+gpform_ui_dialog_response_cb(GPFormUIDialog *dialog, int response_id, gpointer user_data);
 
 static void
 gpform_ui_dialog_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
@@ -78,18 +78,18 @@ gpform_ui_dialog_update_model_cb(GtkWidget *widget, GPFormPMDialog *model);
 static void
 gpform_ui_dialog_class_init(gpointer g_class, gpointer g_class_data)
 {
-    GObjectClass *klasse = G_OBJECT_CLASS(g_class);
+    GObjectClass *class = G_OBJECT_CLASS(g_class);
 
-    g_type_class_add_private(klasse, sizeof(GPFormUIDialogPrivate));
+    g_type_class_add_private(class, sizeof(GPFormUIDialogPrivate));
 
-    klasse->dispose  = gpform_ui_dialog_dispose;
-    klasse->finalize = gpform_ui_dialog_finalize;
+    class->dispose  = gpform_ui_dialog_dispose;
+    class->finalize = gpform_ui_dialog_finalize;
 
-    klasse->get_property = gpform_ui_dialog_get_property;
-    klasse->set_property = gpform_ui_dialog_set_property;
+    class->get_property = gpform_ui_dialog_get_property;
+    class->set_property = gpform_ui_dialog_set_property;
 
     g_object_class_install_property(
-        klasse,
+        class,
         GPFORM_UI_DIALOG_HELP_SPEC,
         g_param_spec_string(
             "help-spec",
@@ -101,7 +101,7 @@ gpform_ui_dialog_class_init(gpointer g_class, gpointer g_class_data)
         );
 
     g_object_class_install_property(
-        klasse,
+        class,
         GPFORM_UI_DIALOG_MODEL,
         g_param_spec_object(
             "model",
@@ -112,16 +112,15 @@ gpform_ui_dialog_class_init(gpointer g_class, gpointer g_class_data)
             )
         );
 
-    g_object_class_install_property(
-        klasse,
-        GPFORM_UI_DIALOG_MODEL_NAME,
-        g_param_spec_string(
-            "model-name",
-            "Model Name",
-            "Model Name",
-            NULL,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
+    g_object_class_install_property(class,
+                                    GPFORM_UI_DIALOG_MODEL_NAME,
+                                    g_param_spec_string("model-name",
+                                                        "Model Name",
+                                                        "Model Name",
+                                                        NULL,
+                                                        G_PARAM_LAX_VALIDATION |
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_STRINGS)
         );
 }
 
@@ -130,10 +129,9 @@ gpform_ui_dialog_dispose(GObject *object)
 {
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        if (privat->model != NULL)
-        {
+    if (privat != NULL) {
+        if (privat->model != NULL) {
+
             g_object_unref(privat->model);
             privat->model = NULL;
         }
@@ -147,8 +145,8 @@ gpform_ui_dialog_finalize(GObject *object)
 {
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->help_spec);
         privat->help_spec = NULL;
 
@@ -159,14 +157,14 @@ gpform_ui_dialog_finalize(GObject *object)
     misc_object_chain_finalize(object);
 }
 
-gchar*
+char*
 gpform_ui_dialog_get_help_spec(const GPFormUIDialog *dialog)
 {
-    gchar *help_spec = NULL;
+    char *help_spec = NULL;
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         help_spec = g_strdup(privat->help_spec);
     }
 
@@ -179,12 +177,12 @@ gpform_ui_dialog_get_model(const GPFormUIDialog *dialog)
     GPFormPMDialog *model = NULL;
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         model = privat->model;
 
-        if (model != NULL)
-        {
+        if (model != NULL) {
+
             g_object_ref(model);
         }
     }
@@ -192,14 +190,14 @@ gpform_ui_dialog_get_model(const GPFormUIDialog *dialog)
     return model;
 }
 
-gchar*
+char*
 gpform_ui_dialog_get_model_name(const GPFormUIDialog *dialog)
 {
-    gchar *model_name = NULL;
+    char *model_name = NULL;
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         model_name = g_strdup(privat->model_name);
     }
 
@@ -211,10 +209,10 @@ gpform_ui_dialog_get_property(GObject *object, guint property_id, GValue *value,
 {
     GPFormUIDialog *dialog = GPFORM_UI_DIALOG(object);
 
-    if (dialog != NULL)
-    {
-        switch (property_id)
-        {
+    if (dialog != NULL) {
+
+        switch (property_id) {
+
             case GPFORM_UI_DIALOG_HELP_SPEC:
                 g_value_take_string(value, gpform_ui_dialog_get_help_spec(dialog));
                 break;
@@ -233,51 +231,83 @@ gpform_ui_dialog_get_property(GObject *object, guint property_id, GValue *value,
     }
 }
 
-GdkPixbuf*
+int
 gpform_ui_dialog_get_snapshot(const GPFormUIDialog* dialog)
 {
-    GdkPixbuf *pixbuf = NULL;
+  int result;
 
-    if (dialog != NULL)
-    {
-        cairo_t *cairo;
-        cairo_surface_t *surface;
-        gint width;
-        gint height;
+  if (dialog != NULL) {
 
-        gtk_window_get_size(GTK_WINDOW(dialog), &width, &height);
+    int width;
+    int height;
 
-        g_debug("Dialog size %d, %d", width, height);
+#if GTK_MAJOR_VERSION < 3
 
-        surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
+    int x;
+    int y;
+    int depth;
 
-        cairo = cairo_create(surface);
+    GdkPixbuf *pixbuf;
+    GdkWindow *gdk_window =  (GdkWindow*)dialog;
 
-        if (cairo != NULL)
-        {
-            gtk_widget_draw(GTK_WIDGET(dialog), cairo);
-            cairo_destroy(cairo);
-            g_debug("rendered");
-        }
+    gdk_window_get_geometry(gdk_window, &x, &y, &width, &height, &depth);
 
-        if (surface != NULL)
-        {
-            cairo_surface_write_to_png(surface, "output.png");
-            cairo_surface_destroy(surface);
-            g_debug("wrote");
-        }
+    pixbuf = gdk_pixbuf_get_from_drawable( NULL /* allocate a new pixbuf */, gdk_window,
+                                           gdk_colormap_get_system(), 0 /* src_x */, 0 /* src_y */,
+                                           0 /* dest_x */, 0 /* dest_y */, width, height);
+    if (NULL == pixbuf) {
+      g_warning("gdk_pixbuf_get_from_drawable failed.");
+      result = FALSE;
+    }
+    else {
+      result = gdk_pixbuf_save(pixbuf, "output", "png",
+                                NULL /* no GError */,
+                                NULL /* end of option list */);
+      /* This will free the pixbuf, see gdk_pixbuf_get_from_drawable doc. */
+      g_object_unref(pixbuf);
+    }
+#else
+
+    cairo_t *cairo;
+    cairo_surface_t *surface;
+
+    gtk_window_get_size(GTK_WINDOW(dialog), &width, &height);
+
+    g_debug("Dialog size %d, %d", width, height);
+
+    surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
+
+    cairo = cairo_create(surface);
+
+    if (cairo != NULL) {
+
+      gtk_widget_draw(GTK_WIDGET(dialog), cairo);
+      cairo_destroy(cairo);
+      g_debug("rendered");
     }
 
-    return pixbuf;
+    if (surface != NULL) {
+
+      cairo_surface_write_to_png(surface, "output.png");
+      cairo_surface_destroy(surface);
+      result = TRUE;
+    }
+#endif
+
+  }
+  else {
+    result = FALSE;
+  }
+
+  return result;
 }
 
-GType
-gpform_ui_dialog_get_type(void)
+unsigned int gpform_ui_dialog_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+    static unsigned int type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPFormUIDialogClass),    /* class_size */
             NULL,                           /* base_init */
@@ -291,12 +321,8 @@ gpform_ui_dialog_get_type(void)
             NULL                            /* value_table */
             };
 
-        type = g_type_register_static(
-            GTK_TYPE_DIALOG,
-            "GPFormUIDialog",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(GTK_TYPE_DIALOG,
+                                      "GPFormUIDialog", &tinfo, 0);
     }
 
     return type;
@@ -305,21 +331,17 @@ gpform_ui_dialog_get_type(void)
 static void
 gpform_ui_dialog_init(GTypeInstance *instance, gpointer g_class)
 {
-    if (instance != NULL)
-    {
+    if (instance != NULL) {
+
         GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(instance);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             /* Initialize private members */
         }
 
-        g_signal_connect(
-            G_OBJECT(instance),
-            "response",
-            G_CALLBACK(gpform_ui_dialog_response_cb),
-            NULL
-            );
+        g_signal_connect(G_OBJECT(instance), "response",
+                         G_CALLBACK(gpform_ui_dialog_response_cb),NULL);
     }
 }
 
@@ -330,10 +352,10 @@ gpform_ui_dialog_new(void)
 }
 
 static void
-gpform_ui_dialog_response_cb(GPFormUIDialog *dialog, gint response_id, gpointer user_data)
+gpform_ui_dialog_response_cb(GPFormUIDialog *dialog, int response_id, gpointer user_data)
 {
-    switch (response_id)
-    {
+    switch (response_id) {
+
         case GTK_RESPONSE_CANCEL:
             g_debug("GTK_RESPONSE_CANCEL");
             break;
@@ -356,10 +378,10 @@ gpform_ui_dialog_set_property(GObject *object, guint property_id, const GValue *
 {
     GPFormUIDialog *dialog = GPFORM_UI_DIALOG(object);
 
-    if (dialog != NULL)
-    {
-        switch (property_id)
-        {
+    if (dialog != NULL) {
+
+        switch (property_id) {
+
             case GPFORM_UI_DIALOG_HELP_SPEC:
                 gpform_ui_dialog_set_help_spec(dialog, g_value_get_string(value));
                 break;
@@ -379,12 +401,12 @@ gpform_ui_dialog_set_property(GObject *object, guint property_id, const GValue *
 }
 
 void
-gpform_ui_dialog_set_help_spec(GPFormUIDialog *dialog, const gchar *help_spec)
+gpform_ui_dialog_set_help_spec(GPFormUIDialog *dialog, const char *help_spec)
 {
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->help_spec);
         privat->help_spec = g_strdup(help_spec);
 
@@ -397,37 +419,35 @@ gpform_ui_dialog_set_model(GPFormUIDialog *dialog, GPFormPMDialog *model)
 {
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
-        if (privat->model != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->model != NULL) {
+
             g_object_unref(privat->model);
         }
 
         privat->model = model;
 
-        if (privat->model != NULL)
-        {
+        if (privat->model != NULL) {
+
             g_object_ref(privat->model);
         }
 
-        gtk_container_forall(
-            GTK_CONTAINER(dialog),
-            (GtkCallback) gpform_ui_dialog_update_model_cb,
-            privat->model
-            );
+        gtk_container_forall(GTK_CONTAINER(dialog),
+                             (GtkCallback) gpform_ui_dialog_update_model_cb,
+                             privat->model);
 
         g_object_notify(G_OBJECT(dialog), "model");
     }
 }
 
 void
-gpform_ui_dialog_set_model_name(GPFormUIDialog *dialog, const gchar *model_name)
+gpform_ui_dialog_set_model_name(GPFormUIDialog *dialog, const char *model_name)
 {
     GPFormUIDialogPrivate *privat = GPFORM_UI_DIALOG_GET_PRIVATE(dialog);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_free(privat->model_name);
         privat->model_name = g_strdup(model_name);
 
@@ -440,21 +460,16 @@ gpform_ui_dialog_update_model_cb(GtkWidget *widget, GPFormPMDialog *model)
 {
     g_debug("Dialog child type: %s", G_OBJECT_TYPE_NAME(widget));
 
-    if (GPFORM_IS_UI_WIDGET(widget))
-    {
-        gpform_ui_widget_set_model(
-            GPFORM_UI_WIDGET(widget),
-            model
-            );
+    if (GPFORM_IS_UI_WIDGET(widget)) {
+
+        gpform_ui_widget_set_model(GPFORM_UI_WIDGET(widget),model);
     }
 
-    if (GTK_IS_CONTAINER(widget))
-    {
-        gtk_container_forall(
-            GTK_CONTAINER(widget),
-            (GtkCallback) gpform_ui_dialog_update_model_cb,
-            model
-            );
+    if (GTK_IS_CONTAINER(widget)) {
+
+        gtk_container_forall(GTK_CONTAINER(widget),
+                             (GtkCallback) gpform_ui_dialog_update_model_cb,
+                             model);
     }
 }
 
