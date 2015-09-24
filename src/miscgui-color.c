@@ -80,26 +80,22 @@ miscgui_color_new(void)
 MiscGUIColor*
 miscgui_color_new_from_name(const gchar *name)
 {
-    MiscGUIColor *color = NULL;
+  MiscGUIColor *color = NULL;
 
-    if (name != NULL)
-    {
-        gint     success;
-        GdkColor value;
+  if (name != NULL) {
 
-        success = gdk_color_parse(name, &color);
+    GdkColor value;
 
-        if (success)
-        {
-            MiscGUIColor *color = miscgui_color_new();
+    if (gdk_color_parse(name, &value)) {
 
-            color->red   = (gdouble) color->red   / 65535.0;
-            color->green = (gdouble) color->green / 65535.0;
-            color->blue  = (gdouble) color->blue  / 65535.0;
-            color->alpha = 1.0;
-        }
+      color = miscgui_color_new();
+
+      color->red   = (gdouble) value.red   / 65535.0;
+      color->green = (gdouble) value.green / 65535.0;
+      color->blue  = (gdouble) value.blue  / 65535.0;
+      color->alpha = 1.0;
     }
+  }
 
-    return color;
+  return color;
 }
-
