@@ -51,6 +51,5 @@ gparts_config_get_type(void);
  *
  *  \return A pointer to the configuration.
  */
-GPartsConfig*
-gparts_config_new(void);
-
+GPartsConfig       * gparts_config_new                (void);
+GPartsDatabaseType * gparts_config_get_database_types (const GPartsConfig *config);
