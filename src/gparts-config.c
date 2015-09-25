@@ -57,7 +57,28 @@ gparts_config_init(GTypeInstance *instance, gpointer g_class);
 static void
 gparts_config_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
+void
+gparts_config_set_database_types(GPartsConfig *config, GPartsDatabaseType *types)
+{
+    GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(config);
 
+    if (privat != NULL) {
+
+        if (privat->database_types != NULL) {
+
+            g_object_unref(privat->database_types);
+        }
+
+        privat->database_types = types;
+
+        if (privat->database_types != NULL) {
+
+            g_object_ref(privat->database_types);
+        }
+
+        g_object_notify(G_OBJECT(config), "database-types");
+    }
+}
 
 static void
 gparts_config_class_init(gpointer g_class, gpointer g_class_data)
@@ -90,8 +111,7 @@ gparts_config_dispose(GObject *object)
 {
     GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         gparts_config_set_database_types(GPARTS_CONFIG(object), NULL);
     }
 
@@ -113,24 +133,24 @@ gparts_config_finalize(GObject *object)
 GPartsDatabaseType*
 gparts_config_get_database_types(const GPartsConfig *config)
 {
-    GPartsDatabaseType *types = NULL;
+  GPartsDatabaseType *types = NULL;
 
-    if (config != NULL)
-    {
-        GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(config);
+  if (config != NULL) {
 
-        if (privat != NULL)
-        {
-            types = privat->database_types;
+    GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(config);
 
-            if (types != NULL)
-            {
-                g_object_ref(types);
-            }
-        }
+    if (privat != NULL) {
+
+      types = privat->database_types;
+
+      if (types != NULL) {
+
+        g_object_ref(types);
+      }
     }
+  }
 
-    return types;
+  return types;
 }
 
 static void
@@ -149,6 +169,22 @@ gparts_config_get_property(GObject *object, guint property_id, GValue *value, GP
             default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         }
+    }
+}
+
+static void
+gparts_config_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+{
+    GPartsConfig *config = GPARTS_CONFIG(object);
+
+    switch (property_id)
+    {
+        case GPARTS_CONFIG_DATABASE_TYPES:
+            gparts_config_set_database_types(config, GPARTS_DATABASE_TYPE(g_value_get_object(value)));
+            break;
+
+        default:
+            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
 }
 
@@ -206,43 +242,3 @@ gparts_config_new(void)
 
     return config;
 }
-
-void
-gparts_config_set_database_types(GPartsConfig *config, GPartsDatabaseType *types)
-{
-    GPartsConfigPrivate *privat = GPARTS_CONFIG_GET_PRIVATE(config);
-
-    if (privat != NULL) {
-
-        if (privat->database_types != NULL) {
-
-            g_object_unref(privat->database_types);
-        }
-
-        privat->database_types = types;
-
-        if (privat->database_types != NULL) {
-
-            g_object_ref(privat->database_types);
-        }
-
-        g_object_notify(G_OBJECT(config), "database-types");
-    }
-}
-
-static void
-gparts_config_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
-{
-    GPartsConfig *config = GPARTS_CONFIG(object);
-
-    switch (property_id)
-    {
-        case GPARTS_CONFIG_DATABASE_TYPES:
-            gparts_config_set_database_types(config, GPARTS_DATABASE_TYPE(g_value_get_object(value)));
-            break;
-
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-    }
-}
-
