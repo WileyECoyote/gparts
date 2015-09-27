@@ -64,19 +64,19 @@ struct _GPViewCategoryModelPrivate
 #define GPVIEW_CATEGORY_MODEL_GET_PRIVATE(object) G_TYPE_INSTANCE_GET_PRIVATE(object, GPVIEW_TYPE_CATEGORY_MODEL, GPViewCategoryModelPrivate)
 
 static void
-gpview_category_model_instance_init(GTypeInstance* instance, gpointer g_class);
+gpview_category_model_instance_init(GTypeInstance *instance, void *g_class);
 
 static void
-gpview_category_model_dispose(GObject* object);
+gpview_category_model_dispose(GObject *object);
 
 static void
-gpview_category_model_finalize(GObject* object);
+gpview_category_model_finalize(GObject *object);
 
 static void
-gpview_category_model_get_property(GObject* object, guint property_id, GValue* value, GParamSpec* pspec);
+gpview_category_model_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-gpview_category_model_set_property(GObject* object, guint property_id, const GValue* value, GParamSpec* pspec);
+gpview_category_model_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec* pspec);
 
 //static void
 //gpview_load_children(GPartsDatabase* database, GtkTreeIter* iter);
@@ -98,21 +98,21 @@ gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 static void
 gpview_load_root(GPartsDatabase* database, GPViewCategoryModelNode **node)
 {
-    *node = g_new0(GPViewCategoryModelNode, 1);
+  *node = g_new0(GPViewCategoryModelNode, 1);
 
-    char* query = "SELECT * FROM Category WHERE ParentID IS NULL";
+  char* query = "SELECT * FROM Category WHERE ParentID IS NULL";
 
-    (*node)->result = gparts_database_query(database, query, NULL);
+  (*node)->result = gparts_database_query(database, query, NULL);
 
-    if ((*node)->result != NULL) {
+  if ((*node)->result != NULL) {
 
-        int rows = gparts_database_result_get_row_count((*node)->result);
+    int rows = gparts_database_result_get_row_count((*node)->result);
 
-        if (rows > 0) {
+    if (rows > 0) {
 
-            (*node)->children = (void*)g_new0(GPViewCategoryModelNode, rows);
-        }
+      (*node)->children = (void*)g_new0(GPViewCategoryModelNode, rows);
     }
+  }
 }
 
 /*!
@@ -123,39 +123,39 @@ gpview_load_root(GPartsDatabase* database, GPViewCategoryModelNode **node)
 static void
 gpview_category_model_load_children(GPartsDatabase* database, GtkTreeIter *iter)
 {
-    GPViewCategoryModelNode **child;
-    int index;
-    GPViewCategoryModelNode *node;
+  GPViewCategoryModelNode **child;
+  int index;
+  GPViewCategoryModelNode *node;
 
-    node = (GPViewCategoryModelNode*) iter->user_data;
-    index = GPOINTER_TO_INT(iter->user_data2);
-    child = node->children + index;
+  node = (GPViewCategoryModelNode*) iter->user_data;
+  index = GPOINTER_TO_INT(iter->user_data2);
+  child = node->children + index;
 
-    if (*child == NULL)
-    {
-        GValue value0 = {0};
-        GValue value1 = {0};
+  if (*child == NULL) {
 
-        *child = g_new0(GPViewCategoryModelNode, 1);
+    GValue value0 = {0};
+    GValue value1 = {0};
 
-        (*child)->parent = *iter;
+    *child = g_new0(GPViewCategoryModelNode, 1);
 
-        gparts_database_result_get_field_value(node->result, index, 0, &value0);
+    (*child)->parent = *iter;
 
-        g_value_init(&value1, G_TYPE_STRING);
-        g_value_transform(&value0, &value1);
-        g_value_unset(&value0);
+    gparts_database_result_get_field_value(node->result, index, 0, &value0);
 
-        GString *query = g_string_new(NULL);
+    g_value_init(&value1, G_TYPE_STRING);
+    g_value_transform(&value0, &value1);
+    g_value_unset(&value0);
 
-        g_string_printf(query, "SELECT * FROM Category WHERE ParentID = %s", g_value_get_string(&value1));
-        g_value_unset(&value1);
+    GString *query = g_string_new(NULL);
 
-        (*child)->result = gparts_database_query(database, query->str, NULL);
-        g_string_free(query, TRUE);
+    g_string_printf(query, "SELECT * FROM Category WHERE ParentID = %s", g_value_get_string(&value1));
+    g_value_unset(&value1);
 
-        (*child)->children = (void*) g_new0(GPViewCategoryModelNode, gparts_database_result_get_row_count((*child)->result));
-    }
+    (*child)->result = gparts_database_query(database, query->str, NULL);
+    g_string_free(query, TRUE);
+
+    (*child)->children = (void*) g_new0(GPViewCategoryModelNode, gparts_database_result_get_row_count((*child)->result));
+  }
 }
 
 /*! \brief
@@ -186,14 +186,11 @@ gpview_category_model_database_disconnected_cb(GPartsDatabase *database)
  *  \param [in] g_class_data
  */
 static void
-gpview_category_model_class_init(gpointer g_class, gpointer g_class_data)
+gpview_category_model_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass* object_class = G_OBJECT_CLASS(g_class);
 
-    g_type_class_add_private(
-        g_class,
-        sizeof( GPViewCategoryModelPrivate )
-        );
+    g_type_class_add_private(g_class, sizeof(GPViewCategoryModelPrivate));
 
     object_class->dispose      = gpview_category_model_dispose;
     object_class->finalize     = gpview_category_model_finalize;
@@ -203,14 +200,11 @@ gpview_category_model_class_init(gpointer g_class, gpointer g_class_data)
     g_object_class_install_property(
         object_class,
         GPVIEW_CATEGORY_MODEL_PROPID_DATABASE,
-        g_param_spec_object(
-            "database",
-            "",
-            "",
-            G_TYPE_OBJECT,    /* \todo See if this can be an interface */
-            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+        g_param_spec_object("database",
+                            "",
+                            "",
+                            G_TYPE_OBJECT,    /* \todo See if this can be an interface */
+                            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 }
 
 /** \brief Unreference all referenced objects.
@@ -254,19 +248,19 @@ gpview_category_model_get_field(GPViewCategoryModel* model, GtkTreeIter *iter, c
     if (node->result != NULL) {
 
         int index;
-        gboolean success;
+        int success;
 
         success = gparts_database_result_get_column_index(node->result, name, &index);
 
         if (success) {
 
-            gboolean error = FALSE;
+            int      error  = FALSE;
             GString *buffer = g_string_sized_new(10);
-            GValue value = {0};
+            GValue   value  = {0};
 
             gparts_database_result_get_field_value(
                 node->result,
-                GPOINTER_TO_UINT(iter->user_data2),
+                (unsigned int)(long)(iter->user_data2),
                 index,
                 &value
                 );
@@ -307,7 +301,7 @@ gpview_category_model_get_field(GPViewCategoryModel* model, GtkTreeIter *iter, c
  *
  */
 static void
-gpview_category_model_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpview_category_model_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     GPViewCategoryModelPrivate *private;
 
@@ -582,7 +576,7 @@ gpview_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, int
     GPViewCategoryModelNode *node = (GPViewCategoryModelNode*) iter->user_data;
 
     gparts_database_result_get_field_value(node->result,
-                                           GPOINTER_TO_UINT(iter->user_data2),
+                                           (unsigned int)(long)(iter->user_data2),
                                            column,
                                            value);
 
@@ -637,17 +631,17 @@ gpview_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
  *
  *
  */
-static gboolean
+static int
 gpview_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
-    guint new_position;
-    guint old_position;
+    unsigned int new_position;
+    unsigned int old_position;
     GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
     g_assert(iter != NULL);
     g_assert(iter->stamp == private->stamp);
 
-    old_position = GPOINTER_TO_UINT(iter->user_data2);
+    old_position = (unsigned int)(long)(iter->user_data2);
     new_position = old_position + 1;
 
     if (new_position > old_position)

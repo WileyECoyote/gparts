@@ -482,8 +482,8 @@ gpartsui_connect_model_get_database_types(const GPartsUIConnectModel *model)
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
     GStrv types = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GPartsConfig *config = gparts_config_new();
 
         GPartsDatabaseType *type = gparts_config_get_database_types(config);
