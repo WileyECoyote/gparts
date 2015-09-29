@@ -56,11 +56,11 @@ struct _GPartsUIConnectModelPrivate
     GPartsDatabaseFactory *database_factory;
     GPartsUIDatabaseModel *database_model;
 
-    gchar                 *database;
-    gchar                 *filename;
-    gchar                 *hostname;
-    gchar                 *password;
-    gchar                 *username;
+    char                 *database;
+    char                 *filename;
+    char                 *hostname;
+    char                 *password;
+    char                 *username;
 };
 
 static void
@@ -381,7 +381,7 @@ gpartsui_connect_model_finalize(GObject *object)
     misc_object_chain_finalize(object);
 }
 
-gboolean
+int
 gpartsui_connect_model_get_connect_sensitive(const GPartsUIConnectModel *model)
 {
     return TRUE;
@@ -425,11 +425,11 @@ gpartsui_connect_model_get_database_model(const GPartsUIConnectModel *model)
     return dmodel;
 }
 
-gchar*
+char*
 gpartsui_connect_model_get_database_name(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *database = NULL;
+    char *database = NULL;
 
     if (privat != NULL)
     {
@@ -439,15 +439,15 @@ gpartsui_connect_model_get_database_name(const GPartsUIConnectModel *model)
     return database;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_database_name_sensitive(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gboolean sensitive = FALSE;
+    int sensitive = FALSE;
 
     if (privat != NULL)
     {
-        gint flags = gparts_database_factory_get_flags(privat->database_factory);
+        int flags = gparts_database_factory_get_flags(privat->database_factory);
 
         sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_DATABASE);
     }
@@ -455,18 +455,18 @@ gpartsui_connect_model_get_database_name_sensitive(const GPartsUIConnectModel *m
     return sensitive;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_database_name_valid(const GPartsUIConnectModel *model)
 {
     return TRUE;
 }
 
 
-gchar*
+char*
 gpartsui_connect_model_get_database_type(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *type = NULL;
+    char *type = NULL;
 
     if (privat != NULL)
     {
@@ -495,65 +495,63 @@ gpartsui_connect_model_get_database_types(const GPartsUIConnectModel *model)
 }
 
 
-gchar*
+char*
 gpartsui_connect_model_get_filename(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *filename = NULL;
+    char *filename = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         filename = g_strdup(privat->filename);
     }
 
     return filename;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_filename_sensitive(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gboolean sensitive = FALSE;
+    int sensitive = FALSE;
 
-    if (privat != NULL)
-    {
-        gint flags = gparts_database_factory_get_flags(privat->database_factory);
+    if (privat != NULL) {
 
-        sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_FILENAME);
+      int flags = gparts_database_factory_get_flags(privat->database_factory);
+
+      sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_FILENAME);
     }
 
     return sensitive;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_filename_valid(const GPartsUIConnectModel *model)
 {
     return TRUE;
 }
 
-gchar*
+char*
 gpartsui_connect_model_get_hostname(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *hostname = NULL;
+    char *hostname = NULL;
 
-    if (privat != NULL)
-    {
-        hostname = g_strdup(privat->hostname);
+    if (privat != NULL) {
+      hostname = g_strdup(privat->hostname);
     }
 
     return hostname;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_hostname_sensitive(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gboolean sensitive = FALSE;
+    int sensitive = FALSE;
 
-    if (privat != NULL)
-    {
-        gint flags = gparts_database_factory_get_flags(privat->database_factory);
+    if (privat != NULL) {
+
+        int flags = gparts_database_factory_get_flags(privat->database_factory);
 
         sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_HOSTNAME);
     }
@@ -561,35 +559,34 @@ gpartsui_connect_model_get_hostname_sensitive(const GPartsUIConnectModel *model)
     return sensitive;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_hostname_valid(const GPartsUIConnectModel *model)
 {
     return TRUE;
 }
 
-gchar*
+char*
 gpartsui_connect_model_get_password(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *password = NULL;
+    char *password = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         password = g_strdup(privat->password);
     }
 
     return password;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_password_sensitive(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gboolean sensitive = FALSE;
+    int sensitive = FALSE;
 
-    if (privat != NULL)
-    {
-        gint flags = gparts_database_factory_get_flags(privat->database_factory);
+    if (privat != NULL) {
+
+        int flags = gparts_database_factory_get_flags(privat->database_factory);
 
         sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_PASSWORD);
     }
@@ -597,7 +594,7 @@ gpartsui_connect_model_get_password_sensitive(const GPartsUIConnectModel *model)
     return sensitive;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_password_valid(const GPartsUIConnectModel *model)
 {
     return TRUE;
@@ -606,152 +603,150 @@ gpartsui_connect_model_get_password_valid(const GPartsUIConnectModel *model)
 static void
 gpartsui_connect_model_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    GPartsUIConnectModel *model = GPARTSUI_CONNECT_MODEL(object);
+  GPartsUIConnectModel *model = GPARTSUI_CONNECT_MODEL(object);
 
-    if (model != NULL)
-    {
-        switch ( property_id )
-        {
-            case GPARTSUI_CONNECT_MODEL_CONNECT_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_connect_sensitive(model));
-                break;
+  if (model != NULL) {
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_FACTORY:
-                g_value_take_object(value, gpartsui_connect_model_get_database_factory(model));
-                break;
+    switch ( property_id ) {
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_MODEL:
-                g_value_take_object(value, gpartsui_connect_model_get_database_model(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_CONNECT_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_connect_sensitive(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_NAME:
-                g_value_take_string(value, gpartsui_connect_model_get_database_name(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_FACTORY:
+        g_value_take_object(value, gpartsui_connect_model_get_database_factory(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_NAME_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_database_name_sensitive(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_MODEL:
+        g_value_take_object(value, gpartsui_connect_model_get_database_model(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_NAME_VALID:
-                g_value_set_boolean(value, gpartsui_connect_model_get_database_name_valid(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_NAME:
+        g_value_take_string(value, gpartsui_connect_model_get_database_name(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_TYPE:
-                g_value_take_string(value, gpartsui_connect_model_get_database_type(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_NAME_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_database_name_sensitive(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_TYPES:
-                g_value_take_boxed(value, gpartsui_connect_model_get_database_types(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_NAME_VALID:
+        g_value_set_boolean(value, gpartsui_connect_model_get_database_name_valid(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_FILENAME:
-                g_value_take_string(value, gpartsui_connect_model_get_filename(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_TYPE:
+        g_value_take_string(value, gpartsui_connect_model_get_database_type(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_FILENAME_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_filename_sensitive(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_TYPES:
+        g_value_take_boxed(value, gpartsui_connect_model_get_database_types(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_FILENAME_VALID:
-                g_value_set_boolean(value, gpartsui_connect_model_get_filename_valid(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_FILENAME:
+        g_value_take_string(value, gpartsui_connect_model_get_filename(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_HOSTNAME:
-                g_value_take_string(value, gpartsui_connect_model_get_hostname(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_FILENAME_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_filename_sensitive(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_HOSTNAME_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_hostname_sensitive(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_FILENAME_VALID:
+        g_value_set_boolean(value, gpartsui_connect_model_get_filename_valid(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_HOSTNAME_VALID:
-                g_value_set_boolean(value, gpartsui_connect_model_get_hostname_valid(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_HOSTNAME:
+        g_value_take_string(value, gpartsui_connect_model_get_hostname(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_PASSWORD:
-                g_value_take_string(value, gpartsui_connect_model_get_password(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_HOSTNAME_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_hostname_sensitive(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_PASSWORD_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_password_sensitive(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_HOSTNAME_VALID:
+        g_value_set_boolean(value, gpartsui_connect_model_get_hostname_valid(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_PASSWORD_VALID:
-                g_value_set_boolean(value, gpartsui_connect_model_get_password_valid(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_PASSWORD:
+        g_value_take_string(value, gpartsui_connect_model_get_password(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_USERNAME:
-                g_value_take_string(value, gpartsui_connect_model_get_username(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_PASSWORD_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_password_sensitive(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_USERNAME_SENSITIVE:
-                g_value_set_boolean(value, gpartsui_connect_model_get_username_sensitive(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_PASSWORD_VALID:
+        g_value_set_boolean(value, gpartsui_connect_model_get_password_valid(model));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_USERNAME_VALID:
-                g_value_set_boolean(value, gpartsui_connect_model_get_username_valid(model));
-                break;
+      case GPARTSUI_CONNECT_MODEL_USERNAME:
+        g_value_take_string(value, gpartsui_connect_model_get_username(model));
+        break;
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+      case GPARTSUI_CONNECT_MODEL_USERNAME_SENSITIVE:
+        g_value_set_boolean(value, gpartsui_connect_model_get_username_sensitive(model));
+        break;
+
+      case GPARTSUI_CONNECT_MODEL_USERNAME_VALID:
+        g_value_set_boolean(value, gpartsui_connect_model_get_username_valid(model));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 GType
 gpartsui_connect_model_get_type( void )
 {
-    static GType type = 0;
+  static GType type = 0;
 
-    if ( type == 0 )
-    {
-        static const GTypeInfo tinfo = {
-            sizeof(GPartsUIConnectModelClass),
-            NULL,
-            NULL,
-            gpartsui_connect_model_class_init,
-            NULL,
-            NULL,
-            sizeof(GPartsUIConnectModel),
-            0,
-            gpartsui_connect_model_instance_init,
-            NULL
-            };
+  if ( type == 0 ) {
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "gpartsui-connect-model",
-            &tinfo,
-            0
-            );
-    }
+    static const GTypeInfo tinfo = {
+      sizeof(GPartsUIConnectModelClass),
+      NULL,
+      NULL,
+      gpartsui_connect_model_class_init,
+      NULL,
+      NULL,
+      sizeof(GPartsUIConnectModel),
+      0,
+      gpartsui_connect_model_instance_init,
+      NULL
+    };
 
-    return type;
+    type = g_type_register_static(
+      G_TYPE_OBJECT, "gpartsui-connect-model",
+      &tinfo,
+      0
+    );
+  }
+
+  return type;
 }
 
-gchar*
+char*
 gpartsui_connect_model_get_username(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gchar *username = NULL;
+    char *username = NULL;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         username = g_strdup(privat->username);
     }
 
     return username;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_username_sensitive(const GPartsUIConnectModel *model)
 {
     GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
-    gboolean sensitive = FALSE;
+    int sensitive = FALSE;
 
-    if (privat != NULL)
-    {
-        gint flags = gparts_database_factory_get_flags(privat->database_factory);
+    if (privat != NULL) {
+
+        int flags = gparts_database_factory_get_flags(privat->database_factory);
 
         sensitive = (flags & GPARTS_DATABASE_TYPE_FLAGS_USES_USERNAME);
     }
@@ -759,7 +754,7 @@ gpartsui_connect_model_get_username_sensitive(const GPartsUIConnectModel *model)
     return sensitive;
 }
 
-gboolean
+int
 gpartsui_connect_model_get_username_valid(const GPartsUIConnectModel *model)
 {
     return TRUE;
@@ -778,206 +773,205 @@ gpartsui_connect_model_new(void)
 }
 
 void
-gpartsui_connect_model_set_database_name(GPartsUIConnectModel *model, const gchar *database)
+gpartsui_connect_model_set_database_name(GPartsUIConnectModel *model, const char *database)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        g_free(privat->database);
-        privat->database = g_strdup(database);
+  if (privat != NULL) {
 
-        g_object_notify(G_OBJECT(model), "database-name");
-        g_object_notify(G_OBJECT(model), "database-name-valid");
-    }
+    g_free(privat->database);
+    privat->database = g_strdup(database);
+
+    g_object_notify(G_OBJECT(model), "database-name");
+    g_object_notify(G_OBJECT(model), "database-name-valid");
+  }
 }
 
 
 void
 gpartsui_connect_model_set_database_factory(GPartsUIConnectModel *model, GPartsDatabaseFactory *factory)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        if (privat->database_factory != NULL)
-        {
-            g_object_unref(privat->database_factory);
-        }
+  if (privat != NULL) {
 
-        privat->database_factory = factory;
+    if (privat->database_factory != NULL) {
 
-        if (privat->database_factory != NULL)
-        {
-            g_object_ref(privat->database_factory);
-        }
-
-        g_object_notify(G_OBJECT(model), "database-factory");
-        g_object_notify(G_OBJECT(model), "database-name-sensitive");
-        g_object_notify(G_OBJECT(model), "database-name-valid");
-        g_object_notify(G_OBJECT(model), "database-type");
-        g_object_notify(G_OBJECT(model), "filename-sensitive");
-        g_object_notify(G_OBJECT(model), "filename-valid");
-        g_object_notify(G_OBJECT(model), "hostname-sensitive");
-        g_object_notify(G_OBJECT(model), "hostname-valid");
-        g_object_notify(G_OBJECT(model), "password-sensitive");
-        g_object_notify(G_OBJECT(model), "password-valid");
-        g_object_notify(G_OBJECT(model), "username-sensitive");
-        g_object_notify(G_OBJECT(model), "username-valid");
+      g_object_unref(privat->database_factory);
     }
+
+    privat->database_factory = factory;
+
+    if (privat->database_factory != NULL) {
+
+      g_object_ref(privat->database_factory);
+    }
+
+    g_object_notify(G_OBJECT(model), "database-factory");
+    g_object_notify(G_OBJECT(model), "database-name-sensitive");
+    g_object_notify(G_OBJECT(model), "database-name-valid");
+    g_object_notify(G_OBJECT(model), "database-type");
+    g_object_notify(G_OBJECT(model), "filename-sensitive");
+    g_object_notify(G_OBJECT(model), "filename-valid");
+    g_object_notify(G_OBJECT(model), "hostname-sensitive");
+    g_object_notify(G_OBJECT(model), "hostname-valid");
+    g_object_notify(G_OBJECT(model), "password-sensitive");
+    g_object_notify(G_OBJECT(model), "password-valid");
+    g_object_notify(G_OBJECT(model), "username-sensitive");
+    g_object_notify(G_OBJECT(model), "username-valid");
+  }
 }
 
 void
 gpartsui_connect_model_set_database_model(GPartsUIConnectModel *cmodel, GPartsUIDatabaseModel *dmodel)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(cmodel);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(cmodel);
 
-    if (privat != NULL)
-    {
-        if (privat->database_model != NULL)
-        {
-            g_object_unref(privat->database_model);
-        }
+  if (privat != NULL) {
 
-        privat->database_model = dmodel;
+    if (privat->database_model != NULL) {
 
-        if (privat->database_model != NULL)
-        {
-            g_object_ref(privat->database_model);
-        }
-
-        g_object_notify(G_OBJECT(cmodel), "database-model");
-        g_object_notify(G_OBJECT(cmodel), "database-type");
-        g_object_notify(G_OBJECT(cmodel), "filename-valid");
-        g_object_notify(G_OBJECT(cmodel), "hostname-valid");
-        g_object_notify(G_OBJECT(cmodel), "password-valid");
-        g_object_notify(G_OBJECT(cmodel), "username-valid");
+      g_object_unref(privat->database_model);
     }
+
+    privat->database_model = dmodel;
+
+    if (privat->database_model != NULL) {
+
+      g_object_ref(privat->database_model);
+    }
+
+    g_object_notify(G_OBJECT(cmodel), "database-model");
+    g_object_notify(G_OBJECT(cmodel), "database-type");
+    g_object_notify(G_OBJECT(cmodel), "filename-valid");
+    g_object_notify(G_OBJECT(cmodel), "hostname-valid");
+    g_object_notify(G_OBJECT(cmodel), "password-valid");
+    g_object_notify(G_OBJECT(cmodel), "username-valid");
+  }
 }
 
 void
-gpartsui_connect_model_set_database_type(GPartsUIConnectModel *model, const gchar *name)
+gpartsui_connect_model_set_database_type(GPartsUIConnectModel *model, const char *name)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        GPartsConfig *config = gparts_config_new();
-        GPartsDatabaseType *type = gparts_config_get_database_types(config);
+  if (privat != NULL) {
 
-        GPartsDatabaseFactory *factory = gparts_database_type_get_factory(type, name);
+    GPartsConfig *config = gparts_config_new();
+    GPartsDatabaseType *type = gparts_config_get_database_types(config);
 
-        gpartsui_connect_model_set_database_factory(model, factory);
+    GPartsDatabaseFactory *factory = gparts_database_type_get_factory(type, name);
 
-        g_object_unref(factory);
-        g_object_unref(type);
-    }
+    gpartsui_connect_model_set_database_factory(model, factory);
+
+    g_object_unref(factory);
+    g_object_unref(type);
+  }
 }
 
 void
-gpartsui_connect_model_set_filename(GPartsUIConnectModel *model, const gchar *filename)
+gpartsui_connect_model_set_filename(GPartsUIConnectModel *model, const char *filename)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        g_free(privat->filename);
-        privat->filename = g_strdup(filename);
+  if (privat != NULL) {
 
-        g_object_notify(G_OBJECT(model), "filename");
-        g_object_notify(G_OBJECT(model), "filename-valid");
-    }
+    g_free(privat->filename);
+    privat->filename = g_strdup(filename);
+
+    g_object_notify(G_OBJECT(model), "filename");
+    g_object_notify(G_OBJECT(model), "filename-valid");
+  }
 }
 
 void
-gpartsui_connect_model_set_hostname(GPartsUIConnectModel *model, const gchar *hostname)
+gpartsui_connect_model_set_hostname(GPartsUIConnectModel *model, const char *hostname)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        g_free(privat->hostname);
-        privat->hostname = g_strdup(hostname);
+  if (privat != NULL) {
 
-        g_object_notify(G_OBJECT(model), "hostname");
-        g_object_notify(G_OBJECT(model), "hostname-valid");
-    }
+    g_free(privat->hostname);
+    privat->hostname = g_strdup(hostname);
+
+    g_object_notify(G_OBJECT(model), "hostname");
+    g_object_notify(G_OBJECT(model), "hostname-valid");
+  }
 }
 
 void
-gpartsui_connect_model_set_password(GPartsUIConnectModel *model, const gchar *password)
+gpartsui_connect_model_set_password(GPartsUIConnectModel *model, const char *password)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        g_free(privat->password);
-        privat->password = g_strdup(password);
+  if (privat != NULL) {
 
-        g_object_notify(G_OBJECT(model), "password");
-        g_object_notify(G_OBJECT(model), "password-valid");
-    }
+    g_free(privat->password);
+    privat->password = g_strdup(password);
+
+    g_object_notify(G_OBJECT(model), "password");
+    g_object_notify(G_OBJECT(model), "password-valid");
+  }
 }
 
 static void
 gpartsui_connect_model_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-    GPartsUIConnectModel *model = GPARTSUI_CONNECT_MODEL(object);
+  GPartsUIConnectModel *model = GPARTSUI_CONNECT_MODEL(object);
 
-    if (model != NULL)
-    {
-        switch ( property_id )
-        {
-            case GPARTSUI_CONNECT_MODEL_DATABASE_FACTORY:
-                gpartsui_connect_model_set_database_factory(model, g_value_get_object(value));
-                break;
+  if (model != NULL) {
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_MODEL:
-                gpartsui_connect_model_set_database_model(model, g_value_get_object(value));
-                break;
+    switch ( property_id ) {
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_NAME:
-                gpartsui_connect_model_set_database_name(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_FACTORY:
+        gpartsui_connect_model_set_database_factory(model, g_value_get_object(value));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_DATABASE_TYPE:
-                gpartsui_connect_model_set_database_type(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_MODEL:
+        gpartsui_connect_model_set_database_model(model, g_value_get_object(value));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_FILENAME:
-                gpartsui_connect_model_set_filename(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_NAME:
+        gpartsui_connect_model_set_database_name(model, g_value_get_string(value));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_HOSTNAME:
-                gpartsui_connect_model_set_hostname(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_DATABASE_TYPE:
+        gpartsui_connect_model_set_database_type(model, g_value_get_string(value));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_PASSWORD:
-                gpartsui_connect_model_set_password(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_FILENAME:
+        gpartsui_connect_model_set_filename(model, g_value_get_string(value));
+        break;
 
-            case GPARTSUI_CONNECT_MODEL_USERNAME:
-                gpartsui_connect_model_set_username(model, g_value_get_string(value));
-                break;
+      case GPARTSUI_CONNECT_MODEL_HOSTNAME:
+        gpartsui_connect_model_set_hostname(model, g_value_get_string(value));
+        break;
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+      case GPARTSUI_CONNECT_MODEL_PASSWORD:
+        gpartsui_connect_model_set_password(model, g_value_get_string(value));
+        break;
+
+      case GPARTSUI_CONNECT_MODEL_USERNAME:
+        gpartsui_connect_model_set_username(model, g_value_get_string(value));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 void
-gpartsui_connect_model_set_username(GPartsUIConnectModel *model, const gchar *username)
+gpartsui_connect_model_set_username(GPartsUIConnectModel *model, const char *username)
 {
-    GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
+  GPartsUIConnectModelPrivate *privat = GPARTSUI_CONNECT_MODEL_GET_PRIVATE(model);
 
-    if (privat != NULL)
-    {
-        g_free(privat->username);
-        privat->username = g_strdup(username);
+  if (privat != NULL) {
 
-        g_object_notify(G_OBJECT(model), "username");
-        g_object_notify(G_OBJECT(model), "username-valid");
-    }
+    g_free(privat->username);
+    privat->username = g_strdup(username);
+
+    g_object_notify(G_OBJECT(model), "username");
+    g_object_notify(G_OBJECT(model), "username-valid");
+  }
 }
-

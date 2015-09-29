@@ -77,8 +77,10 @@ gpview_symbol_ctrl_class_init(gpointer g_class, gpointer g_class_data);
 static void
 gpview_symbol_ctrl_dispose(GObject *object);
 
+/*
 static void
 gpview_symbol_ctrl_edit_cb(GtkAction *action, GPViewSymbolCtrl *ctrl);
+*/
 
 static void
 gpview_symbol_ctrl_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);

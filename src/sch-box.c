@@ -69,8 +69,10 @@ sch_box_class_init(gpointer g_class, gpointer g_class_data);
 static void
 sch_box_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
 
+/*
 static void
 sch_box_schematic_shape_init(gpointer g_iface, gpointer g_iface_data);
+*/
 
 static void
 sch_box_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);

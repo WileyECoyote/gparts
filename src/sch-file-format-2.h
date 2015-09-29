@@ -41,8 +41,6 @@ struct _SchFileFormat2Class
 GType
 sch_file_format_2_get_type(void);
 
-
-
 void
 sch_file_format_2_write_arc(const SchFileFormat2 *format, SchOutputStream *stream, const SchArc *shape, GError **error);
 

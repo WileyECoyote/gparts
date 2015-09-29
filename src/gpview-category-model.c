@@ -87,7 +87,7 @@ gpview_category_model_tree_model_init(GtkTreeModelIface *iface);
 static void
 gpview_category_model_set_database(GObject *object, const GValue *value);
 
-static gboolean
+static int
 gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int n);
 /**
  *
@@ -171,9 +171,6 @@ gpview_category_model_database_connected_cb(GPartsDatabase *database)
 /*! \brief
  *
  *
- *
- *
- *
  */
 static void
 gpview_category_model_database_disconnected_cb(GPartsDatabase *database)
@@ -241,57 +238,57 @@ gpview_category_model_finalize(GObject *object)
 char*
 gpview_category_model_get_field(GPViewCategoryModel* model, GtkTreeIter *iter, const char *name)
 {
-    GPViewCategoryModelNode *node = (GPViewCategoryModelNode*) iter->user_data;
-//    GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(model);
-    char *result = NULL;
+  GPViewCategoryModelNode *node = (GPViewCategoryModelNode*) iter->user_data;
+  //    GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(model);
+  char *result = NULL;
 
-    if (node->result != NULL) {
+  if (node->result != NULL) {
 
-        int index;
-        int success;
+    int index;
+    int success;
 
-        success = gparts_database_result_get_column_index(node->result, name, &index);
+    success = gparts_database_result_get_column_index(node->result, name, &index);
 
-        if (success) {
+    if (success) {
 
-            int      error  = FALSE;
-            GString *buffer = g_string_sized_new(10);
-            GValue   value  = {0};
+      int      error  = FALSE;
+      GString *buffer = g_string_sized_new(10);
+      GValue   value  = {0};
 
-            gparts_database_result_get_field_value(
-                node->result,
-                (unsigned int)(long)(iter->user_data2),
-                index,
-                &value
-                );
+      gparts_database_result_get_field_value(
+        node->result,
+        (unsigned int)(long)(iter->user_data2),
+                                             index,
+                                             &value
+      );
 
-            /* TODO The following code needs to go elsewhere or use transformations */
+      /* TODO The following code needs to go elsewhere or use transformations */
 
-            if(G_IS_VALUE(&value)) {
+      if(G_IS_VALUE(&value)) {
 
-                if (G_VALUE_HOLDS_STRING(&value)) {
+        if (G_VALUE_HOLDS_STRING(&value)) {
 
-                    g_string_printf(buffer, "%s", g_value_get_string(&value));
-                }
-                else if (G_VALUE_HOLDS_DOUBLE(&value)) {
-
-                    g_string_printf(buffer, "%f", g_value_get_double(&value));
-                }
-                else if (G_VALUE_HOLDS_INT(&value)) {
-
-                    g_string_printf(buffer, "%d", g_value_get_int(&value));
-                }
-                else {
-
-                    error = TRUE;
-                }
-
-                result = g_string_free(buffer, error);
-            }
+          g_string_printf(buffer, "%s", g_value_get_string(&value));
         }
-    }
+        else if (G_VALUE_HOLDS_DOUBLE(&value)) {
 
-    return result;
+          g_string_printf(buffer, "%f", g_value_get_double(&value));
+        }
+        else if (G_VALUE_HOLDS_INT(&value)) {
+
+          g_string_printf(buffer, "%d", g_value_get_int(&value));
+        }
+        else {
+
+          error = TRUE;
+        }
+
+        result = g_string_free(buffer, error);
+      }
+    }
+  }
+
+  return result;
 }
 
 /*! \brief
@@ -303,21 +300,20 @@ gpview_category_model_get_field(GPViewCategoryModel* model, GtkTreeIter *iter, c
 static void
 gpview_category_model_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
-    GPViewCategoryModelPrivate *private;
+  GPViewCategoryModelPrivate *private;
 
-    private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(object);
+  private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(object);
 
-    /*	\todo handle case where private is NULL */
+  /*	\todo handle case where private is NULL */
 
-    switch ( property_id )
-    {
-        case GPVIEW_CATEGORY_MODEL_PROPID_DATABASE:
-            g_value_set_object(value, private->database);
-            break;
+  switch ( property_id ) {
+    case GPVIEW_CATEGORY_MODEL_PROPID_DATABASE:
+      g_value_set_object(value, private->database);
+      break;
 
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-    }
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+  }
 }
 
 /*! \brief
@@ -484,7 +480,7 @@ gpview_category_model_get_column_type(GtkTreeModel *tree_model, int index)
  *
  *
  */
-static gboolean
+static int
 gpview_category_model_get_iter(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreePath *path)
 {
 //    GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
@@ -594,7 +590,7 @@ gpview_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, int
  *
  *
  */
-static gboolean
+static int
 gpview_category_model_iter_children(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent)
 {
     return gpview_category_model_iter_nth_child(tree_model, iter, parent, 0);
@@ -605,7 +601,7 @@ gpview_category_model_iter_children(GtkTreeModel *tree_model, GtkTreeIter *iter,
  *
  *
  */
-static gboolean
+static int
 gpview_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
     GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
@@ -671,7 +667,7 @@ gpview_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
  *  \param [in]  n          Zero based index of the child of the parent to get.
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise.
  */
-static gboolean
+static int
 gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int n)
 {
     GPViewCategoryModelNode *list;
@@ -725,7 +721,7 @@ gpview_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
  *
  *
  */
-static gboolean
+static int
 gpview_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
 //    GPViewCategoryModelPrivate *private;
@@ -746,15 +742,13 @@ gpview_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *ite
  *  \param [in]  child      An iterator referencing the child node.
  *  \return TRUE successful and iter is valid.  FALSE if otherwise.
  */
-static gboolean
+static int
 gpview_category_model_iter_parent(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *child)
 {
-//    GPViewCategoryModelPrivate *private = GPVIEW_CATEGORY_MODEL_GET_PRIVATE(tree_model);
-
     GPViewCategoryModelNode *node = (GPViewCategoryModelNode*) child->user_data;
 
-    if (node->parent.user_data != NULL)
-    {
+    if (node->parent.user_data != NULL) {
+
         *iter = node->parent;
 
         return TRUE;
@@ -797,20 +791,23 @@ gpview_category_model_tree_model_init(GtkTreeModelIface *iface)
 void
 gpview_category_model_hide_columns(GtkTreeView *tree_view)
 {
-    int index = 0;
-    GtkTreeViewColumn *column;
+  int index = 0;
+  GtkTreeViewColumn *column;
+
+  column = gtk_tree_view_get_column(tree_view, index++);
+
+  while (column != NULL) {
+
+    const char *name;
+    int visible;
+
+    name    = gtk_tree_view_column_get_title(column);
+    visible = (name != NULL) && (strcmp(name, "CategoryName") == 0);
+
+    gtk_tree_view_column_set_visible(column, visible);
 
     column = gtk_tree_view_get_column(tree_view, index++);
-
-    while (column != NULL)
-    {
-        const char *name = gtk_tree_view_column_get_title(column);
-        gboolean visible = (name != NULL) && (strcmp(name, "CategoryName") == 0);
-
-        gtk_tree_view_column_set_visible(column, visible);
-
-        column = gtk_tree_view_get_column(tree_view, index++);
-    }
+  }
 }
 
 /*! \brief
