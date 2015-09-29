@@ -133,8 +133,7 @@ sch_output_stream_write_net_2(SchOutputStream *stream, const SchNet *shape, GErr
  *  \param [in]  shape  The path to write.
  *  \param [out] error  An error, if any, using the GError protocol.
  */
-//void
-//sch_output_stream_write_path_2(SchOutputStream *stream, const SchPath *shape, GError **error);
+void sch_output_stream_write_path_2(SchOutputStream *stream, const SchPath *shape, GError **error);
 
 /*! \brief Write a picture to an output stream in the gEDA schematic/symbol format
  *
@@ -143,7 +142,7 @@ sch_output_stream_write_net_2(SchOutputStream *stream, const SchNet *shape, GErr
  *  \param [out] error  An error, if any, using the GError protocol.
  */
 void
-sch_output_stream_write_picture_2(SchOutputStream *stream, SchPicture *shape, GError **error);
+sch_output_stream_write_picture_2(SchOutputStream *stream, const SchPicture *shape, GError **error);
 
 /*! \brief Write a pin to an output stream in the gEDA schematic/symbol format
  *
@@ -152,7 +151,7 @@ sch_output_stream_write_picture_2(SchOutputStream *stream, SchPicture *shape, GE
  *  \param [out] error  An error, if any, using the GError protocol.
  */
 void
-sch_output_stream_write_pin_2(SchOutputStream *stream, SchPin *shape, GError **error);
+sch_output_stream_write_pin_2(SchOutputStream *stream, const SchPin *shape, GError **error);
 
 /*! \brief Write a string to the underlying output stream
  *
@@ -173,7 +172,7 @@ sch_output_stream_write_string(SchOutputStream *stream, const char *string, GErr
  *  \param [out] error  An error, if any, using the GError protocol.
  */
 void
-sch_output_stream_write_text_2(SchOutputStream *stream, SchText *shape, GError **error);
+sch_output_stream_write_text_2(SchOutputStream *stream, const SchText *shape, GError **error);
 
 /*! \brief Write the version information to the output stream in the gEDA schematic/symbol format
  *

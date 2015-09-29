@@ -785,7 +785,7 @@ sch_output_stream_write_net_2(SchOutputStream *stream, const SchNet *shape, GErr
 }
 
 void
-sch_output_stream_write_path_2(SchOutputStream *stream, SchPath *shape, GError **error)
+sch_output_stream_write_path_2(SchOutputStream *stream, const SchPath *shape, GError **error)
 {
   SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
@@ -809,7 +809,7 @@ sch_output_stream_write_path_2(SchOutputStream *stream, SchPath *shape, GError *
     int   fill_pitch2;
     int   count = sch_path_count(shape);
 
-    g_object_get(shape,
+    g_object_get((void*)shape,
                  "color",            &color,
                  "line-width",       &line_width,
                  "line-cap-style",   &capstyle,
@@ -824,32 +824,24 @@ sch_output_stream_write_path_2(SchOutputStream *stream, SchPath *shape, GError *
                  "fill-pitch2",      &fill_pitch2,
                  NULL);
 
-    str = g_strdup_printf(
-      "%s %d %d %d %d %d %d %d %d %d %d %d %d %d%s",
-      "H",
-      color,
-      line_width,
-      capstyle,
-      dashstyle,
-      dashlength,
-      dashspace,
-      fill_type,
-      fill_width,
-      fill_angle1,
-      fill_pitch1,
-      fill_angle2,
-      fill_pitch2,
-      count,
-      SCH_OUTPUT_STREAM_EOL
-    );
+    str = g_strdup_printf("%s %d %d %d %d %d %d %d %d %d %d %d %d %d%s",
+                          "H",
+                          color,
+                          line_width,
+                          capstyle,
+                          dashstyle,
+                          dashlength,
+                          dashspace,
+                          fill_type,
+                          fill_width,
+                          fill_angle1,
+                          fill_pitch1,
+                          fill_angle2,
+                          fill_pitch2,
+                          count,
+                          SCH_OUTPUT_STREAM_EOL);
 
-    g_output_stream_write(
-      privat->base_stream,
-      str,
-      strlen(str),
-                          NULL,
-                          error
-    );
+    g_output_stream_write(privat->base_stream, str, strlen(str), NULL, error);
 
     sch_path_foreach(shape, (GFunc)sch_output_stream_write_path_2_proc, stream);
 
@@ -965,217 +957,191 @@ sch_output_stream_write_path_2_proc(SchPathCommand *command, void *user_data)
 }
 
 void
-sch_output_stream_write_picture_2(SchOutputStream *stream, SchPicture *shape, GError **error)
+sch_output_stream_write_picture_2(SchOutputStream *stream, const SchPicture *shape, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL) {
+  if (privat != NULL && shape != NULL) {
 
-        char *str;
-        int   x1;
-        int   y1;
-        int   x2;
-        int   y2;
-        int   color;
-        int   type;
-        int   end;
+    char *str;
+    int   x1;
+    int   y1;
+    int   x2;
+    int   y2;
+    int   color;
+    int   type;
+    int   end;
 
-        g_object_get(shape,
-            "x1",       &x1,
-            "y1",       &y1,
-            "x2",       &x2,
-            "y2",       &y2,
-            "color",    &color,
-            "pin-type", &type,
-            "pin-end",  &end,
-            NULL
-            );
+    g_object_get((void*)shape,
+                 "x1",       &x1,
+                 "y1",       &y1,
+                 "x2",       &x2,
+                 "y2",       &y2,
+                 "color",    &color,
+                 "pin-type", &type,
+                 "pin-end",  &end,
+                 NULL);
 
-        str = g_strdup_printf(
-            "%s %d %d %d %d %d %d %d%s",
-            "G",
-            x1,
-            y1,
-            x2,
-            y2,
-            color,
-            type,
-            end,
-            SCH_OUTPUT_STREAM_EOL
-            );
+    str = g_strdup_printf("%s %d %d %d %d %d %d %d%s",
+                          "G",
+                          x1,
+                          y1,
+                          x2,
+                          y2,
+                          color,
+                          type,
+                          end,
+                          SCH_OUTPUT_STREAM_EOL);
 
-        g_output_stream_write(
-            privat->base_stream,
-            str,
-            strlen(str),
-            NULL,
-            error
-            );
+    g_output_stream_write(privat->base_stream,
+                          str,
+                          strlen(str),
+                          NULL,
+                          error);
 
-        g_free(str);
-    }
+    g_free(str);
+  }
 
 }
 
 void
-sch_output_stream_write_pin_2(SchOutputStream *stream, SchPin *shape, GError **error)
+sch_output_stream_write_pin_2(SchOutputStream *stream, const SchPin *shape, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL) {
+  if (privat != NULL && shape != NULL) {
 
-        char *str;
-        int   x1;
-        int   y1;
-        int   x2;
-        int   y2;
-        int   color;
-        int   type;
-        int   end;
+    char *str;
+    int   x1;
+    int   y1;
+    int   x2;
+    int   y2;
+    int   color;
+    int   type;
+    int   end;
 
-        g_object_get(shape,
-            "x1",       &x1,
-            "y1",       &y1,
-            "x2",       &x2,
-            "y2",       &y2,
-            "color",    &color,
-            "pin-type", &type,
-            "pin-end",  &end,
-            NULL
-            );
+    g_object_get((void*)shape,
+                 "x1",       &x1,
+                 "y1",       &y1,
+                 "x2",       &x2,
+                 "y2",       &y2,
+                 "color",    &color,
+                 "pin-type", &type,
+                 "pin-end",  &end,
+                 NULL);
 
-        str = g_strdup_printf(
-            "%s %d %d %d %d %d %d %d%s",
-            "P",
-            x1,
-            y1,
-            x2,
-            y2,
-            color,
-            type,
-            end,
-            SCH_OUTPUT_STREAM_EOL
-            );
+    str = g_strdup_printf("%s %d %d %d %d %d %d %d%s",
+                          "P",
+                          x1,
+                          y1,
+                          x2,
+                          y2,
+                          color,
+                          type,
+                          end,
+                          SCH_OUTPUT_STREAM_EOL);
 
-        g_output_stream_write(
-            privat->base_stream,
-            str,
-            strlen(str),
-            NULL,
-            error
-            );
+    g_output_stream_write( privat->base_stream,
+                           str,
+                           strlen(str),
+                           NULL,
+                           error);
 
-        g_free(str);
-    }
+    g_free(str);
+  }
 }
 
 void
 sch_output_stream_write_string(SchOutputStream *stream, const char *string, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && string != NULL) {
+  if (privat != NULL && string != NULL) {
 
-        g_output_stream_write(
-            privat->base_stream,
-            string,
-            strlen(string),
-            NULL,
-            error
-            );
+    g_output_stream_write(privat->base_stream,
+                          string,
+                          strlen(string),
+                          NULL,
+                          error );
 
-        g_output_stream_write(
-            privat->base_stream,
-            SCH_OUTPUT_STREAM_EOL,
-            strlen(SCH_OUTPUT_STREAM_EOL),
-            NULL,
-            error
-            );
-    }
+    g_output_stream_write(privat->base_stream,
+                          SCH_OUTPUT_STREAM_EOL,
+                          strlen(SCH_OUTPUT_STREAM_EOL),
+                          NULL,
+                          error);
+  }
 }
 
 void
-sch_output_stream_write_text_2(SchOutputStream *stream, SchText *shape, GError **error)
+sch_output_stream_write_text_2(SchOutputStream *stream, const SchText *shape, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL && shape != NULL) {
+  if (privat != NULL && shape != NULL) {
 
-        char *str;
-        int   x;
-        int   y;
-        int   color;
-        int   size;
-        int   visibility;
-        int   name_value;
-        int   angle;
-        int   alignment;
-        int   num_lines;
+    char *str;
+    int   x;
+    int   y;
+    int   color;
+    int   size;
+    int   visibility;
+    int   name_value;
+    int   angle;
+    int   alignment;
+    int   num_lines;
 
-        g_object_get(shape,
-            "x",               &x,
-            "y",               &y,
-            "color",           &color,
-            "size",            &size,
-            "visibility",      &visibility,
-            "show-name-value", &name_value,
-            "angle",           &angle,
-            "alignment",       &alignment,
-            "num-lines",       &num_lines,
-            NULL
-            );
+    g_object_get((void*)shape,
+                 "x",               &x,
+                 "y",               &y,
+                 "color",           &color,
+                 "size",            &size,
+                 "visibility",      &visibility,
+                 "show-name-value", &name_value,
+                 "angle",           &angle,
+                 "alignment",       &alignment,
+                 "num-lines",       &num_lines,
+                 NULL);
 
-        str = g_strdup_printf(
-            "%s %d %d %d %d %d %d %d %d %d%s",
-            "T",
-            x,
-            y,
-            color,
-            size,
-            visibility,
-            name_value,
-            angle,
-            alignment,
-            num_lines,
-            SCH_OUTPUT_STREAM_EOL
-            );
+    str = g_strdup_printf("%s %d %d %d %d %d %d %d %d %d%s",
+                          "T",
+                          x,
+                          y,
+                          color,
+                          size,
+                          visibility,
+                          name_value,
+                          angle,
+                          alignment,
+                          num_lines,
+                          SCH_OUTPUT_STREAM_EOL);
 
-        g_output_stream_write(
-            privat->base_stream,
-            str,
-            strlen(str),
-            NULL,
-            error
-            );
+    g_output_stream_write(
+      privat->base_stream,
+      str,
+      strlen(str),
+                          NULL,
+                          error);
 
-        g_free(str);
-    }
-
+    g_free(str);
+  }
 }
 
 void
 sch_output_stream_write_version(SchOutputStream *stream, const char *package_date, int format_version, GError **error)
 {
-    SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
+  SchOutputStreamPrivate *privat = SCH_OUTPUT_STREAM_GET_PRIVATE(stream);
 
-    if (privat != NULL) {
+  if (privat != NULL) {
 
-        char *str = g_strdup_printf(
-            "%s %s %d%s",
-            "v",
-            package_date,
-            format_version,
-            SCH_OUTPUT_STREAM_EOL
-            );
+    char *str;
 
-        g_output_stream_write(
-            privat->base_stream,
-            str,
-            strlen(str),
-            NULL,
-            error
-            );
+    str = g_strdup_printf("v %s %d%s",
+                          package_date,
+                          format_version,
+                          SCH_OUTPUT_STREAM_EOL);
 
-        g_free(str);
-    }
+    g_output_stream_write(privat->base_stream, str, strlen(str), NULL, error);
+
+    g_free(str);
+  }
 }

@@ -172,149 +172,139 @@ sch_shape_get_property(GObject *object, guint property_id, GValue *value, GParam
 GType
 sch_shape_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+  static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
-        static const GTypeInfo tinfo = {
-            sizeof(SchShapeClass),    /* class_size */
-            NULL,                     /* base_init */
-            NULL,                     /* base_finalize */
-            sch_shape_class_init,     /* class_init */
-            NULL,                     /* class_finalize */
-            NULL,                     /* class_data */
-            sizeof(SchShape),         /* instance_size */
-            0,                        /* n_preallocs */
-            sch_shape_init,           /* instance_init */
-            NULL                      /* value_table */
-            };
+  if (type == G_TYPE_INVALID) {
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "SchShape",
-            &tinfo,
-            G_TYPE_FLAG_ABSTRACT
-            );
-    }
+    static const GTypeInfo tinfo = {
+      sizeof(SchShapeClass),    /* class_size */
+      NULL,                     /* base_init */
+      NULL,                     /* base_finalize */
+      sch_shape_class_init,     /* class_init */
+      NULL,                     /* class_finalize */
+      NULL,                     /* class_data */
+      sizeof(SchShape),         /* instance_size */
+      0,                        /* n_preallocs */
+      sch_shape_init,           /* instance_init */
+      NULL                      /* value_table */
+    };
 
-    return type;
+    type = g_type_register_static( G_TYPE_OBJECT, "SchShape",
+                                   &tinfo,
+                                   G_TYPE_FLAG_ABSTRACT);
+  }
+
+  return type;
 }
 
 static void
 sch_shape_init(GTypeInstance *instance, gpointer g_class)
 {
-    SchShapePrivate *privat;
+  SchShapePrivate *privat;
 
-    privat = SCH_SHAPE_GET_PRIVATE(instance);
+  privat = SCH_SHAPE_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
-        privat->attributes = g_object_new(SCH_TYPE_ATTRIBUTES, NULL);
-    }
+  if (privat != NULL) {
+
+    privat->attributes = g_object_new(SCH_TYPE_ATTRIBUTES, NULL);
+  }
 }
 
 void
 sch_shape_rotate(SchShape *shape, int angle)
 {
-    SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
+  SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 
-    if ((klasse != NULL) && (klasse->rotate != NULL))
-    {
-        klasse->rotate(shape, angle);
-    }
+  if ((klasse != NULL) && (klasse->rotate != NULL)) {
+    klasse->rotate(shape, angle);
+  }
 }
 
 static void
 sch_shape_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
-    SchShapePrivate *privat = SCH_SHAPE_GET_PRIVATE(object);
+  SchShapePrivate *privat = SCH_SHAPE_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
-            case SCH_SHAPE_ATTRIBUTES:
-                sch_shape_set_attributes(SCH_SHAPE(object), g_value_get_object(value));
-                break;
+  if (privat != NULL) {
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+    switch (property_id) {
+
+      case SCH_SHAPE_ATTRIBUTES:
+        sch_shape_set_attributes(SCH_SHAPE(object), g_value_get_object(value));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 void
 sch_shape_transform(SchShape *shape, const GeomTransform *transform)
 {
-    SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
+  SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 
-    if ((klasse != NULL) && (klasse->transform != NULL))
-    {
-        klasse->transform(shape, transform);
-    }
+  if ((klasse != NULL) && (klasse->transform != NULL)) {
+    klasse->transform(shape, transform);
+  }
 }
 
 void
 sch_shape_translate(SchShape *shape, int dx, int dy)
 {
-    SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
+  SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 
-    if ((klasse != NULL) && (klasse->translate != NULL))
-    {
-        klasse->translate(shape, dx, dy);
-    }
+  if ((klasse != NULL) && (klasse->translate != NULL)) {
+    klasse->translate(shape, dx, dy);
+  }
 }
 
 SchAttributes*
 sch_shape_get_attributes(SchShape *shape)
 {
-    SchAttributes   *attributes = NULL;
-    SchShapePrivate *privat = SCH_SHAPE_GET_PRIVATE(shape);
+  SchAttributes   *attributes = NULL;
+  SchShapePrivate *privat     = SCH_SHAPE_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
-        if (privat->attributes != NULL)
-        {
-            g_object_ref(privat->attributes);
-        }
+  if (privat != NULL) {
 
-        attributes = privat->attributes;
+    if (privat->attributes != NULL) {
+      g_object_ref(privat->attributes);
     }
 
-    return attributes;
+    attributes = privat->attributes;
+  }
+
+  return attributes;
 }
 
 void
 sch_shape_set_attributes(SchShape *shape, SchAttributes *attributes)
 {
-    SchShapePrivate *privat = SCH_SHAPE_GET_PRIVATE(shape);
+  SchShapePrivate *privat = SCH_SHAPE_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
-        if (privat->attributes != NULL)
-        {
-            g_object_unref(privat->attributes);
-        }
+  if (privat != NULL) {
 
-        privat->attributes = attributes;
-
-        if (privat->attributes != NULL)
-        {
-            g_object_ref(privat->attributes);
-        }
-
-        g_object_notify(G_OBJECT(shape), "attributes");
+    if (privat->attributes != NULL) {
+      g_object_unref(privat->attributes);
     }
+
+    privat->attributes = attributes;
+
+    if (privat->attributes != NULL) {
+      g_object_ref(privat->attributes);
+    }
+
+    g_object_notify(G_OBJECT(shape), "attributes");
+  }
 }
 
 void
-sch_shape_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_shape_write(SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
-    SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
+  SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 
-    if ((klasse != NULL) && (klasse->write != NULL))
-    {
-        klasse->write(shape, format, stream, error);
-    }
+  if ((klasse != NULL) && (klasse->write != NULL)) {
+    klasse->write(shape, format, stream, error);
+  }
 }
 
