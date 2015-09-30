@@ -89,5 +89,5 @@ sch_attributes_foreach(SchAttributes *attributes, GFunc func, gpointer user_data
  *  \param [out] error      The error, if any, using GError protocol.
  */
 void
-sch_attributes_write(SchAttributes *attributes, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_attributes_write(SchAttributes *attributes, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 

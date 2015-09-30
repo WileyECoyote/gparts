@@ -164,24 +164,23 @@ sch_attributes_translate(SchAttributes *attributes, int dx, int dy)
 }
 
 void
-sch_attributes_write(SchAttributes *attributes, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_attributes_write(SchAttributes *attributes, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
-    SchAttributesPrivate *privat = SCH_ATTRIBUTES_GET_PRIVATE(attributes);
+  SchAttributesPrivate *privat = SCH_ATTRIBUTES_GET_PRIVATE(attributes);
 
-    if ((privat != NULL) && (privat->shapes != NULL))
-    {
-        GSList *node = privat->shapes;
+  if ((privat != NULL) && (privat->shapes != NULL)) {
 
-        sch_file_format_2_write_attributes_begin(format, stream, error);
+    GSList *node = privat->shapes;
 
-        while (node != NULL)
-        {
-           sch_shape_write(SCH_SHAPE(node->data), format, stream, error);
+    sch_file_format_2_write_attributes_begin(format, stream, error);
 
-            node = g_slist_next(node);
-        }
+    while (node != NULL) {
 
-        sch_file_format_2_write_attributes_end(format, stream, error);
-   }
+      sch_shape_write(SCH_SHAPE(node->data), format, stream, error);
+
+      node = g_slist_next(node);
+    }
+
+    sch_file_format_2_write_attributes_end(format, stream, error);
+  }
 }
-
