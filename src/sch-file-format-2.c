@@ -27,7 +27,6 @@
 
 #include "sch.h"
 
-
 #define SCH_FILE_FORMAT_2_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj),SCH_TYPE_FILE_FORMAT_2,SchFileFormat2Private))
 
 enum
@@ -43,16 +42,14 @@ struct _SchFileFormat2Private
 };
 
 
-
 static void
 sch_file_format_2_class_init(gpointer g_class, gpointer g_class_data);
 
 static void
-sch_file_format_2_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_file_format_2_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_file_format_2_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
-
+sch_file_format_2_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 
 static void
@@ -79,22 +76,23 @@ sch_file_format_2_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-sch_file_format_2_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_file_format_2_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
-    SchFileFormat2Private *privat = SCH_FILE_FORMAT_2_GET_PRIVATE(object);
+  SchFileFormat2        *format = SCH_FILE_FORMAT_2 (object);
+  SchFileFormat2Private *privat = SCH_FILE_FORMAT_2_GET_PRIVATE(format);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
-            case SCH_FILE_FORMAT_2_PACKAGE_DATE:
-                g_value_set_string(value, privat->package_date);
-                break;
+  if (privat != NULL) {
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+    switch (property_id) {
+
+      case SCH_FILE_FORMAT_2_PACKAGE_DATE:
+        g_value_set_string(value, privat->package_date);
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 GType
@@ -102,8 +100,8 @@ sch_file_format_2_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchFileFormat2Class),    /* class_size */
             NULL,                           /* base_init */
@@ -118,8 +116,7 @@ sch_file_format_2_get_type(void)
             };
 
         type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "SchFileFormat2",
+            G_TYPE_OBJECT, "SchFileFormat2",
             &tinfo,
             0
             );
@@ -129,22 +126,22 @@ sch_file_format_2_get_type(void)
 }
 
 static void
-sch_file_format_2_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_file_format_2_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
-    SchFileFormat2Private *privat = SCH_FILE_FORMAT_2_GET_PRIVATE(object);
+  SchFileFormat2Private *privat = SCH_FILE_FORMAT_2_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
-            case SCH_FILE_FORMAT_2_PACKAGE_DATE:
-                privat->package_date = g_value_dup_string(value);
-                break;
+  if (privat != NULL) {
 
-            default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-        }
+    switch (property_id) {
+
+      case SCH_FILE_FORMAT_2_PACKAGE_DATE:
+        privat->package_date = g_value_dup_string(value);
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
     }
+  }
 }
 
 void
@@ -186,16 +183,14 @@ sch_file_format_2_write_circle(const SchFileFormat2 *format, SchOutputStream *st
 void
 sch_file_format_2_write_component(const SchFileFormat2 *format, SchOutputStream *stream, const SchComponent *shape, GError **error)
 {
-    SchAttributes *attributes = sch_shape_get_attributes(shape);
+  SchAttributes *attributes = sch_shape_get_attributes((SchShape*)shape);
 
-    sch_output_stream_write_component_2(stream, shape, NULL);
+  sch_output_stream_write_component_2(stream, shape, NULL);
 
-    if (attributes != NULL)
-    {
-        sch_attributes_write(attributes, format, stream, error);
-
-        g_object_unref(attributes);
-    }
+  if (attributes != NULL) {
+    sch_attributes_write(attributes, format, stream, error);
+    g_object_unref(attributes);
+  }
 }
 
 void
@@ -226,7 +221,7 @@ sch_file_format_2_write_picture(const SchFileFormat2 *format, SchOutputStream *s
 void
 sch_file_format_2_write_pin(const SchFileFormat2 *format, SchOutputStream *stream, const SchPin *shape, GError **error)
 {
-    SchAttributes *attributes = sch_shape_get_attributes(shape);
+    SchAttributes *attributes = sch_shape_get_attributes((SchShape*)shape);
 
     sch_output_stream_write_pin_2(stream, shape, NULL);
 
