@@ -47,19 +47,19 @@ typedef struct _SchPinPrivate SchPinPrivate;
 struct _SchPinPrivate
 {
     GeomLine line;
-    gint     color;
-    gint     pin_type;
-    gint     pin_end;
+    int      color;
+    int      pin_type;
+    int      pin_end;
 };
 
 static void
-sch_pin_class_init(gpointer g_class, gpointer g_class_data);
+sch_pin_class_init(void *g_class, void *g_class_data);
 
 static void
-sch_pin_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_pin_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_pin_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_pin_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 sch_pin_rotate(SchShape *shape, int angle);
@@ -71,12 +71,11 @@ static void
 sch_pin_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_pin_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
-
+sch_pin_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
-sch_pin_class_init(gpointer g_class, gpointer g_class_data)
+sch_pin_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
     SchPinClass *klasse = SCH_PIN_CLASS(g_class);
@@ -191,7 +190,7 @@ sch_pin_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-sch_pin_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_pin_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(object);
 
@@ -238,8 +237,8 @@ sch_pin_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchPinClass),    /* class_size */
             NULL,                   /* base_init */
@@ -253,26 +252,21 @@ sch_pin_get_type(void)
             NULL                    /* value_table */
             };
 
-        type = g_type_register_static(
-            SCH_TYPE_SHAPE,
-            "SchPin",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(SCH_TYPE_SHAPE, "SchPin", &tinfo, 0);
     }
 
     return type;
 }
 
 static void
-sch_pin_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_pin_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_PIN_X1:
                 privat->line.x[0] = g_value_get_int(value);
                 break;
@@ -310,14 +304,13 @@ sch_pin_set_property(GObject *object, guint property_id, const GValue *value, GP
 void
 sch_pin_get_color(const SchPin *shape, int *index)
 {
-    if (index != NULL)
-    {
+    if (index != NULL) {
+
         SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(shape);
 
         *index = SCH_PIN_DEFAULT_COLOR;
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
             *index = privat->color;
         }
     }
@@ -326,16 +319,14 @@ sch_pin_get_color(const SchPin *shape, int *index)
 void
 sch_pin_get_line(const SchPin *shape, GeomLine *line)
 {
-    if (line != NULL)
-    {
+    if (line != NULL) {
+
         SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(shape);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
             *line = privat->line;
         }
-        else
-        {
+        else  {
             geom_line_init(line);
         }
     }
@@ -352,8 +343,7 @@ sch_pin_rotate(SchShape *shape, int angle)
 {
     SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         geom_line_rotate(&(privat->line), angle);
     }
 }
@@ -361,12 +351,12 @@ sch_pin_rotate(SchShape *shape, int angle)
 static void
 sch_pin_transform(SchShape *shape, const GeomTransform *transform)
 {
-    if (transform != NULL)
-    {
+    if (transform != NULL) {
+
         SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(shape);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             geom_line_transform(&(privat->line), transform);
         }
     }
@@ -378,14 +368,13 @@ sch_pin_translate(SchShape *shape, int dx, int dy)
 {
     SchPinPrivate *privat = SCH_PIN_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         geom_line_translate(&(privat->line), dx, dy);
     }
 }
 
 static void
-sch_pin_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_pin_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_pin(format, stream, SCH_PIN(shape), error);
 }

@@ -54,8 +54,8 @@ typedef struct _SchPathPrivate SchPathPrivate;
 struct _SchPathPrivate
 {
     GSList       *commands;
-    gint         color;
-    gint         line_width;
+    int          color;
+    int          line_width;
     SchLineStyle line_style;
     SchFillStyle fill_style;
 };
@@ -69,10 +69,10 @@ static void
 sch_path_finalize(GObject *object);
 
 static void
-sch_path_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_path_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_path_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_path_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 sch_path_rotate(SchShape *shape, int angle);
@@ -84,8 +84,7 @@ static void
 sch_path_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_path_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
-
+sch_path_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 void
@@ -316,7 +315,7 @@ sch_path_get_fill_style(const SchPath *path, SchFillStyle *style)
 }
 
 static void
-sch_path_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_path_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
   SchPathPrivate *priv = SCH_PATH_GET_PRIVATE(object);
 
@@ -410,7 +409,7 @@ sch_path_get_type(void)
 }
 
 static void
-sch_path_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_path_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
   SchPathPrivate *priv = SCH_PATH_GET_PRIVATE(object);
 
@@ -589,7 +588,6 @@ sch_path_transform(SchShape *shape, const GeomTransform *transform)
 }
 
 
-
 static void
 sch_path_translate(SchShape *shape, int dx, int dy)
 {
@@ -609,8 +607,7 @@ sch_path_translate(SchShape *shape, int dx, int dy)
 }
 
 static void
-sch_path_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_path_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_path(format, stream, SCH_PATH(shape), error);
 }
-

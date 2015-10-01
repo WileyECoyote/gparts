@@ -56,36 +56,36 @@ typedef struct _SchCirclePrivate SchCirclePrivate;
 struct _SchCirclePrivate
 {
     GeomCircle   circle;
-    gint         color;
-    gint         line_width;
+    int          color;
+    int          line_width;
     SchLineStyle line_style;
     SchFillStyle fill_style;
 };
 
 static void
-sch_circle_class_init(gpointer g_class, gpointer g_class_data);
+sch_circle_class_init(void *g_class, void *g_class_data);
 
 static void
-sch_circle_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_circle_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_circle_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
- 
+sch_circle_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
+
 static void
 sch_circle_rotate(SchShape *shape, int angle);
 
 static void
 sch_circle_transform(SchShape *shape, const GeomTransform *transform);
 
-void
-sch_circle_translate(SchCircle *circle, int dx, int dy);
+static void
+sch_circle_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_circle_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_circle_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
-sch_circle_class_init(gpointer g_class, gpointer g_class_data)
+sch_circle_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
     SchCircleClass *klasse = SCH_CIRCLE_CLASS(g_class);
@@ -100,47 +100,39 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
     klasse->parent.translate = sch_circle_translate;
     klasse->parent.write     = sch_circle_write;
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_X,
-        g_param_spec_int(
-            "center-x",
-            "Center X",
-            "Center X",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(object_class,
+                                    SCH_CIRCLE_X,
+                                    g_param_spec_int("center-x",
+                                                     "Center X",
+                                                     "Center X",
+                                                     G_MININT,
+                                                     G_MAXINT,
+                                                     0,
+                                                     G_PARAM_LAX_VALIDATION |
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_Y,
-        g_param_spec_int(
-            "center-y",
-            "Center Y",
-            "Center Y",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(object_class,
+                                    SCH_CIRCLE_Y,
+                                    g_param_spec_int("center-y",
+                                                     "Center Y",
+                                                     "Center Y",
+                                                     G_MININT,
+                                                     G_MAXINT,
+                                                     0,
+                                                     G_PARAM_LAX_VALIDATION |
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_RADIUS,
-        g_param_spec_int(
-            "radius",
-            "Radius",
-            "Radius",
-            0,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(object_class,
+                                    SCH_CIRCLE_RADIUS,
+                                    g_param_spec_int("radius",
+                                                     "Radius",
+                                                     "Radius",
+                                                     0,
+                                                     G_MAXINT,
+                                                     0,
+                                                     G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -152,9 +144,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             0,
             G_MAXINT,
             SCH_CIRCLE_DEFAULT_COLOR,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -166,9 +156,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             0,
             G_MAXINT,
             SCH_CIRCLE_DEFAULT_LINE_WIDTH,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -180,9 +168,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             0,
             2,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -194,9 +180,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             0,
             4,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -208,9 +192,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -222,9 +204,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -236,9 +216,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -250,9 +228,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -264,9 +240,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -278,9 +252,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -292,9 +264,7 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
     g_object_class_install_property(
         object_class,
@@ -306,13 +276,12 @@ sch_circle_class_init(gpointer g_class, gpointer g_class_data)
             -1,
             G_MAXINT,
             -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+
 }
 
 static void
-sch_circle_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_circle_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(object);
 
@@ -391,8 +360,8 @@ sch_circle_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchCircleClass),    /* class_size */
             NULL,                      /* base_init */
@@ -406,19 +375,14 @@ sch_circle_get_type(void)
             NULL                       /* value_table */
             };
 
-        type = g_type_register_static(
-            SCH_TYPE_SHAPE,
-            "SchCircle",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(SCH_TYPE_SHAPE, "SchCircle",&tinfo, 0);
     }
 
     return type;
 }
 
 static void
-sch_circle_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_circle_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(object);
 
@@ -610,8 +574,7 @@ sch_circle_rotate(SchShape *shape, int angle)
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         geom_circle_rotate(&(privat->circle), angle);
     }
 }
@@ -628,18 +591,17 @@ sch_circle_transform(SchShape *shape, const GeomTransform *transform)
 }
 
 void
-sch_circle_translate(SchCircle *shape, int dx, int dy)
+sch_circle_translate(SchShape *shape, int dx, int dy)
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         geom_circle_translate(&(privat->circle), dx, dy);
     }
 }
 
 static void
-sch_circle_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_circle_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_circle(format, stream, SCH_CIRCLE(shape), error);
 }

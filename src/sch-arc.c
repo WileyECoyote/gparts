@@ -79,7 +79,7 @@ void
 sch_arc_translate(SchShape *shape, gint dx, gint dy);
 
 static void
-sch_arc_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_arc_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 
@@ -779,7 +779,7 @@ sch_arc_translate(SchShape *shape, int dx, int dy)
 
 
 static void
-sch_arc_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_arc_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_arc(format, stream, SCH_ARC(shape), error);
 }

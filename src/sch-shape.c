@@ -299,7 +299,7 @@ sch_shape_set_attributes(SchShape *shape, SchAttributes *attributes)
 }
 
 void
-sch_shape_write(SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_shape_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
   SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 

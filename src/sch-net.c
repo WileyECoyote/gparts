@@ -53,20 +53,20 @@ struct _SchNetPrivate
 };
 
 static void
-sch_net_class_init(gpointer g_class, gpointer g_class_data);
+sch_net_class_init(void *g_class, void *g_class_data);
 
 static void
-sch_net_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_net_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_net_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_net_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-sch_net_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_net_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
-sch_net_class_init(gpointer g_class, gpointer g_class_data)
+sch_net_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
     SchNetClass *klasse = SCH_NET_CLASS(g_class);
@@ -178,7 +178,7 @@ sch_net_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-sch_net_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_net_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(object);
 
@@ -252,7 +252,7 @@ sch_net_get_type(void)
 }
 
 static void
-sch_net_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_net_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     SchNetPrivate *privat = SCH_NET_GET_PRIVATE(object);
 
@@ -391,7 +391,7 @@ sch_net_set_y1(SchNet *shape, int  y1)
 }
 
 static void
-sch_net_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_net_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_net(format, stream, SCH_NET(shape), error);
 }

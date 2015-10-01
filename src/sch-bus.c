@@ -45,18 +45,18 @@ typedef struct _SchBusPrivate SchBusPrivate;
 struct _SchBusPrivate
 {
     GeomLine line;
-    gint     color;
-    gint     ripper_dir;
+    int     color;
+    int     ripper_dir;
 };
 
 static void
-sch_bus_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_bus_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_bus_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_bus_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-sch_bus_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_bus_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 
@@ -159,7 +159,7 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-sch_bus_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_bus_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(object);
 
@@ -229,7 +229,7 @@ sch_bus_get_type(void)
 }
 
 static void
-sch_bus_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_bus_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(object);
 
@@ -267,10 +267,10 @@ sch_bus_set_property(GObject *object, guint property_id, const GValue *value, GP
     }
 }
 
-gint
+int
 sch_bus_get_color(const SchBus *shape)
 {
-    gint index = SCH_BUS_DEFAULT_COLOR;
+    int index = SCH_BUS_DEFAULT_COLOR;
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
     if (privat != NULL)
@@ -326,7 +326,7 @@ sch_bus_set_line(SchBus *shape, const GeomLine *line)
 }
 
 void
-sch_bus_set_x0(SchBus *shape, gint x0)
+sch_bus_set_x0(SchBus *shape, int x0)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
@@ -339,7 +339,7 @@ sch_bus_set_x0(SchBus *shape, gint x0)
 }
 
 void
-sch_bus_set_x1(SchBus *shape, gint x1)
+sch_bus_set_x1(SchBus *shape, int x1)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
@@ -352,7 +352,7 @@ sch_bus_set_x1(SchBus *shape, gint x1)
 }
 
 void
-sch_bus_set_y0(SchBus *shape, gint y0)
+sch_bus_set_y0(SchBus *shape, int y0)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
@@ -365,7 +365,7 @@ sch_bus_set_y0(SchBus *shape, gint y0)
 }
 
 void
-sch_bus_set_y1(SchBus *shape, gint y1)
+sch_bus_set_y1(SchBus *shape, int y1)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
@@ -378,7 +378,7 @@ sch_bus_set_y1(SchBus *shape, gint y1)
 }
 
 static void
-sch_bus_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_bus_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_bus(format, stream, SCH_BUS(shape), error);
 }

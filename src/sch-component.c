@@ -79,7 +79,7 @@ static void
 sch_component_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-sch_component_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_component_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
@@ -218,8 +218,8 @@ sch_component_find_macros(const SchShape *shape, const GRegex *regex, GHashTable
 {
     SchShapeClass *klasse = SCH_SHAPE_GET_CLASS(shape);
 
-    if (klasse != NULL)
-    {
+    if (klasse != NULL) {
+
         SchShapeClass *parent_klasse = SCH_SHAPE_CLASS(g_type_class_peek_parent(klasse));
 
         if ((parent_klasse != NULL) && (parent_klasse->expand_macros != NULL))
@@ -235,8 +235,7 @@ sch_component_get_angle(const SchComponent *shape)
     int angle = 0;
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         angle = privat->angle;
     }
 
@@ -249,10 +248,10 @@ sch_component_get_basename(const SchComponent *component)
     char *basename = NULL;
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(component);
 
-    if (privat != NULL)
-    {
-        if (privat->drawing != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->drawing != NULL) {
+
             basename = sch_drawing_get_basename(privat->drawing);
         }
     }
@@ -266,12 +265,12 @@ sch_component_get_drawing(const SchComponent *shape)
     SchDrawing *drawing = NULL;
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         drawing = privat->drawing;
 
-        if (drawing != NULL)
-        {
+        if (drawing != NULL) {
+
             g_object_ref(drawing);
         }
     }
@@ -284,29 +283,29 @@ sch_component_get_insertion_point(const SchComponent *shape, int *x, int *y)
 {
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
-        if (x != NULL)
-        {
-            *x = privat->x;
-        } 
+    if (privat != NULL) {
 
-        if (y != NULL)
-        {
+        if (x != NULL) {
+
+            *x = privat->x;
+        }
+
+        if (y != NULL) {
+
             *y = privat->y;
-        } 
+        }
     }
-    else
-    {
-        if (x != NULL)
-        {
+    else {
+
+        if (x != NULL) {
+
             *x = 0;
-        } 
+        }
 
         if (y != NULL)
         {
             *y = 0;
-        } 
+        }
     }
 }
 
@@ -316,8 +315,8 @@ sch_component_get_mirror(const SchComponent *shape)
     int mirror = 0;
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         mirror = privat->mirror;
     }
 
@@ -330,18 +329,18 @@ sch_component_get_orientation(const SchComponent *shape, int *angle, int *mirror
 {
     SchComponentPrivate *privat = SCH_COMPONENT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         *angle  = privat->angle;
         *mirror = privat->mirror;
     }
-    else
-    {
+    else {
+
         *angle = 0;
         *mirror = 0;
     }
 }
- 
+
 static void
 sch_component_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
@@ -385,32 +384,27 @@ sch_component_get_property(GObject *object, guint property_id, GValue *value, GP
 GType
 sch_component_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+  static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
-        static const GTypeInfo tinfo = {
-            sizeof(SchComponentClass),    /* class_size */
-            NULL,                         /* base_init */
-            NULL,                         /* base_finalize */
-            sch_component_class_init,     /* class_init */
-            NULL,                         /* class_finalize */
-            NULL,                         /* class_data */
-            sizeof(SchComponent),         /* instance_size */
-            0,                            /* n_preallocs */
-            NULL,                         /* instance_init */
-            NULL                          /* value_table */
-            };
+  if (type == G_TYPE_INVALID) {
 
-        type = g_type_register_static(
-            SCH_TYPE_SHAPE,
-            "SchComponent",
-            &tinfo,
-            0
-            );
-    }
+    static const GTypeInfo tinfo = {
+      sizeof(SchComponentClass),    /* class_size */
+      NULL,                         /* base_init */
+      NULL,                         /* base_finalize */
+      sch_component_class_init,     /* class_init */
+      NULL,                         /* class_finalize */
+      NULL,                         /* class_data */
+      sizeof(SchComponent),         /* instance_size */
+      0,                            /* n_preallocs */
+      NULL,                         /* instance_init */
+      NULL                          /* value_table */
+    };
 
-    return type;
+    type = g_type_register_static(SCH_TYPE_SHAPE, "SchComponent", &tinfo, 0);
+  }
+
+  return type;
 }
 
 int
@@ -630,7 +624,7 @@ sch_component_set_y(SchComponent *shape, int y)
 
 
 static void
-sch_component_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_component_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_component(format, stream, SCH_COMPONENT(shape), error);
 }

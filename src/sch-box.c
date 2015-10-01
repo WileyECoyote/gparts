@@ -87,7 +87,7 @@ static void
 sch_box_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_box_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_box_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 
@@ -741,7 +741,7 @@ sch_box_rotate(SchShape *shape, int angle)
 }
 
 static void
-sch_box_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_box_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_box(format, stream, SCH_BOX(shape), error);
 }

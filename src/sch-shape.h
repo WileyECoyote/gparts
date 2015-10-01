@@ -43,12 +43,12 @@ struct _SchShapeClass
 {
     GObjectClass parent;
 
-    void (*expand_macros)(SchShape *shape, const GRegex *regex, const GHashTable *table);
-    void (*find_macros)(const SchShape *shape, const GRegex *regex, GHashTable *table);
-    void (*rotate)(SchShape *shape, int angle);
-    void (*transform)(SchShape *shape, const GeomTransform *transform);
-    void (*translate)(SchShape *shape, int dx, int dy);
-    void (*write)(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+    void (*expand_macros)(      SchShape *shape, const GRegex *regex, const GHashTable *table);
+    void (*find_macros)  (const SchShape *shape, const GRegex *regex, GHashTable *table);
+    void (*rotate)       (      SchShape *shape, int angle);
+    void (*transform)    (      SchShape *shape, const GeomTransform *transform);
+    void (*translate)    (      SchShape *shape, int dx, int dy);
+    void (*write)        (const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 };
 
 GType
@@ -110,5 +110,5 @@ void sch_shape_set_attributes(SchShape *shape, SchAttributes *attributes);
  *  \param [in]  stream The stream to write the shape to.
  *  \param [out] error  The error, if any, using the GError protocol.
  */
-void sch_shape_write(SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+void sch_shape_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 

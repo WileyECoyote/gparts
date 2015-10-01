@@ -88,7 +88,7 @@ static const SchColorEntry sch_color_dark_table[SCH_COLOR_COUNT] =
     /* 19  freestyle2         */ SCH_COLOR_ENTRY(0x00, 0xFF, 0x00), /* originally false */
     /* 20  freestyle3         */ SCH_COLOR_ENTRY(0x00, 0xFF, 0x00), /* originally false */
     /* 21  freestyle4         */ SCH_COLOR_ENTRY(0x00, 0xFF, 0x00), /* originally false */
-    /* 22  mesh-grid-major    */ SCH_COLOR_ENTRY(0x1E, 0x1E, 0x1E), 
+    /* 22  mesh-grid-major    */ SCH_COLOR_ENTRY(0x1E, 0x1E, 0x1E),
     /* 23  mesh-grid-minor    */ SCH_COLOR_ENTRY(0x17, 0x17, 0x17)
 };
 
@@ -121,12 +121,6 @@ static const SchColorEntry sch_color_light_table[SCH_COLOR_COUNT] =
 };
 
 void
-sch_color_get_default(int index, double *red, double *green, double *blue)
-{
-    sch_color_get_default_dark(index, red, green, blue);
-}
-
-void
 sch_color_get_default_dark(int index, double *red, double *green, double *blue)
 {
     if ((index < 0) || (index >= SCH_COLOR_COUNT))
@@ -148,6 +142,12 @@ sch_color_get_default_dark(int index, double *red, double *green, double *blue)
     {
         *blue = sch_color_dark_table[index].blue;
     }
+}
+
+void
+sch_color_get_default(int index, double *red, double *green, double *blue)
+{
+    sch_color_get_default_dark(index, red, green, blue);
 }
 
 void

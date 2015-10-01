@@ -50,21 +50,21 @@ typedef struct _SchLinePrivate SchLinePrivate;
 struct _SchLinePrivate
 {
     GeomLine     line;
-    gint         color;
-    gint         line_width;
+    int          color;
+    int          line_width;
     SchLineStyle line_style;
 };
 
 
 
 static void
-sch_line_class_init(gpointer g_class, gpointer g_class_data);
+sch_line_class_init(void *g_class, void *g_class_data);
 
 static void
-sch_line_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_line_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-sch_line_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_line_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 sch_line_rotate(SchShape *shape, int angle);
@@ -76,11 +76,11 @@ static void
 sch_line_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_line_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
+sch_line_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
-sch_line_class_init(gpointer g_class, gpointer g_class_data)
+sch_line_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
     SchLineClass *klasse1 = SCH_LINE_CLASS(g_class);
@@ -237,7 +237,7 @@ sch_line_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-sch_line_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_line_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchLinePrivate *privat = SCH_LINE_GET_PRIVATE(object);
 
@@ -323,7 +323,7 @@ sch_line_get_type(void)
 }
 
 static void
-sch_line_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_line_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     SchLinePrivate *privat = SCH_LINE_GET_PRIVATE(object);
 
@@ -504,7 +504,7 @@ sch_line_translate(SchShape *shape, int dx, int dy)
 }
 
 static void
-sch_line_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_line_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_line(format, stream, SCH_LINE(shape), error);
 }

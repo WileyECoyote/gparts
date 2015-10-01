@@ -49,20 +49,20 @@ typedef struct _SchTextPrivate SchTextPrivate;
 
 struct _SchTextPrivate
 {
-    gint x;
-    gint y;
-    gint color;
-    gint size;
-    gint visibility;
-    gint show_name_value;
-    gint angle;
-    gint alignment;
+    int  x;
+    int  y;
+    int  color;
+    int  size;
+    int  visibility;
+    int  show_name_value;
+    int  angle;
+    int  alignment;
 
     SchMultiline *multiline;
 };
 
 static void
-sch_text_class_init(gpointer g_class, gpointer g_class_data);
+sch_text_class_init(void *g_class, void *g_class_data);
 
 static void
 sch_text_expand_macros(SchShape *shape, const GRegex *regex, const GHashTable *table);
@@ -71,13 +71,15 @@ static void
 sch_text_find_macros(const SchShape *shape, const GRegex *regex, GHashTable *table);
 
 static void
-sch_text_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+sch_text_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
+
+/*
+static void
+sch_text_schematic_shape_init(void *g_iface, void *g_iface_data);
+*/
 
 static void
-sch_text_schematic_shape_init(gpointer g_iface, gpointer g_iface_data);
-
-static void
-sch_text_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+sch_text_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 void
 sch_text_rotate(SchShape *shape, int angle);
@@ -89,12 +91,11 @@ void
 sch_text_translate(SchShape *shape, int dx, int dy);
 
 static void
-sch_text_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error);
-
+sch_text_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
 
 
 static void
-sch_text_class_init(gpointer g_class, gpointer g_class_data)
+sch_text_class_init(void *g_class, void *g_class_data)
 {
     GError *error = NULL;
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
@@ -472,7 +473,7 @@ sch_text_get_multiline(const SchText *text)
 }
 
 static void
-sch_text_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+sch_text_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(object);
 
@@ -732,7 +733,7 @@ sch_text_set_color(SchText *shape, int color)
 }
 
 static void
-sch_text_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+sch_text_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     switch (property_id)
     {
@@ -905,7 +906,7 @@ sch_text_translate(SchShape *shape, int dx, int dy)
 }
 
 static void
-sch_text_write(SchShape *shape, SchFileFormat2 *format, SchOutputStream *stream, GError **error)
+sch_text_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error)
 {
     sch_file_format_2_write_text(format, stream, SCH_TEXT(shape), error);
 }
