@@ -87,196 +87,244 @@ sch_circle_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputS
 static void
 sch_circle_class_init(void *g_class, void *g_class_data)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS(g_class);
-    SchCircleClass *klasse = SCH_CIRCLE_CLASS(g_class);
+  GParamSpec     *params;
+  GObjectClass   *object_class = G_OBJECT_CLASS(g_class);
+  SchCircleClass *klasse       = SCH_CIRCLE_CLASS(g_class);
 
-    g_type_class_add_private(object_class, sizeof(SchCirclePrivate));
+  g_type_class_add_private(object_class, sizeof(SchCirclePrivate));
 
-    object_class->get_property = sch_circle_get_property;
-    object_class->set_property = sch_circle_set_property;
+  object_class->get_property = sch_circle_get_property;
+  object_class->set_property = sch_circle_set_property;
 
-    klasse->parent.rotate    = sch_circle_rotate;
-    klasse->parent.transform = sch_circle_transform;
-    klasse->parent.translate = sch_circle_translate;
-    klasse->parent.write     = sch_circle_write;
+  klasse->parent.rotate    = sch_circle_rotate;
+  klasse->parent.transform = sch_circle_transform;
+  klasse->parent.translate = sch_circle_translate;
+  klasse->parent.write     = sch_circle_write;
 
-    g_object_class_install_property(object_class,
-                                    SCH_CIRCLE_X,
-                                    g_param_spec_int("center-x",
-                                                     "Center X",
-                                                     "Center X",
-                                                     G_MININT,
-                                                     G_MAXINT,
-                                                     0,
-                                                     G_PARAM_LAX_VALIDATION |
-                                                     G_PARAM_READWRITE |
-                                                     G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:center-x:
+   */
+  params = g_param_spec_int("center-x",
+                            "Center X",
+                            "Center X",
+                            G_MININT,
+                            G_MAXINT,
+                            0,
+                            G_PARAM_LAX_VALIDATION |
+                            G_PARAM_READWRITE |
+                            G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(object_class,
-                                    SCH_CIRCLE_Y,
-                                    g_param_spec_int("center-y",
-                                                     "Center Y",
-                                                     "Center Y",
-                                                     G_MININT,
-                                                     G_MAXINT,
-                                                     0,
-                                                     G_PARAM_LAX_VALIDATION |
-                                                     G_PARAM_READWRITE |
-                                                     G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property(object_class, SCH_CIRCLE_X, params);
 
-    g_object_class_install_property(object_class,
-                                    SCH_CIRCLE_RADIUS,
-                                    g_param_spec_int("radius",
-                                                     "Radius",
-                                                     "Radius",
-                                                     0,
-                                                     G_MAXINT,
-                                                     0,
-                                                     G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:center-y:
+   */
+  params = g_param_spec_int ("center-y",
+                             "Center Y",
+                             "Center Y",
+                             G_MININT,
+                             G_MAXINT,
+                             0,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_COLOR,
-        g_param_spec_int(
-            "color",
-            "Color",
-            "Color",
-            0,
-            G_MAXINT,
-            SCH_CIRCLE_DEFAULT_COLOR,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property(object_class, SCH_CIRCLE_Y, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_LINE_WIDTH,
-        g_param_spec_int(
-            "line-width",
-            "Line Width",
-            "Line Width",
-            0,
-            G_MAXINT,
-            SCH_CIRCLE_DEFAULT_LINE_WIDTH,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:radius:
+   */
+  params = g_param_spec_int ("radius",
+                             "Radius",
+                             "Radius",
+                             0,
+                             G_MAXINT,
+                             0,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_CAP_STYLE,
-        g_param_spec_int(
-            "line-cap-style",
-            "Line Cap Style",
-            "Line Cap Style",
-            0,
-            2,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property(object_class, SCH_CIRCLE_RADIUS, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_DASH_STYLE,
-        g_param_spec_int(
-            "line-dash-style",
-            "Line dash Style",
-            "Line dash Style",
-            0,
-            4,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:color:
+   */
+  params = g_param_spec_int ("color",
+                             "Color",
+                             "Color",
+                             0,
+                             G_MAXINT,
+                             SCH_CIRCLE_DEFAULT_COLOR,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_DASH_LENGTH,
-        g_param_spec_int(
-            "line-dash-length",
-            "Line Dash Length",
-            "Line Dash Length",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property( object_class, SCH_CIRCLE_COLOR, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_DASH_SPACE,
-        g_param_spec_int(
-            "line-dash-space",
-            "Line Dash Space",
-            "Line Dash Space",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:line-width:
+   */
+  params = g_param_spec_int ("line-width",
+                             "Line Width",
+                             "Line Width",
+                             0,
+                             G_MAXINT,
+                             SCH_CIRCLE_DEFAULT_LINE_WIDTH,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_TYPE,
-        g_param_spec_int(
-            "fill-type",
-            "Fill Type",
-            "Fill Type",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property(object_class, SCH_CIRCLE_LINE_WIDTH, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_WIDTH,
-        g_param_spec_int(
-            "fill-width",
-            "Fill Width",
-            "Fill Width",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:line-cap-style:
+   */
+  params = g_param_spec_int ("line-cap-style",
+                             "Line Cap Style",
+                             "Line Cap Style",
+                             0,
+                             2,
+                             0,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_ANGLE1,
-        g_param_spec_int(
-            "fill-angle1",
-            "Fill Angle 1",
-            "Fill Angle 1",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property (object_class, SCH_CIRCLE_CAP_STYLE, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_PITCH1,
-        g_param_spec_int(
-            "fill-pitch1",
-            "Fill Pitch 1",
-            "Fill Pitch 1",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:line-dash-style:
+   */
+  params = g_param_spec_int ("line-dash-style",
+                             "Line dash Style",
+                             "Line dash Style",
+                             0,
+                             4,
+                             0,
+                             G_PARAM_LAX_VALIDATION
+                             | G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_ANGLE2,
-        g_param_spec_int(
-            "fill-angle2",
-            "Fill Angle 2",
-            "Fill Angle 2",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  g_object_class_install_property (object_class, SCH_CIRCLE_DASH_STYLE, params);
 
-    g_object_class_install_property(
-        object_class,
-        SCH_CIRCLE_FILL_PITCH2,
-        g_param_spec_int(
-            "fill-pitch2",
-            "Fill Pitch 2",
-            "Fill Pitch 2",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  /**
+   * SchCircle:line-dash-length:
+   */
+  params = g_param_spec_int ("line-dash-length",
+                             "Line Dash Length",
+                             "Line Dash Length",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_DASH_LENGTH, params);
+
+  /**
+   * SchCircle:line-dash-space:
+   */
+  params = g_param_spec_int ("line-dash-space",
+                             "Line Dash Space",
+                             "Line Dash Space",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_DASH_SPACE, params);
+
+  /**
+   * SchCircle:fill-type:
+   */
+  params = g_param_spec_int ("fill-type",
+                             "Fill Type",
+                             "Fill Type",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_TYPE, params);
+
+  /**
+   * SchCircle:fill-width:
+   */
+  params = g_param_spec_int ("fill-width",
+                             "Fill Width",
+                             "Fill Width",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_WIDTH, params);
+
+  /**
+   * SchCircle:fill-angle1:
+   */
+  params = g_param_spec_int ("fill-angle1",
+                             "Fill Angle 1",
+                             "Fill Angle 1",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_ANGLE1, params);
+
+  /**
+   * SchCircle:fill-pitch1:
+   */
+  params = g_param_spec_int ("fill-pitch1",
+                             "Fill Pitch 1",
+                             "Fill Pitch 1",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_PITCH1, params);
+
+  /**
+   * SchCircle:fill-angle2:
+   */
+  params = g_param_spec_int ("fill-angle2",
+                             "Fill Angle 2",
+                             "Fill Angle 2",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_ANGLE2, params);
+
+  /**
+   * SchCircle:fill-pitch2:
+   */
+  params = g_param_spec_int ("fill-pitch2",
+                             "Fill Pitch 2",
+                             "Fill Pitch 2",
+                             -1,
+                             G_MAXINT,
+                             -1,
+                             G_PARAM_LAX_VALIDATION |
+                             G_PARAM_READWRITE |
+                             G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_property (object_class, SCH_CIRCLE_FILL_PITCH2, params);
 
 }
 
@@ -285,10 +333,10 @@ sch_circle_get_property(GObject *object, unsigned int property_id, GValue *value
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_CIRCLE_X:
                 g_value_set_int(value, privat->circle.center_x);
                 break;
@@ -386,10 +434,10 @@ sch_circle_set_property(GObject *object, unsigned int property_id, const GValue 
 {
     SchCirclePrivate *privat = SCH_CIRCLE_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_CIRCLE_X:
                 privat->circle.center_x = g_value_get_int(value);
                 break;
