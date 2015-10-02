@@ -39,11 +39,11 @@ struct _SchGUICairoDrawItemClass
 {
     GObjectClass parent;
 
-    void (*bounds)(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds);
-    void (*draw)(SchGUICairoDrawItem *item, cairo_t *cairo);
-    void (*mirror_y)(SchGUICairoDrawItem *item);
-    void (*rotate)(SchGUICairoDrawItem *item, double dt);
-    void (*translate)(SchGUICairoDrawItem *item, double dx, double dy);
+    void (*bounds)    (SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds);
+    void (*draw)      (SchGUICairoDrawItem *item, cairo_t *cairo);
+    void (*mirror_y)  (SchGUICairoDrawItem *item);
+    void (*rotate)    (SchGUICairoDrawItem *item, double dt);
+    void (*translate) (SchGUICairoDrawItem *item, double dx, double dy);
 };
 
 GType

@@ -86,8 +86,10 @@ schgui_cairo_factory_create_from_net(SchGUICairoFactory *factory, SchNet *net);
 static SchGUICairoDrawItem*
 schgui_cairo_factory_create_from_path(SchGUICairoFactory *factory, SchPath *path);
 
+/*
 static SchGUICairoDrawItem*
 schgui_cairo_factory_create_from_path_proc(SchPathCommand *command, gpointer user_data);
+*/
 
 static SchGUICairoDrawItem*
 schgui_cairo_factory_create_from_pin(SchGUICairoFactory *factory, SchPin *pin);
