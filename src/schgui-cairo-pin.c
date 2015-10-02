@@ -35,69 +35,68 @@ typedef struct _SchGUICairoPinPrivate SchGUICairoPinPrivate;
 
 struct _SchGUICairoPinPrivate
 {
-    gdouble red;
-    gdouble green;
-    gdouble blue;
-    gdouble alpha;
+    double red;
+    double green;
+    double blue;
+    double alpha;
 
-    gdouble x[2];
-    gdouble y[2];
+    double x[2];
+    double y[2];
 
-    gdouble line_width;
+    double line_width;
 
-    gint    solid;
-    gint    visible;
+    int    solid;
+    int    visible;
 };
 
 static void
 schgui_cairo_pin_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds);
 
 static void
-schgui_cairo_pin_class_init(gpointer g_class, gpointer g_class_data);
+schgui_cairo_pin_class_init(void *g_class, void *g_class_data);
 
 static void
-schgui_cairo_pin_draw(SchGUICairoPin *shape, cairo_t *cairo);
+schgui_cairo_pin_draw(SchGUICairoDrawItem *shape, cairo_t *cairo);
 
 static void
-schgui_cairo_pin_mirror_y(SchGUICairoPin *item);
+schgui_cairo_pin_mirror_y(SchGUICairoDrawItem *item);
 
 static void
-schgui_cairo_pin_rotate(SchGUICairoPin *item, double dt);
+schgui_cairo_pin_rotate(SchGUICairoDrawItem *item, double dt);
 
 static void
-schgui_cairo_pin_translate(SchGUICairoPin *item, double dx, double dy);
- 
+schgui_cairo_pin_translate(SchGUICairoDrawItem *item, double dx, double dy);
 
 
 static void
 schgui_cairo_pin_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *bounds)
 {
-    if (bounds != NULL)
-    {
+    if (bounds != NULL) {
+
         SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(item);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             GeomBounds temp;
 
-            if (privat->x[0] < privat->x[1])
-            {
+            if (privat->x[0] < privat->x[1]) {
+
                 temp.min_x = privat->x[0];
                 temp.max_x = privat->x[1];
             }
-            else
-            {
+            else {
+
                 temp.min_x = privat->x[1];
                 temp.max_x = privat->x[0];
             }
 
-            if (privat->y[0] < privat->y[1])
-            {
+            if (privat->y[0] < privat->y[1]) {
+
                 temp.min_y = privat->y[0];
                 temp.max_y = privat->y[1];
             }
-            else
-            {
+            else {
+
                 temp.min_y = privat->y[1];
                 temp.max_y = privat->y[0];
             }
@@ -111,9 +110,9 @@ schgui_cairo_pin_bounds(SchGUICairoDrawItem *item, cairo_t *cairo, GeomBounds *b
 }
 
 static void
-schgui_cairo_pin_class_init(gpointer g_class, gpointer g_class_data)
+schgui_cairo_pin_class_init(void *g_class, void *g_class_data)
 {
-    SchGUICairoPinClass *klasse = SCHGUI_CAIRO_PIN_CLASS(g_class);
+   //SchGUICairoPinClass *klasse = SCHGUI_CAIRO_PIN_CLASS(g_class);
 
     g_type_class_add_private(G_OBJECT_CLASS(g_class), sizeof(SchGUICairoPinPrivate));
 
@@ -125,24 +124,24 @@ schgui_cairo_pin_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 static void
-schgui_cairo_pin_draw(SchGUICairoPin *shape, cairo_t *cairo)
+schgui_cairo_pin_draw(SchGUICairoDrawItem *shape, cairo_t *cairo)
 {
-    if (cairo != NULL)
-    {
-        SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(shape);
+  if (cairo != NULL) {
 
-        if (privat != NULL)
-        {
-            cairo_set_source_rgba(cairo, privat->red, privat->green, privat->blue, privat->alpha);
+    SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(shape);
 
-            cairo_set_line_width(cairo, privat->line_width);
+    if (privat != NULL) {
 
-            cairo_move_to(cairo, privat->x[0], privat->y[0]);
-            cairo_line_to(cairo, privat->x[1], privat->y[1]);
+      cairo_set_source_rgba(cairo, privat->red, privat->green, privat->blue, privat->alpha);
 
-            cairo_stroke(cairo);
-        }
+      cairo_set_line_width(cairo, privat->line_width);
+
+      cairo_move_to(cairo, privat->x[0], privat->y[0]);
+      cairo_line_to(cairo, privat->x[1], privat->y[1]);
+
+      cairo_stroke(cairo);
     }
+  }
 }
 
 GType
@@ -177,12 +176,11 @@ schgui_cairo_pin_get_type(void)
 }
 
 static void
-schgui_cairo_pin_mirror_y(SchGUICairoPin *item)
+schgui_cairo_pin_mirror_y(SchGUICairoDrawItem *item)
 {
     SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         privat->x[0] = -privat->x[0];
         privat->x[1] = -privat->x[1];
     }
@@ -196,11 +194,11 @@ schgui_cairo_pin_new(const SchPin *shape, SchGUIDrawingCfg *config)
 
     SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GeomLine              line;
         MiscGUIColor          color;
-        SchFillStyle          fill_style;
+        //SchFillStyle          fill_style;
         int                   index;
 
         sch_pin_get_color(shape, &index);
@@ -226,12 +224,12 @@ schgui_cairo_pin_new(const SchPin *shape, SchGUIDrawingCfg *config)
 }
 
 static void
-schgui_cairo_pin_rotate(SchGUICairoPin *item, double dt)
+schgui_cairo_pin_rotate(SchGUICairoDrawItem *item, double dt)
 {
     SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         cairo_matrix_t transform;
 
         cairo_matrix_init_rotate(&transform, dt);
@@ -242,12 +240,12 @@ schgui_cairo_pin_rotate(SchGUICairoPin *item, double dt)
 }
 
 static void
-schgui_cairo_pin_translate(SchGUICairoPin *item, double dx, double dy)
+schgui_cairo_pin_translate(SchGUICairoDrawItem *item, double dx, double dy)
 {
     SchGUICairoPinPrivate *privat = SCHGUI_CAIRO_PIN_GET_PRIVATE(item);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->x[0] += dx;
         privat->y[0] += dy;
         privat->x[1] += dx;
