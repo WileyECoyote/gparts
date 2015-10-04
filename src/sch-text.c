@@ -21,8 +21,6 @@
 /*! \file sch-text.c
  */
 
-#include <math.h>
-
 #include <glib.h>
 #include <glib-object.h>
 
@@ -305,8 +303,8 @@ sch_text_expand_macros(SchShape *shape, const GRegex *regex, const GHashTable *t
 
     if (privat != NULL)
     {
-        gchar *param = sch_text_get_string(SCH_TEXT(shape));
-        gchar *result;
+        char *param = sch_text_get_string(SCH_TEXT(shape));
+        char *result;
 
         result = misc_macro_expand(regex, param, table);
 
@@ -336,7 +334,7 @@ sch_text_find_macros(const SchShape *shape, const GRegex *regex, GHashTable *tab
 
     if (privat != NULL)
     {
-        gchar *param = sch_text_get_string(SCH_TEXT(shape));
+        char *param = sch_text_get_string(SCH_TEXT(shape));
 
         misc_macro_find(regex, param, table);
 
@@ -381,10 +379,10 @@ sch_text_get_alignment(const SchText *text)
     return 0;
 }
 
-gchar*
+char*
 sch_text_get_attribute_name(const SchText *shape)
 {
-    gchar *name = NULL;
+    char *name = NULL;
 
     if (shape != NULL)
     {
@@ -393,7 +391,7 @@ sch_text_get_attribute_name(const SchText *shape)
         if ((klasse != NULL) && (klasse->regex != NULL))
         {
             GMatchInfo *match_info;
-            gchar *string = sch_text_get_string(shape);
+            char *string = sch_text_get_string(shape);
 
             g_regex_match(klasse->regex, string, 0, &match_info);
 
@@ -410,10 +408,10 @@ sch_text_get_attribute_name(const SchText *shape)
     return name;
 }
 
-gchar*
+char*
 sch_text_get_attribute_value(const SchText *shape)
 {
-    gchar *value = NULL;
+    char *value = NULL;
 
     if (shape != NULL)
     {
@@ -422,7 +420,7 @@ sch_text_get_attribute_value(const SchText *shape)
         if ((klasse != NULL) && (klasse->regex != NULL))
         {
             GMatchInfo *match_info;
-            gchar *string = sch_text_get_string(shape);
+            char *string = sch_text_get_string(shape);
 
             g_regex_match(klasse->regex, string, 0, &match_info);
 
@@ -550,31 +548,31 @@ sch_text_get_show(const SchText *shape)
     return show;
 }
 
-gchar*
+char*
 sch_text_get_shown_string(const SchText *text)
 {
-    SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
-    gchar *string = NULL;
+  SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
+  char *string = NULL;
 
-    if (privat != NULL)
-    {
-        switch (privat->show_name_value)
-        {
-            case SCH_TEXT_SHOW_VALUE:
-                string = sch_text_get_attribute_value(text);
-                break;
+  if (privat != NULL) {
 
-            case SCH_TEXT_SHOW_NAME:
-                string = sch_text_get_attribute_name(text);
-                break;
+    switch (privat->show_name_value) {
 
-            case SCH_TEXT_SHOW_ALL:
-            default:
-                string = sch_text_get_string(text);
-        }
+      case SCH_TEXT_SHOW_VALUE:
+        string = sch_text_get_attribute_value(text);
+        break;
+
+      case SCH_TEXT_SHOW_NAME:
+        string = sch_text_get_attribute_name(text);
+        break;
+
+      case SCH_TEXT_SHOW_ALL:
+      default:
+        string = sch_text_get_string(text);
     }
+  }
 
-    return string;
+  return string;
 }
 
 char*
@@ -583,8 +581,7 @@ sch_text_get_string(const SchText *text)
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
     char *string = NULL;
 
-    if ((privat != NULL) && (privat->multiline != NULL))
-    {
+    if ((privat != NULL) && (privat->multiline != NULL)) {
         string = g_strdup(sch_multiline_peek_plain(privat->multiline, 0));
     }
 
@@ -596,8 +593,8 @@ sch_text_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchTextClass),    /* class_size */
             NULL,                    /* base_init */
@@ -611,12 +608,7 @@ sch_text_get_type(void)
             NULL                     /* value_table */
             };
 
-        type = g_type_register_static(
-            SCH_TYPE_SHAPE,
-            "SchText",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static( SCH_TYPE_SHAPE, "SchText", &tinfo, 0);
     }
 
     return type;
@@ -628,8 +620,7 @@ sch_text_get_visible(const SchText *shape)
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
     int visible = 1;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         visible = privat->visibility;
     }
 
@@ -642,8 +633,7 @@ sch_text_get_x(const SchText *text)
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
     int x = 0;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         x = privat->x;
     }
 
@@ -656,8 +646,7 @@ sch_text_get_y(const SchText *text)
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
     int y = 0;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         y = privat->y;
     }
 
@@ -667,12 +656,10 @@ sch_text_get_y(const SchText *text)
 SchText*
 sch_text_new(const SchConfig *config)
 {
-    return SCH_TEXT(g_object_new(
-        SCH_TYPE_TEXT,
-        "color", sch_config_get_text_color(config),
-        "size",  sch_config_get_text_size(config),
-        NULL
-        ));
+    return SCH_TEXT(g_object_new(SCH_TYPE_TEXT,
+                                 "color", sch_config_get_text_color(config),
+                                 "size",  sch_config_get_text_size(config),
+                                 NULL ));
 }
 
 void
@@ -680,9 +667,9 @@ sch_text_rotate(SchShape *shape, int angle)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
-        double   radians = geom_angle_radians(angle);
+    if (privat != NULL) {
+
+        double radians = geom_angle_radians(angle);
         int tx = privat->x;
         int ty = privat->y;
 
@@ -698,8 +685,8 @@ sch_text_set_alignment(SchText *shape, int alignment)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->alignment = alignment;
 
         g_object_notify(G_OBJECT(shape), "alignment");
@@ -711,8 +698,8 @@ sch_text_set_angle(SchText *shape, int angle)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->angle = angle;
 
         g_object_notify(G_OBJECT(shape), "angle");
@@ -724,8 +711,8 @@ sch_text_set_color(SchText *shape, int color)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->color = color;
 
         g_object_notify(G_OBJECT(shape), "color");
@@ -735,8 +722,8 @@ sch_text_set_color(SchText *shape, int color)
 static void
 sch_text_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
-    switch (property_id)
-    {
+    switch (property_id) {
+
         case SCH_TEXT_X:
             sch_text_set_x(SCH_TEXT(object), g_value_get_int(value));
             break;
@@ -779,17 +766,17 @@ sch_text_set_multiline(SchText *text, SchMultiline *multiline)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(text);
 
-    if (privat != NULL)
-    {
-        if (privat->multiline != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->multiline != NULL) {
+
             g_object_unref(privat->multiline);
         }
 
         privat->multiline = multiline;
 
-        if (privat->multiline != NULL)
-        {
+        if (privat->multiline != NULL) {
+
             g_object_ref(privat->multiline);
         }
     }
@@ -800,8 +787,8 @@ sch_text_set_show(SchText *shape, int show)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->show_name_value = show;
 
         g_object_notify(G_OBJECT(shape), "show-name-value");
@@ -814,8 +801,8 @@ sch_text_set_size(SchText *shape, int size)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->size = size;
 
         g_object_notify(G_OBJECT(shape), "size");
@@ -827,11 +814,11 @@ sch_text_set_string(SchText *shape, const char *string)
 {
     SchMultiline *multiline = g_object_new(SCH_TYPE_MULTILINE, NULL);
 
-    gchar **lines = g_strsplit(string, "\n", 0);
-    gchar **temp = lines;
+    char **lines = g_strsplit(string, "\n", 0);
+    char **temp = lines;
 
-    while (*temp != NULL)
-    {
+    while (*temp != NULL) {
+
         sch_multiline_append(multiline, *temp);
 
         temp++;
@@ -847,8 +834,8 @@ sch_text_set_visible(SchText *shape, int visible)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->visibility = visible;
 
         g_object_notify(G_OBJECT(shape), "visibility");
@@ -861,8 +848,8 @@ sch_text_set_x(SchText *shape, int x)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->x = x;
 
         g_object_notify(G_OBJECT(shape), "x");
@@ -874,8 +861,8 @@ sch_text_set_y(SchText *shape, int y)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->y = y;
 
         g_object_notify(G_OBJECT(shape), "y");
@@ -887,8 +874,8 @@ sch_text_transform(SchShape *shape, const GeomTransform *transform)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         geom_transform_point(transform, &(privat->x), &(privat->y));
     }
 }
@@ -898,8 +885,8 @@ sch_text_translate(SchShape *shape, int dx, int dy)
 {
     SchTextPrivate *privat = SCH_TEXT_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->x += dx;
         privat->y += dy;
     }
@@ -910,4 +897,3 @@ sch_text_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStr
 {
     sch_file_format_2_write_text(format, stream, SCH_TEXT(shape), error);
 }
-
