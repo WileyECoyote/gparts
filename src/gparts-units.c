@@ -46,22 +46,22 @@ typedef struct _GPartsUnitsMetricPrefix GPartsUnitsMetricPrefix;
 
 struct _GPartsUnits
 {
-    gdouble         value;
+    double         value;
     GValueTransform func;
-    const gchar     *symbol;
+    const char     *symbol;
 };
 
 struct _GPartsUnitsFormat
 {
-    const gchar *string;
+    const char *string;
     float       value;
 };
 
 struct _GPartsUnitsMetricPrefix
 {
-    const gchar *prefix;
-    const gchar *symbol;
-    gdouble      value;
+    const char *prefix;
+    const char *symbol;
+    double      value;
 };
 
 /*
@@ -100,11 +100,11 @@ static const GPartsUnitsMetricPrefix gparts_units_metric_prefixes[] =
 };
 
 
-static const gchar*
-gparts_units_find_format(gdouble value);
+static const char*
+gparts_units_find_format(double value);
 
 static const GPartsUnitsMetricPrefix*
-gparts_units_find_metric_prefix(gdouble value);
+gparts_units_find_metric_prefix(double value);
 
 static void
 gparts_units_transform(const GValue *src_value, GValue *dest_value);
@@ -126,13 +126,12 @@ gparts_units_copy(const GPartsUnits *units)
     return GPARTS_UNITS(g_memdup(units, sizeof(GPartsUnits)));
 }
 
-static const gchar*
-gparts_units_find_format(gdouble value)
+static const char*
+gparts_units_find_format(double value)
 {
     const GPartsUnitsFormat *format = &gparts_units_format[0];
 
-    while (fabs(value) < format->value)
-    {
+    while (fabs(value) < format->value) {
         format++;
     }
 
@@ -146,17 +145,15 @@ gparts_units_find_format(gdouble value)
  *  return NULL.
  */
 static const GPartsUnitsMetricPrefix*
-gparts_units_find_metric_prefix(gdouble value)
+gparts_units_find_metric_prefix(double value)
 {
     const GPartsUnitsMetricPrefix *prefix = &gparts_units_metric_prefixes[0];
 
-    if (value == 0)
-    {
+    if (value == 0) {
         value = 1;
     }
 
-    while (fabs(value) < prefix->value)
-    {
+    while (fabs(value) < prefix->value) {
         prefix++;
     }
 
@@ -166,24 +163,21 @@ gparts_units_find_metric_prefix(gdouble value)
 GType
 gparts_units_get_type(void)
 {
-    static GType type = G_TYPE_INVALID;
+  static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
-        type = g_boxed_type_register_static(
-            "GPartsUnits",
-            (GBoxedCopyFunc) gparts_units_copy,
-            (GBoxedFreeFunc) gparts_units_free
-            );
+  if (type == G_TYPE_INVALID) {
 
-        g_value_register_transform_func(
-            GPARTS_TYPE_UNITS,
-            G_TYPE_STRING,
-            gparts_units_transform
-            );
-    }
+    type = g_boxed_type_register_static( "GPartsUnits",
+                                         (GBoxedCopyFunc) gparts_units_copy,
+                                         (GBoxedFreeFunc) gparts_units_free
+    );
 
-    return type;
+    g_value_register_transform_func(GPARTS_TYPE_UNITS,
+                                    G_TYPE_STRING,
+                                    gparts_units_transform);
+  }
+
+  return type;
 }
 
 void
@@ -193,11 +187,10 @@ gparts_units_free(GPartsUnits *units)
 }
 
 GPartsUnitsNewFunc
-gparts_units_get_new_func(const gchar *name)
+gparts_units_get_new_func(const char *name)
 {
-    struct entry
-    {
-        const gchar        *name;
+    struct entry {
+        const char        *name;
         GPartsUnitsNewFunc func;
     };
 
@@ -230,14 +223,12 @@ gparts_units_get_new_func(const gchar *name)
     GPartsUnitsNewFunc func = NULL;
     const struct entry *t = &table[0];
 
-    while (func == NULL)
-    {
-        if ((t->name == NULL) || (g_strcmp0(t->name, name) == 0))
-        {
+    while (func == NULL) {
+
+        if ((t->name == NULL) || (g_strcmp0(t->name, name) == 0)) {
             func = t->func;
         }
-        else
-        {
+        else {
             t++;
         }
     }
@@ -246,7 +237,7 @@ gparts_units_get_new_func(const gchar *name)
 }
 
 GPartsUnits*
-gparts_units_new_amphours(gdouble amphours)
+gparts_units_new_amphours(double amphours)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -258,7 +249,7 @@ gparts_units_new_amphours(gdouble amphours)
 }
 
 GPartsUnits*
-gparts_units_new_amps(gdouble amps)
+gparts_units_new_amps(double amps)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -270,7 +261,7 @@ gparts_units_new_amps(gdouble amps)
 }
 
 GPartsUnits*
-gparts_units_new_celcius(gdouble celcius)
+gparts_units_new_celcius(double celcius)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -282,7 +273,7 @@ gparts_units_new_celcius(gdouble celcius)
 }
 
 GPartsUnits*
-gparts_units_new_farads(gdouble farads)
+gparts_units_new_farads(double farads)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -294,7 +285,7 @@ gparts_units_new_farads(gdouble farads)
 }
 
 GPartsUnits*
-gparts_units_new_grams(gdouble grams)
+gparts_units_new_grams(double grams)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -306,7 +297,7 @@ gparts_units_new_grams(gdouble grams)
 }
 
 GPartsUnits*
-gparts_units_new_henrys(gdouble henrys)
+gparts_units_new_henrys(double henrys)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -318,7 +309,7 @@ gparts_units_new_henrys(gdouble henrys)
 }
 
 GPartsUnits*
-gparts_units_new_hertz(gdouble hertz)
+gparts_units_new_hertz(double hertz)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -330,7 +321,7 @@ gparts_units_new_hertz(gdouble hertz)
 }
 
 GPartsUnits*
-gparts_units_new_meters(gdouble meters)
+gparts_units_new_meters(double meters)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -342,7 +333,7 @@ gparts_units_new_meters(gdouble meters)
 }
 
 GPartsUnits*
-gparts_units_new_none(gdouble value)
+gparts_units_new_none(double value)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -354,7 +345,7 @@ gparts_units_new_none(gdouble value)
 }
 
 GPartsUnits*
-gparts_units_new_ohms(gdouble ohms)
+gparts_units_new_ohms(double ohms)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -366,7 +357,7 @@ gparts_units_new_ohms(gdouble ohms)
 }
 
 GPartsUnits*
-gparts_units_new_percent(gdouble percent)
+gparts_units_new_percent(double percent)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -378,7 +369,7 @@ gparts_units_new_percent(gdouble percent)
 }
 
 GPartsUnits*
-gparts_units_new_pp(gdouble pp)
+gparts_units_new_pp(double pp)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -390,7 +381,7 @@ gparts_units_new_pp(gdouble pp)
 }
 
 GPartsUnits*
-gparts_units_new_volts(gdouble volts)
+gparts_units_new_volts(double volts)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -402,7 +393,7 @@ gparts_units_new_volts(gdouble volts)
 }
 
 GPartsUnits*
-gparts_units_new_watts(gdouble watts)
+gparts_units_new_watts(double watts)
 {
     GPartsUnits *units = GPARTS_UNITS(g_malloc(sizeof(GPartsUnits)));
 
@@ -417,8 +408,8 @@ gparts_units_new_watts(gdouble watts)
 static void
 gparts_units_transform(const GValue *src_value, GValue *dest_value)
 {
-    if (G_IS_VALUE(src_value))
-    {
+    if (G_IS_VALUE(src_value)) {
+
         GPartsUnits *units = g_value_get_boxed(src_value);
 
         units->func(src_value, dest_value);
@@ -432,17 +423,16 @@ gparts_units_transform_percent(const GValue *src_value, GValue *dest_value)
     {
         GPartsUnits *units = g_value_get_boxed(src_value);
         GString *string = g_string_new("");
-        gdouble percent = 100.0 * units->value;
-        gint digits = 0;
-        const gchar *symbol = units->symbol;
+        double percent = 100.0 * units->value;
+        int digits = 0;
+        const char *symbol = units->symbol;
 
-        if (symbol == NULL)
-        {
+        if (symbol == NULL) {
             symbol = "%";
         }
 
-        if (percent != 0)
-        {
+        if (percent != 0) {
+
             digits = ceil(-log10(fabs(percent)));
 
             if (digits < 0)
@@ -456,8 +446,7 @@ gparts_units_transform_percent(const GValue *src_value, GValue *dest_value)
         g_value_take_string(dest_value, string->str);
         g_string_free(string, FALSE);
     }
-    else
-    {
+    else {
         g_value_set_string(dest_value, "Error");
     }
 }
@@ -465,46 +454,40 @@ gparts_units_transform_percent(const GValue *src_value, GValue *dest_value)
 static void
 gparts_units_transform_pp(const GValue *src_value, GValue *dest_value)
 {
-    if (G_IS_VALUE(src_value))
-    {
+    if (G_IS_VALUE(src_value)) {
+
         GPartsUnits *units = g_value_get_boxed(src_value);
         GString *string = g_string_new("");
-        gdouble pp = units->value;
-        gint digits = 0;
-        const gchar *symbol;
+        double pp = units->value;
+        int digits = 0;
+        const char *symbol;
 
-        if (fabs(pp) >= 1e-3)
-        {
+        if (fabs(pp) >= 1e-3) {
             pp *= 100;
             symbol = "%";
         }
-        else if (fabs(pp) >= 1e-6)
-        {
+        else if (fabs(pp) >= 1e-6) {
             pp *= 1e6;
             symbol = "ppm";
         }
-        else if (fabs(pp) >= 1e-9)
-        {
+        else if (fabs(pp) >= 1e-9) {
             pp *= 1e9;
             symbol = "ppb";
         }
-        else if (fabs(pp) >= 1e-12)
-        {
+        else if (fabs(pp) >= 1e-12) {
             pp *= 1e12;
             symbol = "ppt";
         }
-        else
-        {
+        else {
             pp *= 1e15;
             symbol = "ppq";
         }
 
-        if (pp != 0)
-        {
+        if (pp != 0) {
+
             digits = ceil(-log10(fabs(pp)));
 
-            if (digits < 0)
-            {
+            if (digits < 0) {
                 digits = 0;
             }
         }
@@ -514,8 +497,7 @@ gparts_units_transform_pp(const GValue *src_value, GValue *dest_value)
         g_value_take_string(dest_value, string->str);
         g_string_free(string, FALSE);
     }
-    else
-    {
+    else {
         g_value_set_string(dest_value, "Error");
     }
 }
@@ -523,18 +505,17 @@ gparts_units_transform_pp(const GValue *src_value, GValue *dest_value)
 static void
 gparts_units_transform_std(const GValue *src_value, GValue *dest_value)
 {
-    if (G_IS_VALUE(src_value))
-    {
+    if (G_IS_VALUE(src_value)) {
+
         GPartsUnits *units = g_value_get_boxed(src_value);
         GString *string = g_string_new("");
         double n = units->value;
         const GPartsUnitsMetricPrefix* prefix = gparts_units_find_metric_prefix(n);
 
-        const gchar *format = gparts_units_find_format(n/prefix->value);
-        const gchar *symbol = units->symbol;
+        const char *format = gparts_units_find_format(n/prefix->value);
+        const char *symbol = units->symbol;
 
-        if (symbol == NULL)
-        {
+        if (symbol == NULL) {
             symbol = "";
         }
 
@@ -543,8 +524,7 @@ gparts_units_transform_std(const GValue *src_value, GValue *dest_value)
         g_value_take_string(dest_value, string->str);
         g_string_free(string, FALSE);
     }
-    else
-    {
+    else {
         g_value_set_string(dest_value, "Error");
     }
 }

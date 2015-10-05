@@ -21,6 +21,7 @@
 /*! \file sch-text.c
  */
 
+#include <math.h>
 #include <glib.h>
 #include <glib-object.h>
 
