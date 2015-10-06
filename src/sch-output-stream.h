@@ -46,15 +46,13 @@ struct _SchOutputStreamClass
     GObjectClass parent;
 };
 
-GType
-sch_output_stream_get_type(void);
+GType sch_output_stream_get_type(void);
 
 /*! \brief Create a new schematic output stream
  *
  *  \param [in] stream The underlying stream for output.
  */
-SchOutputStream*
-sch_output_stream_new(GOutputStream *stream);
+SchOutputStream *sch_output_stream_new(GOutputStream *stream);
 
 /*! \brief Write an arc to an output stream in the gEDA schematic/symbol format
  *

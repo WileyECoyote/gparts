@@ -56,7 +56,7 @@ static const GtkTargetEntry schgui_clipboard_targets[] =
 
 
 static void
-schgui_clipboard_class_init(gpointer g_class, gpointer g_class_data);
+schgui_clipboard_class_init(void *g_class, void *g_class_data);
 
 static void
 schgui_clipboard_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
@@ -65,15 +65,15 @@ static void
 schgui_clipboard_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-schgui_clipboard_clear_cb(GtkClipboard *clipboard, gpointer user_data);
+schgui_clipboard_clear_cb(GtkClipboard *clipboard, void *user_data);
 
 static void
-schgui_clipboard_get_cb(GtkClipboard *clipboard, GtkSelectionData *data, guint info, gpointer user_data);
+schgui_clipboard_get_cb(GtkClipboard *clipboard, GtkSelectionData *data, guint info, void *user_data);
 
 
 
 static void
-schgui_clipboard_class_init(gpointer g_class, gpointer g_class_data)
+schgui_clipboard_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
 
@@ -179,79 +179,82 @@ schgui_clipboard_set_property(GObject *object, guint property_id, const GValue *
 void
 schgui_clipboard_copy_drawing(SchGUIClipboard *clipboard, SchDrawing *drawing)
 {
-    SchGUIClipboardPrivate *privat = SCHGUI_CLIPBOARD_GET_PRIVATE(clipboard);
+  SchGUIClipboardPrivate *privat = SCHGUI_CLIPBOARD_GET_PRIVATE(clipboard);
 
-    if (privat != NULL)
-    {
-        if (privat->drawing != NULL)
-        {
-            g_object_unref(privat->drawing);
-        }
+  if (privat != NULL) {
 
-        privat->drawing = drawing;
+    if (privat->drawing != NULL) {
 
-        if (privat->drawing != NULL)
-        {
-            g_object_ref(privat->drawing);
-
-            g_debug("Clipboard %p", privat->clipboard);
-            g_debug("%d", SCHGUI_CLIPBOARD_TARGET_COUNT(schgui_clipboard_targets));
-
-            gtk_clipboard_set_with_data(
-                privat->clipboard,
-                schgui_clipboard_targets,
-                SCHGUI_CLIPBOARD_TARGET_COUNT(schgui_clipboard_targets),
-                schgui_clipboard_get_cb,
-                schgui_clipboard_clear_cb,
-                clipboard
-                );
-        }
+      g_object_unref(privat->drawing);
     }
+
+    privat->drawing = drawing;
+
+    if (privat->drawing != NULL) {
+
+      g_object_ref(privat->drawing);
+
+      g_debug("Clipboard %p", privat->clipboard);
+      g_debug("%d", SCHGUI_CLIPBOARD_TARGET_COUNT(schgui_clipboard_targets));
+
+      gtk_clipboard_set_with_data(privat->clipboard,
+                                  schgui_clipboard_targets,
+                                  SCHGUI_CLIPBOARD_TARGET_COUNT(schgui_clipboard_targets),
+                                  schgui_clipboard_get_cb,
+                                  schgui_clipboard_clear_cb,
+                                  clipboard
+      );
+    }
+  }
 }
 
 static void
-schgui_clipboard_get_cb(GtkClipboard *clipboard, GtkSelectionData *data, guint info, gpointer user_data)
+schgui_clipboard_get_cb(GtkClipboard *clipboard, GtkSelectionData *data,
+                        unsigned int info,        void *user_data)
 {
-    SchGUIClipboardPrivate *privat = SCHGUI_CLIPBOARD_GET_PRIVATE(user_data);
+  SchGUIClipboardPrivate *privat = SCHGUI_CLIPBOARD_GET_PRIVATE(user_data);
 
-    if ((privat != NULL) && (privat->drawing != NULL))
-    {
-        GMemoryOutputStream *mstream = g_memory_output_stream_new(NULL, 0, g_realloc, g_free);
+  if ((privat != NULL) && (privat->drawing != NULL)) {
 
-        SchOutputStream *ostream = sch_output_stream_new(mstream);
+    GMemoryOutputStream *mostream;
+    GOutputStream       *ostream;
 
-        sch_drawing_write(privat->drawing, ostream);
+    ostream = g_memory_output_stream_new(NULL, 0, g_realloc, g_free);
 
-        g_debug("Get clipboard target: %d", info);
+    SchOutputStream *sostream = sch_output_stream_new(ostream);
 
-        switch (info)
-        {
-            case 1:
-                gtk_clipboard_set_text(
-                    clipboard,
-                    g_memory_output_stream_get_data(mstream),
-                    g_memory_output_stream_get_data_size(mstream)
-                    );
-                break;
+    sch_drawing_write(privat->drawing, sostream);
 
-            case 2:
-                gtk_selection_data_set(
-                    data,
-                    gdk_atom_intern("application/x-geda-schematic", FALSE),
-                    8,
-                    g_memory_output_stream_get_data(mstream),
-                    g_memory_output_stream_get_data_size(mstream)
-                    );
-               break;
-        }
+    g_debug("Get clipboard target: %d", info);
 
-        g_object_unref(ostream);
-        g_object_unref(mstream);
+    mostream = (GMemoryOutputStream*)sostream;
+
+    switch (info) {
+      case 1:
+
+        gtk_clipboard_set_text(clipboard,
+                               g_memory_output_stream_get_data(mostream),
+                               g_memory_output_stream_get_data_size(mostream));
+        break;
+
+      case 2:
+        gtk_selection_data_set(
+          data,
+          gdk_atom_intern("application/x-geda-schematic", FALSE),
+                               8,
+                               g_memory_output_stream_get_data(mostream),
+                               g_memory_output_stream_get_data_size(mostream)
+        );
+        break;
     }
+
+    g_object_unref(ostream);
+    g_object_unref(mostream);
+  }
 }
 
 static void
-schgui_clipboard_clear_cb(GtkClipboard *clipboard, gpointer user_data)
+schgui_clipboard_clear_cb(GtkClipboard *clipboard, void *user_data)
 {
     g_debug("clear");
 }
@@ -259,10 +262,8 @@ schgui_clipboard_clear_cb(GtkClipboard *clipboard, gpointer user_data)
 SchGUIClipboard*
 schgui_clipboard_new(void)
 {
-    return g_object_new(
-        SCHGUI_TYPE_CLIPBOARD,
-        "clipboard", gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
-        NULL
-        );
+    return g_object_new(SCHGUI_TYPE_CLIPBOARD,
+                        "clipboard",
+                        gtk_clipboard_get(GDK_SELECTION_CLIPBOARD), NULL);
 }
 
