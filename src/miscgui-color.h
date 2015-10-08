@@ -36,10 +36,10 @@ typedef struct _MiscGUIColor MiscGUIColor;
  */
 struct _MiscGUIColor
 {
-    gdouble red;
-    gdouble green;
-    gdouble blue;
-    gdouble alpha;
+    double red;
+    double green;
+    double blue;
+    double alpha;
 };
 
 /*! \brief Makes a copy of a line.
@@ -58,10 +58,11 @@ miscgui_color_copy(const MiscGUIColor *color);
  *  \public
  *  \memberof _MiscGUIColor
  *
- *  \param [in] color The color to free
+ *  \param [in] color Pointer to MiscGUIColor to free
  */
 void
-miscgui_color_free(MiscGUIColor *color);
+miscgui_color_free (void *color);
+//miscgui_color_free(MiscGUIColor *color);
 
 /* \private */
 GType

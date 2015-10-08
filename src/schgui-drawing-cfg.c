@@ -436,18 +436,18 @@ schgui_drawing_cfg_get_color_as_gdk_color(SchGUIDrawingCfg *config, int index, G
 {
     int enabled = FALSE;
 
-    if (index >= 0)
-    {
+    if (index >= 0) {
+
         SchGUIDrawingCfgPrivate *privat = SCHGUI_DRAWING_CFG_GET_PRIVATE(config);
 
-        if ((privat != NULL) && (privat->colors != NULL))
-        {
+        if ((privat != NULL) && (privat->colors != NULL)) {
+
             MiscGUIColor *value = g_hash_table_lookup(privat->colors, GINT_TO_POINTER(index));
 
-            if (value != NULL)
-            {
-                if (color != NULL)
-                {
+            if (value != NULL) {
+
+                if (color != NULL) {
+
                     color->red   = (guint16) (65535.0 * value->red);
                     color->green = (guint16) (65535.0 * value->green);
                     color->blue  = (guint16) (65535.0 * value->blue);
@@ -466,8 +466,8 @@ schgui_drawing_cfg_get_default_display(void)
 {
     static SchGUIDrawingCfg *config = NULL;
 
-    if (config == NULL)
-    {
+    if (config == NULL) {
+
         config = (SchGUIDrawingCfg*) g_object_new(SCHGUI_TYPE_DRAWING_CFG, NULL);
     }
 
@@ -479,8 +479,7 @@ schgui_drawing_cfg_get_default_print(void)
 {
     static SchGUIDrawingCfg *config = NULL;
 
-    if (config == NULL)
-    {
+    if (config == NULL) {
         config = (SchGUIDrawingCfg*) g_object_new(SCHGUI_TYPE_DRAWING_CFG, NULL);
     }
 
@@ -493,14 +492,13 @@ schgui_drawing_cfg_init(GTypeInstance *instance, gpointer g_class)
 {
     SchGUIDrawingCfgPrivate *privat = SCHGUI_DRAWING_CFG_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->colors = g_hash_table_new_full(
-            g_direct_hash,        /* hash_func          */
-            g_direct_equal,       /* key_equal_func     */
-            NULL,                 /* key_destroy_func   */
-            miscgui_color_free    /* value_destroy_func */
-            );
+          g_direct_hash,        /* hash_func          */
+          g_direct_equal,       /* key_equal_func     */
+          NULL,                 /* key_destroy_func   */
+          g_free);  /* value_destroy_func */
 
         schgui_drawing_cfg_set_color_by_name(
             SCHGUI_DRAWING_CFG(instance),
@@ -626,12 +624,12 @@ schgui_drawing_cfg_init(GTypeInstance *instance, gpointer g_class)
 void
 schgui_drawing_cfg_set_color_by_gdk_color(SchGUIDrawingCfg *config, int index, const GdkColor *color)
 {
-    if ((index >= 0) && (color != NULL))
-    {
+    if ((index >= 0) && (color != NULL)) {
+
         SchGUIDrawingCfgPrivate *privat = SCHGUI_DRAWING_CFG_GET_PRIVATE(config);
 
-        if ((privat != NULL) && (privat->colors != NULL))
-        {
+        if ((privat != NULL) && (privat->colors != NULL))  {
+
             MiscGUIColor *value = miscgui_color_new();
 
             value->red   = (double) color->red   / 65535.0;
@@ -640,8 +638,8 @@ schgui_drawing_cfg_set_color_by_gdk_color(SchGUIDrawingCfg *config, int index, c
 
             g_hash_table_replace(privat->colors, GINT_TO_POINTER(index), value);
 
-            if (index == 0)
-            {
+            if (index == 0) {
+
                 g_object_notify(G_OBJECT(config), "background");
             }
         }
@@ -651,19 +649,19 @@ schgui_drawing_cfg_set_color_by_gdk_color(SchGUIDrawingCfg *config, int index, c
 void
 schgui_drawing_cfg_set_color_by_name(SchGUIDrawingCfg *config, int index, const char *color)
 {
-    if ((index >= 0) && (color != NULL))
-    {
+    if ((index >= 0) && (color != NULL)) {
+
         SchGUIDrawingCfgPrivate *privat = SCHGUI_DRAWING_CFG_GET_PRIVATE(config);
 
-        if ((privat != NULL) && (privat->colors != NULL))
-        {
+        if ((privat != NULL) && (privat->colors != NULL)) {
+
             int      success;
             GdkColor value;
 
             success = gdk_color_parse(color, &value);
 
-            if (success)
-            {
+            if (success) {
+
                 schgui_drawing_cfg_set_color_by_gdk_color(config, index, &value);
             }
         }

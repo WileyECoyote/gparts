@@ -56,7 +56,7 @@ miscgui_color_get_type(void)
 }
 
 void
-miscgui_color_free(MiscGUIColor *color)
+miscgui_color_free(/* (MiscGUIColor*) */ void *color)
 {
     g_free(color);
 }
