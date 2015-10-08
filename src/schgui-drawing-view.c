@@ -48,55 +48,53 @@ struct _SchGUIDrawingViewPrivate
 };
 
 static void
-schgui_drawing_view_class_init(gpointer g_class, gpointer g_class_data);
+schgui_drawing_view_class_init(void *g_class, void *g_class_data);
 
 static void
-schgui_drawing_view_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+schgui_drawing_view_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-schgui_drawing_view_init(GTypeInstance *instance, gpointer g_class);
+schgui_drawing_view_init(GTypeInstance *instance, void *g_class);
 
 static void
 schgui_drawing_view_set_config(SchGUIDrawingView *widget, SchGUIConfig *config);
 
 static void
-schgui_drawing_view_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+schgui_drawing_view_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
-schgui_drawing_view_configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer user_data);
+schgui_drawing_view_configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, void *user_data);
 
 static void
-schgui_drawing_view_draw_event_cb(GtkWidget *widget, cairo_t *cairo, gpointer user_data);
+schgui_drawing_view_draw_event_cb(GtkWidget *widget, cairo_t *cairo, void *user_data);
 
 static void
-schgui_drawing_view_realize_cb(GtkWidget *widget, gpointer user_data);
+schgui_drawing_view_realize_cb(GtkWidget *widget, void *user_data);
 
 /**** Signal Handlers ****/
 
 static void
 schgui_drawing_view_bind_drawing(SchDrawing *drawing, SchGUIDrawingView *view);
 
-static void
-schgui_drawing_view_bind_shape(SchShape *shape, SchGUIDrawingView *view);
+//static void
+//schgui_drawing_view_bind_shape(SchShape *shape, SchGUIDrawingView *view);
 
 static void
 schgui_drawing_view_unbind_drawing(SchDrawing *drawing, SchGUIDrawingView *view);
 
-static void
-schgui_drawing_view_unbind_shape(SchShape *shape, SchGUIDrawingView *view);
+//static void
+//schgui_drawing_view_unbind_shape(SchShape *shape, SchGUIDrawingView *view);
 
-
-
+/*
 static void
 schgui_drawing_view_append_shape(SchDrawing *drawing, SchShape *shape, SchGUIDrawingView *view)
 {
 //    g_debug("schgui_drawing_view_append_shape");
 }
-
-
+*/
 
 static void
-schgui_drawing_view_class_init(gpointer g_class, gpointer g_class_data)
+schgui_drawing_view_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *klasse = G_OBJECT_CLASS(g_class);
 
@@ -143,26 +141,28 @@ schgui_drawing_view_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 
-
 static void
-schgui_drawing_view_bind_drawing(SchDrawing *drawing, SchGUIDrawingView *view)
+schgui_drawing_view_bind_shape(void *data, void *user_data)
 {
-//    g_debug("schgui_drawing_view_bind_drawing");
+//SchShape          *shape = data;
+//SchGUIDrawingView *view  = user_data;
 
-    if (drawing != NULL)
-    {
-        sch_drawing_foreach(drawing, schgui_drawing_view_bind_shape, view);
-    }
-}
-
-static void
-schgui_drawing_view_bind_shape(SchShape *shape, SchGUIDrawingView *view)
-{
 //    g_debug("schgui_drawing_view_bind_shape");
 }
 
 static void
-schgui_drawing_view_configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, gpointer user_data)
+schgui_drawing_view_bind_drawing(SchDrawing *drawing, SchGUIDrawingView *view)
+{
+  //    g_debug("schgui_drawing_view_bind_drawing");
+
+  if (drawing != NULL) {
+    sch_drawing_foreach(drawing, schgui_drawing_view_bind_shape, view);
+  }
+}
+
+
+static void
+schgui_drawing_view_configure_event_cb(GtkWidget *widget, GdkEventConfigure *event, void *user_data)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
 
@@ -214,7 +214,7 @@ schgui_drawing_view_get_drawing(SchGUIDrawingView *widget)
 }
 
 static void
-schgui_drawing_view_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+schgui_drawing_view_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(object);
 
@@ -240,7 +240,7 @@ schgui_drawing_view_get_property(GObject *object, guint property_id, GValue *val
 }
 
 static void
-schgui_drawing_view_realize_cb(GtkWidget *widget, gpointer user_data)
+schgui_drawing_view_realize_cb(GtkWidget *widget, void *user_data)
 {
     GdkColor color;
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
@@ -267,7 +267,7 @@ schgui_drawing_view_realize_cb(GtkWidget *widget, gpointer user_data)
  *
  */
 static void
-schgui_drawing_view_draw_event_cb(GtkWidget *widget, cairo_t *cairo, gpointer user_data)
+schgui_drawing_view_draw_event_cb(GtkWidget *widget, cairo_t *cairo, void *user_data)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
 
@@ -317,52 +317,42 @@ schgui_drawing_view_get_type(void)
 }
 
 static void
-schgui_drawing_view_init(GTypeInstance *instance, gpointer g_class)
+schgui_drawing_view_init(GTypeInstance *instance, void *g_class)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
-        SchGUIConfig *config = schgui_config_new();
+    if (privat != NULL) {
+
+        SchGUIDrawingView *widget = (SchGUIDrawingView*)instance;
+        SchGUIConfig      *config = schgui_config_new();
 
         g_debug("CONFIG %p", config);
 
-        schgui_drawing_view_set_config(
-            instance,
-            config
-            );
+        schgui_drawing_view_set_config(widget, config);
 
         privat->drafter = SCHGUI_CAIRO_DRAFTER(
             g_object_new(
                 SCHGUI_TYPE_CAIRO_DRAFTER,
                 "config", schgui_config_get_config_drawing_display(config),
-                NULL
-                )
-            );
+                NULL));
 
         g_object_unref(config);
     }
 
-    g_signal_connect(
-        G_OBJECT(instance),
-        "configure-event",
-        G_CALLBACK(schgui_drawing_view_configure_event_cb),
-        instance
-        );
+    g_signal_connect(G_OBJECT(instance),
+                     "configure-event",
+                     G_CALLBACK(schgui_drawing_view_configure_event_cb),
+                     instance);
 
-    g_signal_connect(
-        G_OBJECT(instance),
-        "draw",
-        G_CALLBACK(schgui_drawing_view_draw_event_cb),
-        instance
-        );
+    g_signal_connect(G_OBJECT(instance),
+                     "draw",
+                     G_CALLBACK(schgui_drawing_view_draw_event_cb),
+                     instance);
 
-    g_signal_connect(
-        G_OBJECT(instance),
-        "realize",
-        G_CALLBACK(schgui_drawing_view_realize_cb),
-        instance
-        );
+    g_signal_connect(G_OBJECT(instance),
+                     "realize",
+                     G_CALLBACK(schgui_drawing_view_realize_cb),
+                     instance);
 }
 
 SchGUIDrawingView*
@@ -371,53 +361,52 @@ schgui_drawing_view_new(void)
     return SCHGUI_DRAWING_VIEW(g_object_new(SCHGUI_TYPE_DRAWING_VIEW, NULL));
 }
 
+/*
 static void
-schgui_drawing_view_set_background_color(SchGUIDrawingView *widget, GdkColor *color)
+schgui_drawing_view_set_background_color(SchGUIDrawingView *view, GdkColor *color)
 {
-    SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
+  SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(view);
 
-    if (privat != NULL)
-    {
-        if (color != NULL)
-        {
-            privat->background_color = *color;
-        }
-        else
-        {
-            privat->background_color.red   = 0;
-            privat->background_color.green = 0;
-            privat->background_color.blue  = 0;
-        }
+  if (privat != NULL) {
 
-        if (gtk_widget_get_realized(GTK_WIDGET(widget)))
-        {
-            gtk_widget_modify_bg(
-                widget,
-                GTK_STATE_NORMAL,
-                &(privat->background_color)
-                );
-        }
+    GtkWidget *widget = GTK_WIDGET(view);
 
-        gtk_widget_queue_draw(GTK_WIDGET(widget));
+    if (color != NULL) {
+
+      privat->background_color = *color;
     }
+    else {
+
+      privat->background_color.red   = 0;
+      privat->background_color.green = 0;
+      privat->background_color.blue  = 0;
+    }
+
+    if (gtk_widget_get_realized(widget)) {
+      gtk_widget_modify_bg(widget, GTK_STATE_NORMAL, &(privat->background_color));
+    }
+
+    gtk_widget_queue_draw(widget);
+  }
 }
+*/
 
 static void
 schgui_drawing_view_set_config(SchGUIDrawingView *widget, SchGUIConfig *config)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
 
-    if (privat != NULL)
-    {
-        if (privat->config != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->config != NULL) {
+
             g_object_unref(privat->config);
         }
 
         privat->config = config;
 
-        if (privat->config != NULL)
-        {
+        if (privat->config != NULL) {
+
             g_object_ref(privat->config);
         }
 
@@ -430,10 +419,10 @@ schgui_drawing_view_set_drawing(SchGUIDrawingView *widget, SchDrawing *drawing)
 {
     SchGUIDrawingViewPrivate *privat = SCHGUI_DRAWING_VIEW_GET_PRIVATE(widget);
 
-    if (privat != NULL)
-    {
-        if (privat->drawing != NULL)
-        {
+    if (privat != NULL)  {
+
+        if (privat->drawing != NULL)  {
+
             schgui_drawing_view_unbind_drawing(drawing, widget);
 
             g_object_unref(privat->drawing);
@@ -441,15 +430,15 @@ schgui_drawing_view_set_drawing(SchGUIDrawingView *widget, SchDrawing *drawing)
 
         privat->drawing = drawing;
 
-        if (privat->drawing != NULL)
-        {
+        if (privat->drawing != NULL) {
+
             g_object_ref(privat->drawing);
 
             schgui_drawing_view_bind_drawing(drawing, widget);
         }
 
-        if (privat->drafter != NULL)
-        {
+        if (privat->drafter != NULL) {
+
             schgui_cairo_drafter_set_drawing(privat->drafter, privat->drawing);
 
             schgui_drawing_view_zoom_extents(widget);
@@ -462,36 +451,36 @@ schgui_drawing_view_set_drawing(SchGUIDrawingView *widget, SchDrawing *drawing)
 }
 
 static void
-schgui_drawing_view_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+schgui_drawing_view_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
-    switch (property_id)
-    {
-        case SCHGUI_DRAWING_VIEW_DRAWING:
-            schgui_drawing_view_set_drawing(SCHGUI_DRAWING_VIEW(object), g_value_get_object(value));
-            break;
+  switch (property_id) {
+    case SCHGUI_DRAWING_VIEW_DRAWING:
+      schgui_drawing_view_set_drawing(SCHGUI_DRAWING_VIEW(object), g_value_get_object(value));
+      break;
 
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-    }
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+  }
+}
+
+static void
+schgui_drawing_view_unbind_shape(void *data, void *user_data)
+{
+// SchShape *shape = data;
+// SchGUIDrawingView *view = user_data;
+
+// g_debug("schgui_drawing_view_unbind_shape");
 }
 
 static void
 schgui_drawing_view_unbind_drawing(SchDrawing *drawing, SchGUIDrawingView *view)
 {
-//    g_debug("schgui_drawing_view_unbind_drawing");
+  //    g_debug("schgui_drawing_view_unbind_drawing");
 
-    if (drawing != NULL)
-    {
-        sch_drawing_foreach(drawing, schgui_drawing_view_unbind_shape, view);
-    }
+  if (drawing != NULL) {
+    sch_drawing_foreach(drawing, schgui_drawing_view_unbind_shape, view);
+  }
 }
-
-static void
-schgui_drawing_view_unbind_shape(SchShape *shape, SchGUIDrawingView *view)
-{
-//    g_debug("schgui_drawing_view_unbind_shape");
-}
-
 
 void
 schgui_drawing_view_zoom_extents(SchGUIDrawingView *widget)

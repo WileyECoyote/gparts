@@ -207,20 +207,20 @@ schgui_config_set_property(GObject *object, guint property_id, const GValue *val
 SchGUIDrawingCfg*
 schgui_config_get_config_drawing_display(const SchGUIConfig *config)
 {
-    SchGUIDrawingCfg *config_drawing = NULL;
-    SchGUIConfigPrivate *privat = SCHGUI_CONFIG_GET_PRIVATE(config);
+  SchGUIDrawingCfg    *config_drawing = NULL;
+  SchGUIConfigPrivate *privat         = SCHGUI_CONFIG_GET_PRIVATE(config);
 
-    if (privat != NULL)
-    {
-        config_drawing = privat->config_drawing_display;
+  if (privat != NULL) {
 
-        if (config_drawing != NULL)
-        {
-            g_object_ref(config_drawing);
-        }
+    config_drawing = privat->config_drawing_display;
+
+    if (config_drawing != NULL) {
+
+      g_object_ref(config_drawing);
     }
+  }
 
-    return config_drawing;
+  return config_drawing;
 }
 
 SchGUIDrawingCfg*
@@ -229,12 +229,11 @@ schgui_config_get_config_drawing_print(const SchGUIConfig *config)
     SchGUIDrawingCfg *config_drawing = NULL;
     SchGUIConfigPrivate *privat = SCHGUI_CONFIG_GET_PRIVATE(config);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         config_drawing = privat->config_drawing_print;
 
-        if (config_drawing != NULL)
-        {
+        if (config_drawing != NULL) {
             g_object_ref(config_drawing);
         }
     }
