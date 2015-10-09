@@ -22,7 +22,7 @@
  */
 
 #include <config.h>
-
+#include <stdlib.h>
 #include <glib.h>
 #include <glib-object.h>
 
@@ -31,28 +31,28 @@
 char*
 scmcfg_dirs_find_geda_config(void)
 {
-    char *ddir = g_getenv("GEDADATARC");
-    char *path = NULL;
+  const char *ddir = getenv("GEDADATARC");
+  char *path = NULL;
 
-    if (ddir != NULL)
-    {
-        if (g_file_test(ddir, G_FILE_TEST_IS_DIR))
-        {
-            path = g_strdup(ddir);
-        }
+  if (ddir != NULL) {
+
+    if (g_file_test(ddir, G_FILE_TEST_IS_DIR)) {
+
+      path = g_strdup(ddir);
     }
+  }
 
 #ifdef GEDA_RC_DIR
 
-    if (path == NULL)
-    {
-        g_debug("Checking built-in path %s", GEDA_RC_DIR);
+  if (path == NULL) {
 
-        if (g_file_test(GEDA_RC_DIR, G_FILE_TEST_IS_DIR))
-        {
-            path = g_strdup(GEDA_RC_DIR);
-        }
+    g_debug("Checking built-in path %s", GEDA_RC_DIR);
+
+    if (g_file_test(GEDA_RC_DIR, G_FILE_TEST_IS_DIR)) {
+
+      path = g_strdup(GEDA_RC_DIR);
     }
+  }
 
 #else
 
@@ -60,58 +60,56 @@ scmcfg_dirs_find_geda_config(void)
 
 #endif
 
-    if (path == NULL)
-    {
-        const char *const *temp = g_get_system_config_dirs();
+  if (path == NULL)  {
 
-        while (*temp != NULL)
-        {
-            path = g_build_filename(*temp, "gEDA", NULL);
+    const char *const *temp = g_get_system_config_dirs();
 
-            g_debug("Checking path %s", path);
+    while (*temp != NULL) {
 
-            if (g_file_test(path, G_FILE_TEST_IS_DIR))
-            {
-                break;
-            }
+      path = g_build_filename(*temp, "gEDA", NULL);
 
-            g_free(path);
-            path = NULL;
+      g_debug("Checking path %s", path);
 
-            temp++;
-        }
+      if (g_file_test(path, G_FILE_TEST_IS_DIR))  {
+        break;
+      }
+
+      g_free(path);
+      path = NULL;
+
+      temp++;
     }
+  }
 
-    if (path == NULL)
-    {
-        path = scmcfg_dirs_find_geda_data();
-    }
+  if (path == NULL) {
+    path = scmcfg_dirs_find_geda_data();
+  }
 
-    return path;
+  return path;
 }
 
 char*
 scmcfg_dirs_find_geda_data(void)
 {
-    char *ddir = g_getenv("GEDADATADIR");
+    const char *ddir = getenv("GEDADATADIR");
     char *path = NULL;
 
-    if (ddir != NULL)
-    {
-        if (g_file_test(ddir, G_FILE_TEST_IS_DIR))
-        {
-            path = g_strdup(ddir);
+    if (ddir != NULL) {
+
+        if (g_file_test(ddir, G_FILE_TEST_IS_DIR)) {
+
+          path = g_strdup(ddir);
         }
     }
 
 #ifdef GEDA_DATA_DIR
 
-    if (path == NULL)
-    {
+    if (path == NULL) {
+
         g_debug("Checking built-in path %s", GEDA_DATA_DIR);
 
-        if (g_file_test(GEDA_DATA_DIR, G_FILE_TEST_IS_DIR))
-        {
+        if (g_file_test(GEDA_DATA_DIR, G_FILE_TEST_IS_DIR)) {
+
             path = g_strdup(GEDA_DATA_DIR);
         }
     }
@@ -122,18 +120,18 @@ scmcfg_dirs_find_geda_data(void)
 
 #endif
 
-    if (path == NULL)
-    {
+    if (path == NULL) {
+
         const char *const *temp = g_get_system_data_dirs();
 
-        while (*temp != NULL)
-        {
+        while (*temp != NULL) {
+
             path = g_build_filename(*temp, "gEDA", NULL);
 
             g_debug("Checking path %s", path);
 
-            if (g_file_test(path, G_FILE_TEST_IS_DIR))
-            {
+            if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+
                 break;
             }
 
@@ -150,29 +148,29 @@ scmcfg_dirs_find_geda_data(void)
 char*
 scmcfg_dirs_find_gparts_data(void)
 {
-    char *ddir = g_getenv("GPARTSDATADIR");
+    const char *ddir = getenv("GPARTSDATADIR");
     char *path = NULL;
 
-    if (ddir != NULL)
-    {
+    if (ddir != NULL) {
+
         g_debug("Checking GParts path %s", ddir);
 
-        if (g_file_test(ddir, G_FILE_TEST_IS_DIR))
-        {
+        if (g_file_test(ddir, G_FILE_TEST_IS_DIR)) {
+
             path = g_strdup(ddir);
         }
     }
 
 #ifdef DATADIR
 
-    if (path == NULL)
-    {
+    if (path == NULL) {
+
         path = g_build_filename(DATADIR, PACKAGE_NAME, NULL);
 
         g_debug("Checking GParts path %s", path);
 
-        if (!g_file_test(path, G_FILE_TEST_IS_DIR))
-        {
+        if (!g_file_test(path, G_FILE_TEST_IS_DIR)) {
+
             g_free(path);
             path = NULL;
         }
@@ -180,18 +178,18 @@ scmcfg_dirs_find_gparts_data(void)
 
 #endif
 
-    if (path == NULL)
-    {
+    if (path == NULL) {
+
         const char *const *temp = g_get_system_data_dirs();
 
-        while (*temp != NULL)
-        {
+        while (*temp != NULL) {
+
             path = g_build_filename(*temp, PACKAGE_NAME, NULL);
 
             g_debug("Checking GParts path %s", path);
 
-            if (g_file_test(path, G_FILE_TEST_IS_DIR))
-            {
+            if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
+
                 break;
             }
 
@@ -204,4 +202,3 @@ scmcfg_dirs_find_gparts_data(void)
 
     return path;
 }
-
