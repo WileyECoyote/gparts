@@ -51,14 +51,14 @@ SCM_DEFINE(always_promote_attributes, "always-promote-attributes", 1, 0, 0, (SCM
 {
     SchConfig *config = sch_config_new();
 
-    if (config != NULL)
-    {
+    if (config != NULL) {
+
         int    index;
         GArray *list = g_array_new(TRUE, FALSE, sizeof(char*));
         SCM    temp = a;
 
-        while (temp != SCM_EOL)
-        {
+        while (temp != SCM_EOL) {
+
             char *name = scm_to_locale_string(scm_car(temp));
 
             g_array_append_val(list, name);
@@ -354,6 +354,7 @@ scmcfg_config_init_inner(void* data)
 {
     char *configdir;
     char *datadir;
+    char *filename;
 
     SCM scm1;
 
@@ -377,13 +378,11 @@ scmcfg_config_init_inner(void* data)
 
     g_debug("Here");
 
-    scm_variable_set_x(
-        scm1,
-        scm_cons(
-            scm_from_locale_string(g_build_filename(datadir,"scheme")),
-            scm_variable_ref(scm1)
-            )
-        );
+    filename = g_build_filename(datadir, "scheme", NULL);
+
+    scm_variable_set_x (scm1,
+                        scm_cons (scm_from_locale_string(filename),
+                                  scm_variable_ref(scm1)));
 
     g_debug("Here");
 
@@ -407,10 +406,10 @@ static void*
 scmcfg_config_load_inner(void* data)
 {
     char *datapath = scmcfg_dirs_find_geda_config();
-    SCM loaded = SCM_BOOL_F;
+    SCM   loaded   = SCM_BOOL_F;
 
-    if (datapath != NULL)
-    {
+    if (datapath != NULL) {
+
         char *pathname = g_build_filename(datapath, "system-gafrc", NULL);
 
         g_debug("Attempting to load %s\n", pathname);
@@ -427,8 +426,8 @@ scmcfg_config_load_inner(void* data)
         g_free(pathname);
     }
 
-    if (loaded == SCM_BOOL_F)
-    {
+    if (loaded == SCM_BOOL_F) {
+
         g_warning("Unable to locate a system-gafrc");
 
         /* should an error be thrown here? */
@@ -438,8 +437,8 @@ scmcfg_config_load_inner(void* data)
 
     datapath = scmcfg_dirs_find_gparts_data();
 
-    if (datapath != NULL)
-    {
+    if (datapath != NULL) {
+
         char *pathname = g_build_filename(datapath, "system-gpartsrc", NULL);
 
         g_debug("Attempting to load %s\n", pathname);
@@ -457,8 +456,8 @@ scmcfg_config_load_inner(void* data)
         g_free(pathname);
     }
 
-    if (loaded == SCM_BOOL_F)
-    {
+    if (loaded == SCM_BOOL_F) {
+
         g_warning("Unable to locate a system-gpartsrc");
 
         /* should an error be thrown here? */
