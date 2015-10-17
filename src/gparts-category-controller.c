@@ -45,13 +45,13 @@ struct _GPartsCategoryControllerPrivate
 /**** Private functions ****/
 
 static void
-gparts_category_controller_class_init(gpointer g_class, gpointer g_class_data);
+gparts_category_controller_class_init(void *g_class, void *g_class_data);
 
 static void
 gparts_category_controller_dispose(GObject *object);
 
-static gchar*
-gparts_category_controller_get_field(GPartsCategoryController *controller, const gchar *name);
+static char*
+gparts_category_controller_get_field(GPartsController *controller, const char *name);
 
 static void
 gparts_category_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
@@ -81,7 +81,7 @@ gparts_category_controller_changed_cb(GtkTreeSelection *selection, GPartsCategor
 }
 
 static void
-gparts_category_controller_class_init(gpointer g_class, gpointer g_class_data)
+gparts_category_controller_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass* object_class = G_OBJECT_CLASS(g_class);
     GPartsControllerClass *klasse = GPARTS_CONTROLLER_CLASS(g_class);
@@ -98,29 +98,22 @@ gparts_category_controller_class_init(gpointer g_class, gpointer g_class_data)
     g_object_class_install_property(
         object_class,
         GPARTS_CATEGORY_CONTROLLER_PROPID_DATABASE_MODEL,
-        g_param_spec_object(
-            "database-model",
-            "",
-            "",
-            GPARTSUI_TYPE_DATABASE_MODEL,
-            G_PARAM_READWRITE
-            )
-        );
+        g_param_spec_object("database-model",
+                            "",
+                            "",
+                            GPARTSUI_TYPE_DATABASE_MODEL,
+                            G_PARAM_READWRITE));
 
     g_object_class_install_property(
         object_class,
         GPARTS_CATEGORY_CONTROLLER_PROPID_TARGET,
-        g_param_spec_object(
-            "target",
-            "",
-            "",
-            GTK_TYPE_TREE_VIEW,
-            G_PARAM_READWRITE
-            )
-       );
+        g_param_spec_object("target",
+                            "",
+                            "",
+                            GTK_TYPE_TREE_VIEW,
+                            G_PARAM_READWRITE));
 
-     g_signal_new(
-        "updated",
+     g_signal_new("updated",
         G_TYPE_FROM_CLASS(object_class),
         G_SIGNAL_RUN_FIRST,
         0,
@@ -128,8 +121,7 @@ gparts_category_controller_class_init(gpointer g_class, gpointer g_class_data)
         NULL,
         g_cclosure_marshal_VOID__VOID,
         G_TYPE_NONE,
-        0
-        );
+        0);
 }
 
 static void
@@ -149,21 +141,21 @@ gparts_category_controller_dispose(GObject *object)
     misc_object_chain_dispose(object);
 }
 
-static gchar*
-gparts_category_controller_get_field(GPartsCategoryController *controller, const gchar *name)
+static char*
+gparts_category_controller_get_field(GPartsController *controller, const char *name)
 {
     GtkTreeIter iter;
     GtkTreeModel *model;
     GPartsCategoryControllerPrivate *privat = GPARTS_CATEGORY_CONTROLLER_GET_PRIVATE(controller);
     gboolean success;
-    gchar *value = NULL;
+    char *value = NULL;
 
     g_debug("get field");
 
     success = gtk_tree_selection_get_selected(privat->selection, &model, &iter);
 
-    if (success && GPARTS_IS_CATEGORY_MODEL(model))
-    {
+    if (success && GPARTS_IS_CATEGORY_MODEL(model)) {
+
         value = gparts_category_model_get_field(GPARTS_CATEGORY_MODEL(model), &iter, name);
     }
 
@@ -177,8 +169,8 @@ gparts_category_controller_get_type(void)
 {
     static GType type = 0;
 
-    if ( type == 0 )
-    {
+    if ( type == 0 ) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsCategoryControllerClass),
             NULL,
@@ -238,36 +230,34 @@ gparts_category_controller_set_database_model(GPartsCategoryController *controll
 {
     GPartsCategoryControllerPrivate *privat = GPARTS_CATEGORY_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->database_model != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->database_model != NULL) {
+
             g_signal_handlers_disconnect_by_func(
                 privat->database_model,
                 G_CALLBACK(gparts_category_controller_database_model_notify_cb),
-                controller
-                );
+                controller);
 
             g_object_unref(privat->database_model);
         }
 
         privat->database_model = database;
 
-        if (privat->database_model != NULL)
-        {
+        if (privat->database_model != NULL) {
+
             g_object_ref(privat->database_model);
 
             g_signal_connect(
                 privat->database_model,
                 "notify::database",
                 G_CALLBACK(gparts_category_controller_database_model_notify_cb),
-                controller
-                );
+                controller);
         }
 
         gparts_category_controller_update(controller);
 
-        g_object_notify(controller, "database-model");
+        g_object_notify(G_OBJECT(controller), "database-model");
     }
 }
 
@@ -276,41 +266,36 @@ gparts_category_controller_set_target(GPartsCategoryController *controller, GtkT
 {
     GPartsCategoryControllerPrivate *private = GPARTS_CATEGORY_CONTROLLER_GET_PRIVATE(controller);
 
-    if (private->selection != NULL)
-    {
-         g_signal_handlers_disconnect_by_func(
-            private->selection,
+    if (private->selection != NULL) {
+
+         g_signal_handlers_disconnect_by_func(private->selection,
             G_CALLBACK(gparts_category_controller_changed_cb),
-            controller
-            );
+            controller);
 
         g_object_unref(private->selection);
     }
 
-    if (private->target != NULL)
-    {
+    if (private->target != NULL) {
+
         g_object_unref(private->target);
     }
 
     private->selection = NULL;
     private->target = target;
 
-    if (private->target != NULL)
-    {
+    if (private->target != NULL) {
+
         g_object_ref(private->target);
 
         private->selection = gtk_tree_view_get_selection(private->target);
 
-        if (private->selection != NULL)
-        {
+        if (private->selection != NULL) {
+
             g_object_ref(private->selection);
 
-            g_signal_connect(
-                private->selection,
-                "changed",
+            g_signal_connect(private->selection, "changed",
                 G_CALLBACK(gparts_category_controller_changed_cb),
-                controller
-                );
+                controller);
         }
     }
 
@@ -322,18 +307,18 @@ gparts_category_controller_update(GPartsCategoryController *controller)
 {
     GPartsCategoryControllerPrivate *privat = GPARTS_CATEGORY_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->target != NULL)
-    {
+    if (privat->target != NULL) {
+
         GPartsCategoryModel *model = NULL;
         GPartsDatabase *database = NULL;
 
-        if (privat->database_model != NULL)
-        {
+        if (privat->database_model != NULL) {
+
             database = gpartsui_database_model_get_database(privat->database_model);
         }
 
-        if (database != NULL)
-        {
+        if (database != NULL) {
+
             model = gparts_category_model_new(database);
 
             gparts_category_model_set_columns(model, privat->target);
@@ -341,10 +326,9 @@ gparts_category_controller_update(GPartsCategoryController *controller)
 
         gtk_tree_view_set_model(privat->target, GTK_TREE_MODEL(model));
 
-        if (model != NULL)
-        {
+        if (model != NULL) {
+
             g_object_unref(model);
         }
     }
 }
-
