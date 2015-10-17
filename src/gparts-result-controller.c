@@ -49,16 +49,16 @@ struct _GPartsResultControllerPrivate
     GtkTreeSelection      *selection;
     GObject               *source;
     GtkTreeView           *target;
-    gchar                 *template;
-    gchar                 *view_name;
+    char                 *template;
+    char                 *view_name;
 
     GtkAction             *edit_action;
 
-    gchar                 *sort_column;
+    char                 *sort_column;
     gint                  sort_order;
 };
 
-static gchar*
+static char*
 gparts_result_controller_build(GPartsResultController *controller);
 
 static void
@@ -79,14 +79,17 @@ gparts_result_controller_dispose(GObject *object);
 static void
 gparts_result_controller_finalize(GObject *object);
 
-static gchar*
-gparts_result_controller_get_field(GPartsController *controller, const gchar *name);
+static char*
+gparts_result_controller_get_field(GPartsController *controller, const char *name);
 
 static GHashTable*
-gparts_result_controller_get_table(GPartsResultController *controller);
+gparts_result_controller_get_table(GPartsController *controller);
 
 static void
 gparts_result_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+
+void gparts_result_controller_set_database_model(GPartsResultController *controller,
+                                                 GPartsUIDatabaseModel  *model);
 
 static void
 gparts_result_controller_set_sort_indicators(GPartsResultController *controller);
@@ -114,7 +117,7 @@ gparts_result_controller_edit_columns_cb(gpointer unused, GPartsResultController
 static
 gparts_result_controller_notify_focus_cb(GtkWidget *widget, GParamSpec *pspec, GPartsResultController *controller);
 
-static gboolean
+static int
 gparts_result_controller_popup_menu_cb(GtkWidget *widget, GPartsResultController *controller);
 
 static void
@@ -151,127 +154,104 @@ gparts_result_controller_class_init(gpointer g_class, gpointer g_class_data)
     klasse->get_table = gparts_result_controller_get_table;
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_DATABASE_MODEL,
-        g_param_spec_object(
-            "database-model",
-            "",
-            "",
-            GPARTSUI_TYPE_DATABASE_MODEL,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_DATABASE_MODEL,
+      g_param_spec_object("database-model",
+                          "",
+                          "",
+                          GPARTSUI_TYPE_DATABASE_MODEL,
+                          G_PARAM_READWRITE));
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_CUSTOMIZE_CTRL,
-        g_param_spec_object(
-            "customize-ctrl",
-            "",
-            "",
-            G_TYPE_OBJECT,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_CUSTOMIZE_CTRL,
+      g_param_spec_object("customize-ctrl",
+                          "",
+                          "",
+                          G_TYPE_OBJECT,
+                          G_PARAM_READWRITE));
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_SOURCE,
-        g_param_spec_object(
-            "source",
-            "",
-            "",
-            G_TYPE_OBJECT,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_SOURCE,
+      g_param_spec_object("source",
+                          "",
+                          "",
+                          G_TYPE_OBJECT,
+                          G_PARAM_READWRITE));
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_TARGET,
-        g_param_spec_object(
-            "target",
-            "",
-            "",
-            GTK_TYPE_TREE_VIEW,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_TARGET,
+      g_param_spec_object("target",
+                          "",
+                          "",
+                          GTK_TYPE_TREE_VIEW,
+                          G_PARAM_READWRITE));
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_TEMPLATE,
-        g_param_spec_string(
-            "template",
-            "",
-            "",
-            NULL,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_TEMPLATE,
+      g_param_spec_string("template",
+                          "",
+                          "",
+                          NULL,
+                          G_PARAM_READWRITE));
 
     g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_RESULT_NAME,
-        g_param_spec_string(
-            "view-name",
-            "",
-            "",
-            NULL,
-            G_PARAM_READWRITE
-            )
-        );
+      object_class,
+      GPARTS_RESULT_CONTROLLER_PROPID_RESULT_NAME,
+      g_param_spec_string("view-name",
+                          "",
+                          "",
+                          NULL,
+                          G_PARAM_READWRITE));
 
-    g_object_class_install_property(
-        object_class,
-        GPARTS_RESULT_CONTROLLER_PROPID_EDIT_ACTION,
-        g_param_spec_object(
-            "edit-action",
-            "",
-            "",
-            GTK_TYPE_ACTION,
-            G_PARAM_READWRITE
-            )
-        );
+    g_object_class_install_property(object_class,
+                                    GPARTS_RESULT_CONTROLLER_PROPID_EDIT_ACTION,
+                                    g_param_spec_object(
+                                      "edit-action",
+                                      "",
+                                      "",
+                                      GTK_TYPE_ACTION,
+                                      G_PARAM_READWRITE));
 
 
-     g_signal_new(
-        "updated",
-        G_TYPE_FROM_CLASS(object_class),
-        G_SIGNAL_RUN_FIRST,
-        0,
-        NULL,
-        NULL,
-        g_cclosure_marshal_VOID__VOID,
-        G_TYPE_NONE,
-        0
-        );
+    g_signal_new( "updated",
+                  G_TYPE_FROM_CLASS(object_class),
+                  G_SIGNAL_RUN_FIRST,
+                  0,
+                  NULL,
+                  NULL,
+                  g_cclosure_marshal_VOID__VOID,
+                  G_TYPE_NONE,
+                  0);
 }
 
 static void
 gparts_result_controller_column_clicked_cb(GtkTreeViewColumn *column, gpointer user_data)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(user_data);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(user_data);
 
-    if (privat->sort_column == NULL)
+    if (priv->sort_column == NULL)
     {
-        privat->sort_column = g_strdup(gtk_tree_view_column_get_title(column));
-        privat->sort_order = GTK_SORT_ASCENDING;
+        priv->sort_column = g_strdup(gtk_tree_view_column_get_title(column));
+        priv->sort_order = GTK_SORT_ASCENDING;
     }
-    else if (g_strcmp0(privat->sort_column, gtk_tree_view_column_get_title(column)) != 0)
+    else if (g_strcmp0(priv->sort_column, gtk_tree_view_column_get_title(column)) != 0)
     {
-        g_free(privat->sort_column);
-        privat->sort_column = g_strdup(gtk_tree_view_column_get_title(column));
-        privat->sort_order = GTK_SORT_ASCENDING;
+        g_free(priv->sort_column);
+        priv->sort_column = g_strdup(gtk_tree_view_column_get_title(column));
+        priv->sort_order = GTK_SORT_ASCENDING;
     }
-    else if (privat->sort_order == GTK_SORT_ASCENDING)
+    else if (priv->sort_order == GTK_SORT_ASCENDING)
     {
-        privat->sort_order = GTK_SORT_DESCENDING;
+        priv->sort_order = GTK_SORT_DESCENDING;
     }
     else
     {
-        g_free(privat->sort_column);
-        privat->sort_column = NULL;
+        g_free(priv->sort_column);
+        priv->sort_column = NULL;
     }
 
     gparts_result_controller_refresh(user_data);
@@ -286,22 +266,19 @@ gparts_result_controller_connect_columns(GPartsResultController *controller)
 {
     GtkTreeViewColumn *column;
     gint index = 0;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    column = gtk_tree_view_get_column(privat->target, index++);
+    column = gtk_tree_view_get_column(priv->target, index++);
 
-    while (column != NULL)
-    {
+    while (column != NULL) {
+
         gtk_tree_view_column_set_clickable(column, TRUE);
 
-        g_signal_connect(
-            column,
-            "clicked",
+        g_signal_connect(column, "clicked",
             G_CALLBACK(gparts_result_controller_column_clicked_cb),
-            controller
-            );
+            controller);
 
-        column = gtk_tree_view_get_column(privat->target, index++);
+        column = gtk_tree_view_get_column(priv->target, index++);
     }
 }
 
@@ -316,19 +293,19 @@ gparts_result_controller_disconnect_columns(GPartsResultController *controller)
 {
     GtkTreeViewColumn *column;
     gint index = 0;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    column = gtk_tree_view_get_column(privat->target, index++);
+    column = gtk_tree_view_get_column(priv->target, index++);
 
-    while (column != NULL)
-    {
+    while (column != NULL) {
+
         g_signal_handlers_disconnect_by_func(
             column,
             G_CALLBACK(gparts_result_controller_column_clicked_cb),
             controller
             );
 
-        column = gtk_tree_view_get_column(privat->target, index++);
+        column = gtk_tree_view_get_column(priv->target, index++);
     }
 }
 
@@ -352,24 +329,24 @@ gparts_result_controller_dispose(GObject *object)
 static void
 gparts_result_controller_finalize(GObject *object)
 {
-    GPartsResultControllerPrivate *private = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(object);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(object);
 
-    g_free(private->template);
-    g_free(private->view_name);
+    g_free(priv->template);
+    g_free(priv->view_name);
 
     misc_object_chain_finalize(object);
 }
 
-static gchar*
-gparts_result_controller_get_field(GPartsController *controller, const gchar *name)
+static char*
+gparts_result_controller_get_field(GPartsController *controller, const char *name)
 {
     GtkTreeIter iter;
     GtkTreeModel *model;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
-    gboolean success;
-    gchar *value = NULL;
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    int success;
+    char *value = NULL;
 
-    success = gtk_tree_selection_get_selected(privat->selection, &model, &iter);
+    success = gtk_tree_selection_get_selected(priv->selection, &model, &iter);
 
     if (success && GPARTS_IS_RESULT_MODEL(model))
     {
@@ -380,33 +357,30 @@ gparts_result_controller_get_field(GPartsController *controller, const gchar *na
 }
 
 static GHashTable*
-gparts_result_controller_get_table(GPartsResultController *controller)
+gparts_result_controller_get_table(GPartsController *controller)
 {
-    GtkTreeViewColumn *column;
-    gint index = 0;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
-    GHashTable *table = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+  GtkTreeViewColumn *column;
+  gint index = 0;
+  GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+  GHashTable *table = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
-    column = gtk_tree_view_get_column(privat->target, index++);
+  column = gtk_tree_view_get_column(priv->target, index++);
 
-    while (column != NULL)
-    {
-        const gchar *name;
-        gchar *value;
+  while (column != NULL) {
 
-        name = g_strdup(gtk_tree_view_column_get_title(column));
+    char *name;
+    char *value;
 
-        value = gparts_result_controller_get_field(
-            controller,
-            name
-            );
+    name = g_strdup(gtk_tree_view_column_get_title(column));
 
-        g_hash_table_insert(table, name, value);
+    value = gparts_result_controller_get_field(controller, name);
 
-        column = gtk_tree_view_get_column(privat->target, index++);
-    }
+    g_hash_table_insert(table, name, value);
 
-    return table;
+    column = gtk_tree_view_get_column(priv->target, index++);
+  }
+
+  return table;
 }
 
 
@@ -415,8 +389,8 @@ gparts_result_controller_get_type(void)
 {
     static GType type = 0;
 
-    if ( type == 0 )
-    {
+    if ( type == 0 ) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsResultControllerClass),
             NULL,
@@ -455,23 +429,23 @@ void
 gparts_result_controller_refresh(GPartsResultController *controller)
 {
     GPartsDatabase *database = NULL;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
     GPartsDatabaseResult *result = NULL;
 
-    if (privat->database_model != NULL)
-    {
-        database = gpartsui_database_model_get_database(privat->database_model);
+    if (priv->database_model != NULL) {
+
+        database = gpartsui_database_model_get_database(priv->database_model);
     }
 
     if (database != NULL &&
-        privat->target != NULL &&
-        privat->template != NULL &&
-        gtk_widget_get_visible(privat->target))
+        priv->target != NULL &&
+        priv->template != NULL &&
+        gtk_widget_get_visible(GTK_WIDGET(priv->target)))
     {
-        gchar *query = gparts_result_controller_build(controller);
+        char *query = gparts_result_controller_build(controller);
 
-        if (query != NULL)
-        {
+        if (query != NULL) {
+
             result = gparts_database_query(database, query, NULL);
             g_free(query);
         }
@@ -489,17 +463,17 @@ gparts_result_controller_refresh_cb(gpointer unknown, GPartsResultController *co
 static
 gparts_result_controller_notify_focus_cb(GtkWidget *widget, GParamSpec *pspec, GPartsResultController *controller)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->customize_ctrl != NULL)
-    {
-        if (gtk_widget_has_focus(widget))
-        {
-            gparts_customize_ctrl_set_target_view(privat->customize_ctrl, widget);
+    if (priv->customize_ctrl != NULL) {
+
+        if (gtk_widget_has_focus(widget)) {
+
+            gparts_customize_ctrl_set_target_view(priv->customize_ctrl, GTK_TREE_VIEW(widget));
         }
-        else
-        {
-            gparts_customize_ctrl_set_target_view(privat->customize_ctrl, NULL);
+        else {
+
+            gparts_customize_ctrl_set_target_view(priv->customize_ctrl, NULL);
         }
     }
 }
@@ -507,33 +481,30 @@ gparts_result_controller_notify_focus_cb(GtkWidget *widget, GParamSpec *pspec, G
 static void
 gparts_result_controller_set_edit_action(GPartsResultController *controller, GtkAction *action)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->edit_action != action)
-    {
-        if (privat->edit_action != NULL)
-        {
+    if (priv->edit_action != action) {
+
+        if (priv->edit_action != NULL) {
+
             g_signal_handlers_disconnect_by_func(
-                privat->edit_action,
+                priv->edit_action,
                 G_CALLBACK(gparts_result_controller_edit_columns_cb),
                 controller
                 );
 
-            g_object_unref(privat->edit_action);
+            g_object_unref(priv->edit_action);
         }
 
-        privat->edit_action = action;
+        priv->edit_action = action;
 
-        if (privat->edit_action != NULL)
-        {
-            g_object_ref(privat->edit_action);
+        if (priv->edit_action != NULL) {
 
-            g_signal_connect(
-                privat->edit_action,
-                "activate",
-                G_CALLBACK(gparts_result_controller_edit_columns_cb),
-                controller
-                );
+            g_object_ref(priv->edit_action);
+
+            g_signal_connect( priv->edit_action, "activate",
+                              G_CALLBACK(gparts_result_controller_edit_columns_cb),
+                              controller);
         }
     }
 }
@@ -581,32 +552,32 @@ gparts_result_controller_set_property(GObject *object, guint property_id, const 
 /*! \brief Sets the target view's contents to the database's result.
  *
  *
- *  \param [in] private  The private data for this binding.
+ *  \param [in] prive  The private data for this binding.
  *  \param [in] result   The database result to place in the view.
  */
 static void
 gparts_result_controller_set_result(GPartsResultController *controller, GPartsDatabaseResult *result)
 {
     GtkTreeModel *model = NULL;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (result != NULL)
-    {
+    if (result != NULL) {
+
         model = GTK_TREE_MODEL(gparts_result_model_new(result));
 
         gparts_result_controller_disconnect_columns(controller);
-        gparts_result_model_set_columns(result, privat->target);
+        gparts_result_model_set_columns(result, priv->target);
         gparts_result_controller_connect_columns(controller);
     }
 
-    if (privat->target != NULL)
-    {
-        gtk_tree_view_set_model(privat->target, model);
+    if (priv->target != NULL) {
+
+        gtk_tree_view_set_model(priv->target, model);
         gparts_result_controller_set_sort_indicators(controller);
     }
 
-    if (model != NULL)
-    {
+    if (model != NULL) {
+
         g_object_unref(model);
     }
 
@@ -617,28 +588,28 @@ gparts_result_controller_set_sort_indicators(GPartsResultController *controller)
 {
     GtkTreeViewColumn *column;
     gint index = 0;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    column = gtk_tree_view_get_column(privat->target, index++);
+    column = gtk_tree_view_get_column(priv->target, index++);
 
-    while (column != NULL)
-    {
-        gboolean sort_indicator;
+    while (column != NULL) {
+
+        int sort_indicator;
 
         sort_indicator = FALSE;
 
-        if (privat->sort_column != NULL)
-        {
-            if (g_strcmp0(privat->sort_column, gtk_tree_view_column_get_title(column)) == 0)
+        if (priv->sort_column != NULL) {
+
+            if (g_strcmp0(priv->sort_column, gtk_tree_view_column_get_title(column)) == 0)
             {
                 sort_indicator = TRUE;
-                gtk_tree_view_column_set_sort_order(column, privat->sort_order);
+                gtk_tree_view_column_set_sort_order(column, priv->sort_order);
             }
         }
 
         gtk_tree_view_column_set_sort_indicator(column, sort_indicator);
 
-        column = gtk_tree_view_get_column(privat->target, index++);
+        column = gtk_tree_view_get_column(priv->target, index++);
     }
 }
 
@@ -648,14 +619,14 @@ gparts_result_controller_set_sort_indicators(GPartsResultController *controller)
 static void
 gparts_result_controller_updated_cb(GtkTreeSelection *widget, GPartsResultController *controller)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
     /* Temporary solution until the result controller stores the sort state of previous views */
 
-    if (privat->sort_column != NULL)
+    if (priv->sort_column != NULL)
     {
-        g_free(privat->sort_column);
-        privat->sort_column = NULL;
+        g_free(priv->sort_column);
+        priv->sort_column = NULL;
     }
 
     gparts_result_controller_refresh(controller);
@@ -670,20 +641,20 @@ gparts_result_controller_show_cb(GtkWidget *widget, GPartsResultController *cont
 void
 gparts_result_controller_set_customize_ctrl(GPartsResultController *controller, GPartsCustomizeCtrl *customize_ctrl)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->customize_ctrl != customize_ctrl)
-    {
-        if (privat->customize_ctrl != NULL)
-        {
-            g_object_unref(privat->customize_ctrl);
+    if (priv->customize_ctrl != customize_ctrl) {
+
+        if (priv->customize_ctrl != NULL) {
+
+            g_object_unref(priv->customize_ctrl);
         }
 
-        privat->customize_ctrl = customize_ctrl;
+        priv->customize_ctrl = customize_ctrl;
 
-        if (privat->customize_ctrl != NULL)
-        {
-            g_object_ref(privat->customize_ctrl);
+        if (priv->customize_ctrl != NULL) {
+
+            g_object_ref(priv->customize_ctrl);
         }
 
         g_object_notify(G_OBJECT(controller), "customize-ctrl");
@@ -692,89 +663,86 @@ gparts_result_controller_set_customize_ctrl(GPartsResultController *controller, 
 }
 
 void
-gparts_result_controller_set_database_model(GPartsResultController *controller, GPartsUIDatabaseModel *model)
+gparts_result_controller_set_database_model(GPartsResultController *controller,
+                                            GPartsUIDatabaseModel  *model)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->database_model != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->database_model,
-                G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
-                controller
-                );
+  if (priv != NULL) {
 
-            g_signal_handlers_disconnect_by_func(
-                privat->database_model,
-                G_CALLBACK(gparts_result_controller_refresh_cb),
-                controller
-                );
+    if (priv->database_model != NULL) {
 
-            g_object_unref(privat->database_model);
-        }
+      g_signal_handlers_disconnect_by_func(priv->database_model,
+                                           G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
+                                           controller);
 
-        privat->database_model = model;
+      g_signal_handlers_disconnect_by_func(priv->database_model,
+                                           G_CALLBACK(gparts_result_controller_refresh_cb),
+                                           controller);
 
-        if (privat->database_model != NULL)
-        {
-            g_object_ref(privat->database_model);
-
-            g_signal_connect(
-                privat->database_model,
-                "notify::connected",
-                G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
-                controller
-                );
-
-            g_signal_connect(
-                privat->database_model,
-                "notify::database",
-                G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
-                controller
-                );
-
-            g_signal_connect(
-                privat->database_model,
-                "refresh",
-                G_CALLBACK(gparts_result_controller_refresh_cb),
-                controller
-                );
-        }
-
-        g_object_notify(controller, "database-model");
-
-        gparts_result_controller_refresh(controller);
+      g_object_unref(priv->database_model);
     }
+
+    priv->database_model = model;
+
+    if (priv->database_model != NULL) {
+
+      g_object_ref(priv->database_model);
+
+      g_signal_connect(
+        priv->database_model,
+        "notify::connected",
+        G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
+                       controller
+      );
+
+      g_signal_connect(
+        priv->database_model,
+        "notify::database",
+        G_CALLBACK(gparts_result_controller_database_controller_notify_cb),
+                       controller
+      );
+
+      g_signal_connect(
+        priv->database_model,
+        "refresh",
+        G_CALLBACK(gparts_result_controller_refresh_cb),
+                       controller
+      );
+    }
+
+    g_object_notify(G_OBJECT(controller), "database-model");
+
+    gparts_result_controller_refresh(controller);
+  }
 }
 
 void
 gparts_result_controller_set_source(GPartsResultController *controller, GObject *source)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->source != source)
-    {
-        if (privat->source != NULL)
-        {
+    if (priv->source != source) {
+
+        if (priv->source != NULL) {
+
             g_signal_handlers_disconnect_by_func(
-                privat->source,
+                priv->source,
                 G_CALLBACK(gparts_result_controller_updated_cb),
                 controller
                 );
 
-            g_object_unref(privat->source);
+            g_object_unref(priv->source);
         }
 
-        privat->source = source;
+        priv->source = source;
 
-        if (privat->source != NULL)
-        {
-            g_object_ref(privat->source);
+        if (priv->source != NULL) {
+
+            g_object_ref(priv->source);
 
             g_signal_connect(
-                privat->source,
+                priv->source,
                 "updated",
                 G_CALLBACK(gparts_result_controller_updated_cb),
                 controller
@@ -788,87 +756,69 @@ gparts_result_controller_set_source(GPartsResultController *controller, GObject 
 void
 gparts_result_controller_set_target(GPartsResultController *controller, GtkTreeView *target)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat->target != target)
-    {
-        if (privat->selection != NULL)
-        {
+    if (priv->target != target) {
+
+        if (priv->selection != NULL) {
+
             g_signal_handlers_disconnect_by_func(
-                privat->selection,
+                priv->selection,
                 G_CALLBACK(gparts_result_controller_changed_cb),
                 controller
                 );
 
-            g_object_unref(privat->selection);
+            g_object_unref(priv->selection);
         }
 
-        if (privat->target != NULL)
-        {
+        if (priv->target != NULL) {
+
             gparts_result_controller_disconnect_columns(controller);
 
-            g_signal_handlers_disconnect_by_func(
-                privat->selection,
+            g_signal_handlers_disconnect_by_func(priv->selection,
                 G_CALLBACK(gparts_result_controller_notify_focus_cb),
-                controller
-                );
+                controller);
 
-            g_signal_handlers_disconnect_by_func(
-                privat->target,
+            g_signal_handlers_disconnect_by_func(priv->target,
                 G_CALLBACK(gparts_result_controller_popup_menu_cb),
-                controller
-                );
+                controller);
 
-            g_signal_handlers_disconnect_by_func(
-                privat->target,
+            g_signal_handlers_disconnect_by_func( priv->target,
                 G_CALLBACK(gparts_result_controller_show_cb),
-                controller
-                );
+                controller);
 
-            g_object_unref(privat->target);
+            g_object_unref(priv->target);
        }
 
-        privat->target = target;
+        priv->target = target;
 
-        if (privat->target != NULL)
-        {
-            g_object_ref(privat->target);
+        if (priv->target != NULL) {
 
-            g_signal_connect(
-                privat->target,
-                "notify::has-focus",
-                G_CALLBACK(gparts_result_controller_notify_focus_cb),
-                controller
-                );
+            g_object_ref(priv->target);
 
-            g_signal_connect(
-                privat->target,
-                "popup-menu",
-                G_CALLBACK(gparts_result_controller_popup_menu_cb),
-                controller
-                );
+            g_signal_connect(priv->target, "notify::has-focus",
+                             G_CALLBACK(gparts_result_controller_notify_focus_cb),
+                             controller);
 
-            g_signal_connect(
-                privat->target,
-                "show",
-                G_CALLBACK(gparts_result_controller_show_cb),
-                controller
-                );
+            g_signal_connect(priv->target, "popup-menu",
+                             G_CALLBACK(gparts_result_controller_popup_menu_cb),
+                             controller);
+
+            g_signal_connect(priv->target, "show",
+                             G_CALLBACK(gparts_result_controller_show_cb),
+                             controller);
 
             gparts_result_controller_connect_columns(controller);
 
-            privat->selection = gtk_tree_view_get_selection(privat->target);
+            priv->selection = gtk_tree_view_get_selection(priv->target);
 
-            if (privat->selection != NULL)
-            {
-                g_object_ref(privat->selection);
+            if (priv->selection != NULL) {
 
-                g_signal_connect(
-                    privat->selection,
-                    "changed",
-                    G_CALLBACK(gparts_result_controller_changed_cb),
-                    controller
-                    );
+                g_object_ref(priv->selection);
+
+                g_signal_connect(priv->selection, "changed",
+                                 G_CALLBACK(gparts_result_controller_changed_cb),
+                                 controller);
             }
         }
 
@@ -877,61 +827,61 @@ gparts_result_controller_set_target(GPartsResultController *controller, GtkTreeV
 }
 
 void
-gparts_result_controller_set_template(GPartsResultController *controller, const gchar *template)
+gparts_result_controller_set_template(GPartsResultController *controller, const char *template)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (g_strcmp0(template, privat->template) != 0)
+    if (g_strcmp0(template, priv->template) != 0)
     {
-        g_free(privat->template);
-        privat->template = g_strdup(template);
+        g_free(priv->template);
+        priv->template = g_strdup(template);
 
         gparts_result_controller_refresh(controller);
     }
 }
 
 void
-gparts_result_controller_set_result_name(GPartsResultController *controller, const gchar *view_name)
+gparts_result_controller_set_result_name(GPartsResultController *controller, const char *view_name)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (g_strcmp0(view_name, privat->view_name) != 0)
-    {
-        g_free(privat->view_name);
-        privat->view_name = g_strdup(view_name);
+    if (g_strcmp0(view_name, priv->view_name) != 0) {
+
+        g_free(priv->view_name);
+        priv->view_name = g_strdup(view_name);
 
         gparts_result_controller_refresh(controller);
     }
 }
 
-gchar*
-lookup(GPartsResultController *controller, const gchar *name);
+char*
+lookup(GPartsResultController *controller, const char *name);
 
-gchar*
-sub(GPartsResultController *controller, const gchar *template);
+char*
+sub(GPartsResultController *controller, const char *template);
 
-static gchar*
+static char*
 gparts_result_controller_build(GPartsResultController *controller)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
     GString *query = g_string_sized_new(10);
 
-    g_string_printf(query, privat->template, privat->view_name);
+    g_string_printf(query, priv->template, priv->view_name);
 
-    gchar *result = sub(controller, query->str);
+    char *result = sub(controller, query->str);
     g_string_free(query, TRUE);
 
-    if (result != NULL && privat->sort_column != NULL)
-    {
-        GString *buffer = g_string_sized_new(10);
-        gchar *order = "ASC";
+    if (result != NULL && priv->sort_column != NULL) {
 
-        if (privat->sort_order == GTK_SORT_DESCENDING)
+        GString *buffer = g_string_sized_new(10);
+        char *order = "ASC";
+
+        if (priv->sort_order == GTK_SORT_DESCENDING)
         {
             order = "DESC";
         }
 
-        g_string_append_printf(buffer, "%s ORDER BY %s %s", result, privat->sort_column, order);
+        g_string_append_printf(buffer, "%s ORDER BY %s %s", result, priv->sort_column, order);
 
         g_free(result);
         result = g_string_free(buffer, FALSE);
@@ -948,27 +898,27 @@ gparts_result_controller_build(GPartsResultController *controller)
  *  \param [in] template
  *
  */
-gchar*
-sub(GPartsResultController *controller, const gchar *template)
+char*
+sub(GPartsResultController *controller, const char *template)
 {
-    gboolean error = FALSE;
+    int error = FALSE;
     GString *result = g_string_sized_new(10);
-    gchar *temp;
+    char *temp;
 
     temp = strstr(template, "$(");
 
-    while (temp != NULL)
-    {
+    while (temp != NULL) {
+
         g_string_append_len(result, template, temp-template);
 
         template = temp;
 
         temp = strchr(template, ')');
 
-        if (temp != NULL)
-        {
-            gchar *name;
-            gchar *value;
+        if (temp != NULL) {
+
+            char *name;
+            char *value;
 
             template += 2;
 
@@ -977,13 +927,13 @@ sub(GPartsResultController *controller, const gchar *template)
             value = lookup(controller, name);
             g_free(name);
 
-            if (value != NULL)
-            {
+            if (value != NULL) {
+
                 g_string_append(result, value);
                 g_free(value);
             }
-            else
-            {
+            else {
+
                 error = TRUE;
                 break;
             }
@@ -1001,15 +951,14 @@ sub(GPartsResultController *controller, const gchar *template)
 
 /*! \brief Lookup a field's value from the source model.
  */
-gchar*
-lookup(GPartsResultController *controller, const gchar *name)
+char*
+lookup(GPartsResultController *controller, const char *name)
 {
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
-    gchar *field = NULL;
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    char *field = NULL;
 
-    if (privat->source != NULL)
-    {
-        field = gparts_controller_get_field(privat->source, name);
+    if (priv->source != NULL) {
+        field = gparts_controller_get_field((GPartsController*)priv->source, name);
     }
 
     return field;
@@ -1023,68 +972,66 @@ gparts_result_controller_edit_columns_cb(gpointer unused, GPartsResultController
     GtkDialog *dialog = GTK_DIALOG(gtk_dialog_new());
     gint index = 0;
     GtkListStore *model;
-    GtkTreeView *list;
-    GPartsResultControllerPrivate *privat = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
+    GtkTreeView  *tree_view;
+    GtkWidget    *tree_widget;
+    GPartsResultControllerPrivate *priv = GPARTS_RESULT_CONTROLLER_GET_PRIVATE(controller);
     gint result;
     GtkCellRenderer *renderer;
 
     model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
-    column = gtk_tree_view_get_column(privat->target, index++);
+    column = gtk_tree_view_get_column(priv->target, index++);
 
-    while (column != NULL)
-    {
+    while (column != NULL) {
+
         GtkTreeIter iter;
 
         gtk_list_store_append(model, &iter);
 
-        gtk_list_store_set(
-            model,
-            &iter,
-            0, g_strdup(gtk_tree_view_column_get_title(column)),
-            1, gtk_tree_view_column_get_visible(column),
-            -1
-            );
+        gtk_list_store_set( model, &iter, 0,
+                            g_strdup(gtk_tree_view_column_get_title(column)),
+                            1, gtk_tree_view_column_get_visible(column), -1);
 
-        column = gtk_tree_view_get_column(privat->target, index++);
+        column = gtk_tree_view_get_column(priv->target, index++);
     }
 
-    list = gtk_tree_view_new_with_model(model);
-    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(list), GTK_SELECTION_NONE);
+    tree_widget = gtk_tree_view_new_with_model((GtkTreeModel*)model);
+    tree_view   = (GtkTreeView*)tree_widget;
+
+    gtk_tree_selection_set_mode(gtk_tree_view_get_selection(tree_view), GTK_SELECTION_NONE);
     g_object_unref(model);
 
     column = gtk_tree_view_column_new();
     gtk_tree_view_column_set_title(column, "Column");
-    gtk_tree_view_append_column(list, column);
+    gtk_tree_view_append_column(tree_view, column);
     renderer = gtk_cell_renderer_text_new();
     gtk_tree_view_column_pack_start(column, renderer, TRUE);
     gtk_tree_view_column_add_attribute(column, renderer, "text", 0);
 
     column = gtk_tree_view_column_new();
     gtk_tree_view_column_set_title(column, "Visible");
-    gtk_tree_view_append_column(list, column);
+    gtk_tree_view_append_column(tree_view, column);
     renderer = gtk_cell_renderer_toggle_new();
     gtk_tree_view_column_pack_start(column, renderer, FALSE);
     gtk_tree_view_column_add_attribute(column, renderer, "active", 1);
 
-    gtk_widget_show(list);
+    gtk_widget_show(tree_widget);
 
-    gtk_tree_view_append_column(list, column);
+    gtk_tree_view_append_column(tree_view, column);
 
-    gtk_container_add(gtk_dialog_get_content_area(dialog), list);
+    GtkWidget *box = gtk_dialog_get_content_area(dialog);
 
-    gtk_dialog_add_buttons(
-        dialog,
-        GTK_STOCK_HELP,   GTK_RESPONSE_HELP,
-        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-        GTK_STOCK_OK,     GTK_RESPONSE_OK,
-        NULL
-        );
+    gtk_container_add(GTK_CONTAINER(box), tree_widget);
+
+    gtk_dialog_add_buttons(dialog,
+                           GTK_STOCK_HELP,   GTK_RESPONSE_HELP,
+                           GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                           GTK_STOCK_OK,     GTK_RESPONSE_OK,
+                           NULL);
 
     result = gtk_dialog_run(dialog);
 
-    switch (result)
-    {
+    switch (result) {
         case GTK_RESPONSE_OK:
             g_debug("OK");
             break;
@@ -1099,7 +1046,7 @@ gparts_result_controller_edit_columns_cb(gpointer unused, GPartsResultController
             g_debug("Cancel");
     }
 
-    gtk_widget_destroy(dialog);
+    gtk_widget_destroy((GtkWidget*)dialog);
 }
 
 static void
@@ -1108,7 +1055,7 @@ debug_test(gpointer unused, gpointer unused2)
     g_debug("Testing  Did it work?");
 }
 
-static gboolean
+static int
 gparts_result_controller_popup_menu_cb(GtkWidget *widget, GPartsResultController *controller)
 {
     GtkMenu *menu = GTK_MENU(gtk_menu_new());
@@ -1119,36 +1066,32 @@ gparts_result_controller_popup_menu_cb(GtkWidget *widget, GPartsResultController
 
     gtk_widget_show(w);
 
-    gtk_menu_shell_append(menu, w);
+    gtk_menu_shell_append((GtkMenuShell*)menu, w);
 
-    g_signal_connect(
-        G_OBJECT(w),
-        "activate",
-        G_CALLBACK(gparts_result_controller_edit_columns_cb),
-        controller
-        );
+    g_signal_connect(G_OBJECT(w),
+                     "activate",
+                     G_CALLBACK(gparts_result_controller_edit_columns_cb),
+                     controller);
 
-    gtk_menu_popup(
-        menu,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        0,
-        gtk_get_current_event_time()
-        );
+    gtk_menu_popup(menu,
+                   NULL,
+                   NULL,
+                   NULL,
+                   NULL,
+                   0,
+                   gtk_get_current_event_time());
 
     return TRUE;
 }
 
 #if 0
-    if (privat->target != NULL)
+    if (priv->target != NULL)
     {
         GtkMenu *sub = gtk_menu_new();
         gint index = 0;
         GtkTreeViewColumn *column;
 
-        column = gtk_tree_view_get_column(privat->target, index++);
+        column = gtk_tree_view_get_column(priv->target, index++);
 
         while (column != NULL)
         {
@@ -1173,7 +1116,7 @@ gparts_result_controller_popup_menu_cb(GtkWidget *widget, GPartsResultController
 
             gtk_widget_show(item2);
 
-            column = gtk_tree_view_get_column(privat->target, index++);
+            column = gtk_tree_view_get_column(priv->target, index++);
         }
 
         gtk_menu_item_set_submenu(item, sub);
