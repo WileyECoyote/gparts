@@ -613,8 +613,8 @@ gpview_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 
     GPViewCategoryModelNode **child = node->children + index;
 
-    if ((*child)->result != NULL)
-    {
+    if ((*child)->result != NULL) {
+
         if ( gparts_database_result_get_row_count((*child)->result) > 0 )
             return TRUE;
     }
@@ -640,14 +640,14 @@ gpview_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
     old_position = (unsigned int)(long)(iter->user_data2);
     new_position = old_position + 1;
 
-    if (new_position > old_position)
-    {
+    if (new_position > old_position) {
+
         GPViewCategoryModelNode *node = (GPViewCategoryModelNode*) iter->user_data;
 
         int rows = gparts_database_result_get_row_count(node->result);
 
-        if (new_position < rows)
-        {
+        if (new_position < rows) {
+
             iter->user_data2 = GUINT_TO_POINTER(new_position);
 
             return TRUE;
