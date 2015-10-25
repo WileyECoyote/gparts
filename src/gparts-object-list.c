@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
  */
 
-/*! \file gparts-object-list.c 
+/*! \file gparts-object-list.c
  */
 
 #include <gtk/gtk.h>
@@ -79,8 +79,10 @@ gparts_object_list_dispose(GObject *object)
 {
     GPartsObjectListPrivate *privat = GPARTS_OBJECT_LIST_GET_PRIVATE(object);
 
-    g_slist_foreach(privat->objects, g_object_unref, NULL);
+    g_slist_foreach(privat->objects, (GFunc)g_object_unref, NULL);
+
     g_slist_free(privat->objects);
+
     privat->objects = NULL;
 
     misc_object_chain_dispose(object);
@@ -91,8 +93,8 @@ gparts_object_list_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsObjectListClass),    /* class_size */
             NULL,                             /* base_init */
@@ -124,4 +126,3 @@ gparts_object_list_get_type(void)
 
     return type;
 }
-
