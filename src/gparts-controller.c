@@ -75,9 +75,9 @@ gparts_controller_class_init(gpointer g_class, gpointer g_class_data)
 }
 
 gchar*
-gparts_controller_get_field(GPartsController *controller, const gchar *name)
+gparts_controller_get_field(GPartsController *controller, const char *name)
 {
-    gchar *field = NULL;
+    char *field = NULL;
 
     if (controller != NULL)
     {

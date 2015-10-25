@@ -58,7 +58,8 @@ struct _GPartsControllerClass
 {
     GObjectClass parent;
 
-    gchar* (*get_field)(GPartsController *controller, const gchar *name);
+    char* (*get_field)(GPartsController *controller, const char *name);
+
     GHashTable* (*get_table)(GPartsController *controller);
 
     void (*set_copy_action)(GPartsController *controller, GtkAction *action);
@@ -81,8 +82,8 @@ gparts_controller_get_type(void);
  *  caller must free the memory when no longer needed.  This function returns
  *  NULL if it cannot produce a value.
  */
-gchar*
-gparts_controller_get_field(GPartsController *controller, const gchar *name);
+char*
+gparts_controller_get_field(GPartsController *controller, const char *name);
 
 GHashTable*
 gparts_controller_get_table(GPartsController *controller);

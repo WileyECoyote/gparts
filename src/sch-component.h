@@ -155,7 +155,7 @@ sch_component_set_mirror(SchComponent *shape, int mirror);
 /*! \brief Set if the component is selectable or not
  *
  * \param [in] shape The component
- * \param [in] selectable 
+ * \param [in] selectable
  */
 void
 sch_component_set_selectable(SchComponent *shape, int selectable);
