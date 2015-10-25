@@ -22,8 +22,8 @@
  */
 
 #include "gpartsui.h"
-
 #include "schgui-clipboard.h"
+#include "misc-macro.h"
 
 enum
 {
@@ -49,7 +49,7 @@ struct _GPartsPreviewCtrlPrivate
 
 #define GPARTS_PREVIEW_CTRL_GET_PRIVATE(object) G_TYPE_INSTANCE_GET_PRIVATE(object,GPARTS_TYPE_PREVIEW_CTRL,GPartsPreviewCtrlPrivate)
 
-static gchar*
+static char *
 gparts_preview_ctrl_build(GPartsPreviewCtrl *controller);
 
 static void
@@ -81,30 +81,31 @@ gparts_preview_ctrl_copy_action_cb(GtkAction *action, GPartsPreviewCtrl *preview
 static void
 gparts_preview_ctrl_show_cb(GtkWidget *widget, GPartsPreviewCtrl *controller);
 
-
-
 static void
 gparts_preview_ctrl_updated_cb(GtkWidget *widget, GPartsPreviewCtrl *controller)
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         SchComponent *component;
         SchDrawing   *drawing = NULL;
         SchDrawing   *symbol = NULL;
-        gchar        *symbol_name;
+        char         *symbol_name;
 
-        symbol_name = gparts_controller_get_field(privat->symbol_source, "SymbolName");
+        GPartsController *control = (GPartsController *)controller;
+
+        //symbol_name = gparts_controller_get_field(privat->symbol_source, "SymbolName");
+        symbol_name = gparts_controller_get_field(control, "SymbolName");
 
         g_debug("Symbol name: %s", symbol_name);
 
-        if (symbol_name != NULL)
-        {
+        if (symbol_name != NULL) {
+
             SchLoader *loader = sch_loader_get_default();
 
-            if (loader != NULL)
-            {
+            if (loader != NULL) {
+
                 symbol = sch_loader_load_symbol(loader, symbol_name, NULL);
             }
 
@@ -113,15 +114,17 @@ gparts_preview_ctrl_updated_cb(GtkWidget *widget, GPartsPreviewCtrl *controller)
 
         component = sch_component_instantiate(sch_config_new(), symbol);
 
-        if (symbol != NULL)
-        {
+        if (symbol != NULL) {
+
             g_object_unref(symbol);
         }
 
-        if (component != NULL)
-        {
-            GRegex *regex = misc_macro_new_regex();
-            GHashTable *table = gparts_controller_get_table(privat->attrib_source);
+        if (component != NULL) {
+
+            GRegex *regex     = misc_macro_new_regex();
+
+            //GHashTable *table = gparts_controller_get_table(privat->attrib_source);
+            GHashTable *table = gparts_controller_get_table(control);
 
             sch_shape_expand_macros(SCH_SHAPE(component), regex, table);
             g_regex_unref(regex);
@@ -133,10 +136,12 @@ gparts_preview_ctrl_updated_cb(GtkWidget *widget, GPartsPreviewCtrl *controller)
             g_object_unref(component);
         }
 
-        schgui_drawing_view_set_drawing(privat->target, drawing);
+        SchGUIDrawingView *widget =(SchGUIDrawingView*)privat->target;
 
-        if (drawing != NULL)
-        {
+        schgui_drawing_view_set_drawing(widget, drawing);
+
+        if (drawing != NULL) {
+
             g_object_unref(drawing);
         }
     }
@@ -220,14 +225,18 @@ gparts_preview_ctrl_copy_action_cb(GtkAction *action, GPartsPreviewCtrl *preview
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(preview_ctrl);
 
-    if (privat != NULL)
-    {
-        SchDrawing *drawing = schgui_drawing_view_get_drawing(privat->target);
+    if (privat != NULL) {
 
-        if (drawing != NULL)
-        {
-            if (privat->clipboard == NULL)
-            {
+        SchGUIDrawingView *widget;
+        SchDrawing        *drawing;
+
+        widget = (SchGUIDrawingView*)privat->target;
+
+        drawing = schgui_drawing_view_get_drawing(widget);
+
+        if (drawing != NULL) {
+
+            if (privat->clipboard == NULL) {
                 privat->clipboard = schgui_clipboard_new();
             }
 
@@ -236,7 +245,6 @@ gparts_preview_ctrl_copy_action_cb(GtkAction *action, GPartsPreviewCtrl *preview
             g_object_unref(drawing);
         }
     }
-
 }
 
 static void
@@ -309,18 +317,19 @@ gparts_preview_notify_drawing_cb(GObject *object, GParamSpec *param, gpointer us
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(user_data);
 
-    if (privat != NULL)
-    {
-        SchDrawing *drawing = schgui_drawing_view_get_drawing(privat->target);
+    if (privat != NULL) {
 
-        if (drawing != NULL)
-        {
+        SchGUIDrawingView *widget = (SchGUIDrawingView*) object; /* WEH??? */
+        SchDrawing *drawing       = schgui_drawing_view_get_drawing(widget);
+
+        if (drawing != NULL) {
+
             gtk_action_set_sensitive(privat->copy_action, TRUE);
 
             g_object_unref(drawing);
         }
-        else
-        {
+        else {
+
             gtk_action_set_sensitive(privat->copy_action, FALSE);
         }
     }
@@ -336,10 +345,10 @@ gparts_preview_ctrl_set_property(GObject *object, guint property_id, const GValu
 {
     GPartsPreviewCtrl *preview_ctrl = GPARTS_PREVIEW_CTRL(object);
 
-    switch (property_id)
-    {
+    switch (property_id) {
+
         case GPARTS_PREVIEW_CTRL_PROPID_COPY_ACTION:
-            gparts_preview_ctrl_set_copy_action(preview_ctrl, g_value_get_object(value));
+            gparts_preview_ctrl_set_copy_action((GPartsController*)preview_ctrl, g_value_get_object(value));
             break;
 
         case GPARTS_PREVIEW_CTRL_PROPID_ATTRIB_SOURCE:
@@ -364,10 +373,10 @@ gparts_preview_ctrl_set_copy_action(GPartsController *controller, GtkAction *act
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(controller);
 
-    if (privat->copy_action != action)
-    {
-        if (privat->copy_action != NULL)
-        {
+    if (privat->copy_action != action) {
+
+        if (privat->copy_action != NULL) {
+
             g_signal_handlers_disconnect_by_func(
                 privat->copy_action,
                 G_CALLBACK(gparts_preview_ctrl_copy_action_cb),
@@ -379,16 +388,14 @@ gparts_preview_ctrl_set_copy_action(GPartsController *controller, GtkAction *act
 
         privat->copy_action = action;
 
-        if (privat->copy_action != NULL)
-        {
+        if (privat->copy_action != NULL) {
+
             g_object_ref(privat->copy_action);
 
-            g_signal_connect(
-                privat->copy_action,
-                "activate",
-                G_CALLBACK(gparts_preview_ctrl_copy_action_cb),
-                controller
-                );
+            g_signal_connect(privat->copy_action,
+                             "activate",
+                             G_CALLBACK(gparts_preview_ctrl_copy_action_cb),
+                             controller);
 
             gtk_action_set_label(privat->copy_action, "_Copy Component");
             //gtk_action_set_sensitive(privat->copy_action, (privat->database != NULL));
@@ -403,31 +410,28 @@ gparts_preview_ctrl_set_attrib_source(GPartsPreviewCtrl *preview_ctrl, GtkTreeVi
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(preview_ctrl);
 
-    if (privat->attrib_source = attrib_source)
-    {
-        if (privat->attrib_source != NULL)
-        {
+    if (privat->attrib_source = attrib_source) {
+
+        if (privat->attrib_source != NULL) {
+
             g_signal_handlers_disconnect_by_func(
                 privat->attrib_source,
                 G_CALLBACK(gparts_preview_ctrl_updated_cb),
-                preview_ctrl
-                );
+                preview_ctrl);
 
             g_object_unref(privat->attrib_source);
         }
 
         privat->attrib_source = attrib_source;
 
-        if (privat->attrib_source != NULL)
-        {
+        if (privat->attrib_source != NULL) {
+
             g_object_ref(privat->attrib_source);
 
-            g_signal_connect(
-                privat->attrib_source,
-                "updated",
-                G_CALLBACK(gparts_preview_ctrl_updated_cb),
-                preview_ctrl
-                );
+            g_signal_connect(privat->attrib_source,
+                             "updated",
+                             G_CALLBACK(gparts_preview_ctrl_updated_cb),
+                             preview_ctrl);
         }
 
         g_object_notify(G_OBJECT(preview_ctrl), "attrib-source");
@@ -440,10 +444,10 @@ gparts_preview_ctrl_set_symbol_source(GPartsPreviewCtrl *preview_ctrl, GtkTreeVi
 {
     GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(preview_ctrl);
 
-    if (privat->symbol_source = symbol_source)
-    {
-        if (privat->symbol_source != NULL)
-        {
+    if (privat->symbol_source = symbol_source) {
+
+        if (privat->symbol_source != NULL) {
+
             g_signal_handlers_disconnect_by_func(
                 privat->symbol_source,
                 G_CALLBACK(gparts_preview_ctrl_updated_cb),
@@ -455,8 +459,8 @@ gparts_preview_ctrl_set_symbol_source(GPartsPreviewCtrl *preview_ctrl, GtkTreeVi
 
         privat->symbol_source = symbol_source;
 
-        if (privat->symbol_source != NULL)
-        {
+        if (privat->symbol_source != NULL) {
+
             g_object_ref(privat->symbol_source);
 
             g_signal_connect(
@@ -474,49 +478,40 @@ gparts_preview_ctrl_set_symbol_source(GPartsPreviewCtrl *preview_ctrl, GtkTreeVi
 void
 gparts_preview_ctrl_set_target(GPartsPreviewCtrl *preview_ctrl, GtkDrawingArea *target)
 {
-    GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(preview_ctrl);
+  GPartsPreviewCtrlPrivate *privat = GPARTS_PREVIEW_CTRL_GET_PRIVATE(preview_ctrl);
 
-    if (privat->target != target)
-    {
-        if (privat->target != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->target,
-                G_CALLBACK(gparts_preview_notify_drawing_cb),
-                preview_ctrl
-                );
+  if (privat->target != target) {
 
-            g_signal_handlers_disconnect_by_func(
-                privat->target,
-                G_CALLBACK(gparts_preview_ctrl_show_cb),
-                preview_ctrl
-                );
+    if (privat->target != NULL) {
 
-            g_object_unref(privat->target);
-        }
+      g_signal_handlers_disconnect_by_func(privat->target,
+                                           G_CALLBACK(gparts_preview_notify_drawing_cb),
+                                           preview_ctrl);
 
-        privat->target = target;
+      g_signal_handlers_disconnect_by_func(privat->target,
+                                           G_CALLBACK(gparts_preview_ctrl_show_cb),
+                                           preview_ctrl);
 
-        if (privat->target != NULL)
-        {
-            g_object_ref(privat->target);
-
-            g_signal_connect(
-                privat->target,
-                "notify::drawing",
-                G_CALLBACK(gparts_preview_notify_drawing_cb),
-                preview_ctrl
-                );
-
-            g_signal_connect(
-                privat->target,
-                "show",
-                G_CALLBACK(gparts_preview_ctrl_show_cb),
-                preview_ctrl
-                );
-        }
-
-        g_object_notify(G_OBJECT(preview_ctrl), "target");
+      g_object_unref(privat->target);
     }
-}
 
+    privat->target = target;
+
+    if (privat->target != NULL) {
+
+      g_object_ref(privat->target);
+
+      g_signal_connect(privat->target,
+                       "notify::drawing",
+                       G_CALLBACK(gparts_preview_notify_drawing_cb),
+                       preview_ctrl);
+
+      g_signal_connect(privat->target,
+                       "show",
+                       G_CALLBACK(gparts_preview_ctrl_show_cb),
+                       preview_ctrl);
+    }
+
+    g_object_notify(G_OBJECT(preview_ctrl), "target");
+  }
+}
