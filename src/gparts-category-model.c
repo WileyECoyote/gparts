@@ -42,8 +42,8 @@ typedef struct _GPartsCategoryModelNode GPartsCategoryModelNode;
 
 struct _GPartsCategoryModelNode
 {
-    GtkTreeIter                     parent;
-    GPartsDatabaseResult            *result;
+    GtkTreeIter                       parent;
+    GPartsDatabaseResult             *result;
     struct _GPartsCategoryModelNode **children;
 };
 
@@ -80,7 +80,7 @@ gparts_category_model_tree_model_init(GtkTreeModelIface *iface);
 static void
 gparts_category_model_set_database(GObject *object, const GValue *value);
 
-static gboolean
+static int
 gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int  n);
 /**
  *
@@ -91,18 +91,18 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 static void
 gparts_load_root(GPartsDatabase* database, GPartsCategoryModelNode **node)
 {
-    *node = g_new0(GPartsCategoryModelNode, 1);
+   *node = g_new0(GPartsCategoryModelNode, 1);
 
-    gchar* query = "SELECT * FROM Category WHERE ParentID IS NULL";
+    char* query = "SELECT * FROM Category WHERE ParentID IS NULL";
 
     (*node)->result = gparts_database_query(database, query, NULL);
 
-    if ((*node)->result != NULL)
-    {
+    if ((*node)->result != NULL) {
+
         int  rows = gparts_database_result_get_row_count((*node)->result);
 
-        if (rows > 0)
-        {
+        if (rows > 0) {
+
             (*node)->children = g_new0(GPartsCategoryModelNode, rows);
         }
     }
@@ -124,8 +124,8 @@ gparts_category_model_load_children(GPartsDatabase* database, GtkTreeIter *iter)
     index = GPOINTER_TO_INT(iter->user_data2);
     child = node->children + index;
 
-    if (*child == NULL)
-    {
+    if (*child == NULL) {
+
         GValue value0 = {0};
         GValue value1 = {0};
 
@@ -196,14 +196,11 @@ gparts_category_model_class_init(gpointer g_class, gpointer g_class_data)
     g_object_class_install_property(
         object_class,
         GPARTS_CATEGORY_MODEL_PROPID_DATABASE,
-        g_param_spec_object(
-            "database",
-            "",
-            "",
-            G_TYPE_OBJECT,    /* \todo See if this can be an interface */
-            G_PARAM_READWRITE
-            )
-        );
+        g_param_spec_object("database",
+                            "",
+                            "",
+                            G_TYPE_OBJECT,    /* \todo See if this can be an interface */
+                            G_PARAM_READWRITE));
 }
 
 /** \brief Unreference all referenced objects.
@@ -221,7 +218,6 @@ gparts_category_model_dispose(GObject *object)
 
     gparts_category_model_set_database(object, NULL);
 
-  //  g_object_unref(private->tree_store);
     misc_object_chain_dispose(object);
 }
 
@@ -237,23 +233,23 @@ gparts_category_model_finalize(GObject *object)
     misc_object_chain_finalize(object);
 }
 
-gchar*
-gparts_category_model_get_field(GPartsCategoryModel* model, GtkTreeIter *iter, const gchar *name)
+char*
+gparts_category_model_get_field(GPartsCategoryModel* model, GtkTreeIter *iter, const char *name)
 {
     GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) iter->user_data;
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(model);
-    gchar *result = NULL;
+    char *result = NULL;
 
-    if (node->result != NULL)
-    {
+    if (node->result != NULL) {
+
         int  index;
-        gboolean success;
+        int success;
 
         success = gparts_database_result_get_column_index(node->result, name, &index);
 
-        if (success)
-        {
-            gboolean error = FALSE;
+        if (success) {
+
+            int error = FALSE;
             GString *buffer = g_string_sized_new(10);
             GValue value = {0};
 
@@ -266,22 +262,22 @@ gparts_category_model_get_field(GPartsCategoryModel* model, GtkTreeIter *iter, c
 
             /* TODO The following code needs to go elsewhere or use transformations */
 
-            if(G_IS_VALUE(&value))
-            {
-                if (G_VALUE_HOLDS_STRING(&value))
-                {
+            if(G_IS_VALUE(&value)) {
+
+                if (G_VALUE_HOLDS_STRING(&value)) {
+
                     g_string_printf(buffer, "%s", g_value_get_string(&value));
                 }
-                else if (G_VALUE_HOLDS_DOUBLE(&value))
-                {
+                else if (G_VALUE_HOLDS_DOUBLE(&value)) {
+
                     g_string_printf(buffer, "%f", g_value_get_double(&value));
                 }
-                else if (G_VALUE_HOLDS_INT(&value))
-                {
+                else if (G_VALUE_HOLDS_INT(&value)) {
+
                     g_string_printf(buffer, "%d", g_value_get_int(&value));
                 }
-                else
-                {
+                else {
+
                     error = TRUE;
                 }
 
@@ -308,8 +304,8 @@ gparts_category_model_get_property(GObject *object, guint property_id, GValue *v
 
     /*	\todo handle case where private is NULL */
 
-    switch ( property_id )
-    {
+    switch ( property_id ) {
+
         case GPARTS_CATEGORY_MODEL_PROPID_DATABASE:
             g_value_set_object(value, private->database);
             break;
@@ -330,8 +326,8 @@ gparts_category_model_get_type( void )
 {
     static GType type = 0;
 
-    if ( type == 0 )
-    {
+    if ( type == 0 ) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsCategoryModelClass),
             NULL,
@@ -400,8 +396,8 @@ gparts_category_model_set_database(GObject *object, const GValue *value)
 
     private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(object);
 
-    if (private->database != NULL)
-    {
+    if (private->database != NULL) {
+
         g_signal_handlers_disconnect_by_func(
             private->database,
             G_CALLBACK(gparts_category_model_database_connected_cb),
@@ -423,13 +419,13 @@ gparts_category_model_set_database(GObject *object, const GValue *value)
 
     /* 	odo Check for correct type before setting database */
 
-    if (TRUE)
-    {
+    if (TRUE)  {
+
         private->database = g_value_get_object(value);
     }
 
-    if (private->database != NULL)
-    {
+    if (private->database != NULL) {
+
         g_object_ref(private->database);
 
         g_signal_connect(
@@ -488,38 +484,40 @@ gparts_category_model_get_column_type(GtkTreeModel *tree_model, int  index)
  *
  *
  */
-static gboolean
+static int
 gparts_category_model_get_iter(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreePath *path)
 {
-    GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
+  GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
 
-    int  c =0;
-   int  d = gtk_tree_path_get_depth(path);
+  int  c =0;
+  int  d = gtk_tree_path_get_depth(path);
 
-    int  index = gtk_tree_path_get_indices(path)[c++];
+  int  index = gtk_tree_path_get_indices(path)[c++];
 
-    GtkTreeIter pos;
+  GtkTreeIter pos;
 
-    gboolean success = gparts_category_model_iter_nth_child(tree_model, &pos, NULL, index);
+  int success = gparts_category_model_iter_nth_child(tree_model, &pos, NULL, index);
 
-       if (!success) return FALSE;
-    while (c<d)
-    {
-        GtkTreeIter zippy;
+  if (!success)
+    return FALSE;
 
-        zippy = pos;
+  while (c<d) {
 
-       index = gtk_tree_path_get_indices(path)[c++];
+    GtkTreeIter zippy;
 
-       gboolean success = gparts_category_model_iter_nth_child(tree_model, &pos, &zippy, index);
+    zippy = pos;
 
-       if (!success) return FALSE;
-    }
+    index = gtk_tree_path_get_indices(path)[c++];
 
-        *iter = pos;
+    int success = gparts_category_model_iter_nth_child(tree_model, &pos, &zippy, index);
 
-    return TRUE;
+    if (!success) return FALSE;
+  }
+
+  *iter = pos;
+
+  return TRUE;
 }
 
 /**
@@ -544,8 +542,8 @@ gparts_category_model_get_n_columns(GtkTreeModel *tree_model)
     int  columns = 0;
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
-    if (private->root->result != NULL)
-    {
+    if (private->root->result != NULL) {
+
         columns = gparts_database_result_get_column_count(private->root->result);
     }
 
@@ -587,8 +585,8 @@ gparts_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, int
 
     /* \todo Find a better way to handle NULLs from the database */
 
-    if (!G_IS_VALUE(value))
-    {
+    if (!G_IS_VALUE(value)) {
+
         g_value_init(value, G_TYPE_STRING);
         g_value_set_static_string(value, "NULL");
     }
@@ -599,7 +597,7 @@ gparts_category_model_get_value(GtkTreeModel *tree_model, GtkTreeIter *iter, int
  *
  *
  */
-static gboolean
+static int
 gparts_category_model_iter_children(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent)
 {
     gparts_category_model_iter_nth_child(tree_model, iter, parent, 0);
@@ -610,7 +608,7 @@ gparts_category_model_iter_children(GtkTreeModel *tree_model, GtkTreeIter *iter,
  *
  *
  */
-static gboolean
+static int
 gparts_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
@@ -622,8 +620,8 @@ gparts_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 
     GPartsCategoryModelNode **child = node->children + index;
 
-    if ((*child)->result != NULL)
-    {
+    if ((*child)->result != NULL) {
+
         if ( gparts_database_result_get_row_count((*child)->result) > 0 )
             return TRUE;
     }
@@ -636,7 +634,7 @@ gparts_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
  *
  *
  */
-static gboolean
+static int
 gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
     guint new_position;
@@ -649,14 +647,14 @@ gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
     old_position = GPOINTER_TO_UINT(iter->user_data2);
     new_position = old_position + 1;
 
-    if (new_position > old_position)
-    {
+    if (new_position > old_position) {
+
         GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) iter->user_data;
 
         int  rows = gparts_database_result_get_row_count(node->result);
 
-        if (new_position < rows)
-        {
+        if (new_position < rows) {
+
             iter->user_data2 = GUINT_TO_POINTER(new_position);
 
             return TRUE;
@@ -676,7 +674,7 @@ gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
  *  \param [in]  n          Zero based index of the child of the parent to get.
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise.
  */
-static gboolean
+static int
 gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *parent, int  n)
 {
     GPartsCategoryModelNode *list;
@@ -684,12 +682,12 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 
     g_assert(iter != NULL);
 
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
+
         list = private->root;
     }
-    else
-    {
+    else {
+
         g_assert(parent->stamp == private->stamp);
 
         GPartsCategoryModelNode *parent_list = (GPartsCategoryModelNode*) parent->user_data;
@@ -706,12 +704,12 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
         list = *(parent_list->children + offset);
     }
 
-    if (list != NULL && list->result != NULL)
-    {
+    if (list != NULL && list->result != NULL) {
+
         int  rows = gparts_database_result_get_row_count(list->result);
 
-        if (n < rows)
-        {
+        if (n < rows) {
+
             iter->stamp = private->stamp;
             iter->user_data = list;
             iter->user_data2 = GINT_TO_POINTER(n);
@@ -730,7 +728,7 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
  *
  *
  */
-static gboolean
+static int
 gparts_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
     GPartsCategoryModelPrivate *private;
@@ -749,15 +747,15 @@ gparts_category_model_iter_n_children(GtkTreeModel *tree_model, GtkTreeIter *ite
  *  \param [in]  child      An iterator referencing the child node.
  *  \return TRUE successful and iter is valid.  FALSE if otherwise.
  */
-static gboolean
+static int
 gparts_category_model_iter_parent(GtkTreeModel *tree_model, GtkTreeIter *iter, GtkTreeIter *child)
 {
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
     GPartsCategoryModelNode *node = (GPartsCategoryModelNode*) child->user_data;
 
-    if (node->parent.user_data != NULL)
-    {
+    if (node->parent.user_data != NULL) {
+
         *iter = node->parent;
 
         return TRUE;
@@ -807,8 +805,8 @@ gparts_category_model_hide_columns(GtkTreeView *tree_view)
 
     while (column != NULL) {
 
-        const gchar *name = gtk_tree_view_column_get_title(column);
-        gboolean visible = (name != NULL) && (strcmp(name, "CategoryName") == 0);
+        const char *name = gtk_tree_view_column_get_title(column);
+        int visible = (name != NULL) && (strcmp(name, "CategoryName") == 0);
 
         gtk_tree_view_column_set_visible(column, visible);
 
@@ -826,8 +824,8 @@ gparts_category_model_set_columns(GPartsCategoryModel* model, GtkTreeView *tree_
 {
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(model);
 
-    if (private->root->result != NULL)
-    {
+    if (private->root->result != NULL) {
+
         gparts_result_model_set_columns(private->root->result, tree_view);
 
         gparts_category_model_hide_columns(tree_view);
