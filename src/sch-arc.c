@@ -26,10 +26,8 @@
 
 #include "sch.h"
 
-
 #define SCH_ARC_DEFAULT_COLOR       (SCH_CONFIG_DEFAULT_GRAPHIC_COLOR)
 #define SCH_ARC_DEFAULT_LINE_WIDTH  (SCH_CONFIG_DEFAULT_LINE_WIDTH)
-
 
 #define SCH_ARC_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE((obj),SCH_TYPE_ARC,SchArcPrivate))
 
@@ -55,13 +53,13 @@ typedef struct _SchArcPrivate SchArcPrivate;
 struct _SchArcPrivate
 {
     GeomArc      arc;
-    gint         color;
-    gint         line_width;
+    int          color;
+    int          line_width;
     SchLineStyle line_style;
 };
 
 static void
-sch_arc_class_init(gpointer g_class, gpointer g_class_data);
+sch_arc_class_init(void *g_class, void *g_class_data);
 
 static void
 sch_arc_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
@@ -70,13 +68,13 @@ static void
 sch_arc_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 
 void
-sch_arc_rotate(SchShape *shape, gint angle);
+sch_arc_rotate(SchShape *shape, int angle);
 
 static void
 sch_arc_transform(SchShape *shape, const GeomTransform *transform);
 
 void
-sch_arc_translate(SchShape *shape, gint dx, gint dy);
+sch_arc_translate(SchShape *shape, int dx, int dy);
 
 static void
 sch_arc_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStream *stream, GError **error);
@@ -84,212 +82,173 @@ sch_arc_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStre
 
 
 static void
-sch_arc_class_init(gpointer g_class, gpointer g_class_data)
+sch_arc_class_init(void *g_class, void *g_class_data)
 {
-    GObjectClass *object_class = G_OBJECT_CLASS(g_class);
-    SchArcClass *klasse = SCH_ARC_CLASS(g_class);
+  GObjectClass *object_class = G_OBJECT_CLASS(g_class);
+  SchArcClass *klasse = SCH_ARC_CLASS(g_class);
 
-    g_type_class_add_private(object_class, sizeof(SchArcPrivate));
+  g_type_class_add_private(object_class, sizeof(SchArcPrivate));
 
-    object_class->get_property = sch_arc_get_property;
-    object_class->set_property = sch_arc_set_property;
+  object_class->get_property = sch_arc_get_property;
+  object_class->set_property = sch_arc_set_property;
 
-    klasse->parent.rotate    = sch_arc_rotate;
-    klasse->parent.transform = sch_arc_transform;
-    klasse->parent.translate = sch_arc_translate;
-    klasse->parent.write     = sch_arc_write;
+  klasse->parent.rotate    = sch_arc_rotate;
+  klasse->parent.transform = sch_arc_transform;
+  klasse->parent.translate = sch_arc_translate;
+  klasse->parent.write     = sch_arc_write;
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_ARC,
-        g_param_spec_boxed(
-            "arc",
-            "Arc",
-            "Arc",
-            GEOM_TYPE_ARC,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_ARC,
+                                  g_param_spec_boxed("arc",
+                                                     "Arc",
+                                                     "Arc",
+                                                     GEOM_TYPE_ARC,
+                                                     G_PARAM_LAX_VALIDATION |
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_CENTER_X,
-        g_param_spec_int(
-            "center-x",
-            "Center X",
-            "Center X",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_CENTER_X,
+                                  g_param_spec_int("center-x",
+                                                   "Center X",
+                                                   "Center X",
+                                                   G_MININT,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_CENTER_Y,
-        g_param_spec_int(
-            "center-y",
-            "Center Y",
-            "Center Y",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_CENTER_Y,
+                                  g_param_spec_int("center-y",
+                                                   "Center Y",
+                                                   "Center Y",
+                                                   G_MININT,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_RADIUS,
-        g_param_spec_int(
-            "radius",
-            "Radius",
-            "Radius",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_RADIUS,
+                                  g_param_spec_int("radius",
+                                                   "Radius",
+                                                   "Radius",
+                                                   G_MININT,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_START,
-        g_param_spec_int(
-            "start",
-            "Start",
-            "Start",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_START,
+                                  g_param_spec_int("start",
+                                                   "Start",
+                                                   "Start",
+                                                   G_MININT,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_SWEEP,
-        g_param_spec_int(
-            "sweep",
-            "Sweep",
-            "Sweep",
-            G_MININT,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_SWEEP,
+                                  g_param_spec_int("sweep",
+                                                   "Sweep",
+                                                   "Sweep",
+                                                   G_MININT,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
+  g_object_class_install_property(object_class, SCH_ARC_COLOR,
+                                  g_param_spec_int("color",
+                                                   "Color",
+                                                   "Color",
+                                                   0,
+                                                   G_MAXINT,
+                                                   SCH_ARC_DEFAULT_COLOR,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_COLOR,
-        g_param_spec_int(
-            "color",
-            "Color",
-            "Color",
-            0,
-            G_MAXINT,
-            SCH_ARC_DEFAULT_COLOR,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_WIDTH,
+                                  g_param_spec_int("line-width",
+                                                   "Line Width",
+                                                   "Line Width",
+                                                   0,
+                                                   G_MAXINT,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_WIDTH,
-        g_param_spec_int(
-            "line-width",
-            "Line Width",
-            "Line Width",
-            0,
-            G_MAXINT,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_LINE_STYLE,
+                                  g_param_spec_boxed("line-style",
+                                                     "Line Style",
+                                                     "Line Style",
+                                                     SCH_TYPE_LINE_STYLE,
+                                                     G_PARAM_LAX_VALIDATION |
+                                                     G_PARAM_READWRITE |
+                                                     G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_LINE_STYLE,
-        g_param_spec_boxed(
-            "line-style",
-            "Line Style",
-            "Line Style",
-            SCH_TYPE_LINE_STYLE,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class,
+                                  SCH_ARC_CAP_STYLE,
+                                  g_param_spec_int("line-cap-style",
+                                                   "Line Cap Style",
+                                                   "Line Cap Style",
+                                                   0,
+                                                   2,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
+  g_object_class_install_property(object_class,
+                                  SCH_ARC_DASH_STYLE,
+                                  g_param_spec_int("line-dash-style",
+                                                   "Line dash Style",
+                                                   "Line dash Style",
+                                                   0,
+                                                   4,
+                                                   0,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_CAP_STYLE,
-        g_param_spec_int(
-            "line-cap-style",
-            "Line Cap Style",
-            "Line Cap Style",
-            0,
-            2,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_DASH_LENGTH,
+                                  g_param_spec_int("line-dash-length",
+                                                   "Line Dash Length",
+                                                   "Line Dash Length",
+                                                   -1,
+                                                   G_MAXINT,
+                                                   -1,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_DASH_STYLE,
-        g_param_spec_int(
-            "line-dash-style",
-            "Line dash Style",
-            "Line dash Style",
-            0,
-            4,
-            0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
-
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_DASH_LENGTH,
-        g_param_spec_int(
-            "line-dash-length",
-            "Line Dash Length",
-            "Line Dash Length",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
-
-    g_object_class_install_property(
-        object_class,
-        SCH_ARC_DASH_SPACE,
-        g_param_spec_int(
-            "line-dash-space",
-            "Line Dash Space",
-            "Line Dash Space",
-            -1,
-            G_MAXINT,
-            -1,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+  g_object_class_install_property(object_class, SCH_ARC_DASH_SPACE,
+                                  g_param_spec_int("line-dash-space",
+                                                   "Line Dash Space",
+                                                   "Line Dash Space",
+                                                   -1,
+                                                   G_MAXINT,
+                                                   -1,
+                                                   G_PARAM_LAX_VALIDATION |
+                                                   G_PARAM_READWRITE |
+                                                   G_PARAM_STATIC_STRINGS));
 }
 
 
-gint
+int
 sch_arc_get_center_x(const SchArc *shape)
 {
-    gint center_x = 0;
+    int center_x = 0;
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         center_x = privat->arc.center_x;
     }
 
@@ -297,14 +256,14 @@ sch_arc_get_center_x(const SchArc *shape)
 }
 
 
-gint
+int
 sch_arc_get_center_y(const SchArc *shape)
 {
-    gint center_y = 0;
+    int center_y = 0;
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         center_y = privat->arc.center_y;
     }
 
@@ -312,14 +271,14 @@ sch_arc_get_center_y(const SchArc *shape)
 }
 
 
-gint
+int
 sch_arc_get_radius(const SchArc *shape)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
-    gint radius = 0;
+    int radius = 0;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         radius = privat->arc.radius;
     }
 
@@ -327,14 +286,14 @@ sch_arc_get_radius(const SchArc *shape)
 }
 
 
-gint
+int
 sch_arc_get_start(const SchArc *shape)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
-    gint start = 0;
+    int start = 0;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         start = privat->arc.start;
     }
 
@@ -342,14 +301,14 @@ sch_arc_get_start(const SchArc *shape)
 }
 
 
-gint
+int
 sch_arc_get_sweep(const SchArc *shape)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
-    gint sweep = 0;
+    int sweep = 0;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         sweep = privat->arc.sweep;
     }
 
@@ -362,10 +321,10 @@ sch_arc_get_property(GObject *object, guint property_id, GValue *value, GParamSp
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_ARC_CENTER_X:
                 g_value_set_int(value, privat->arc.center_x);
                 break;
@@ -422,8 +381,8 @@ sch_arc_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchArcClass),    /* class_size */
             NULL,                   /* base_init */
@@ -437,12 +396,9 @@ sch_arc_get_type(void)
             NULL                    /* value_table */
             };
 
-        type = g_type_register_static(
-            SCH_TYPE_SHAPE,
-            "SchArc",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(SCH_TYPE_SHAPE,
+                                      "SchArc",
+                                      &tinfo, 0);
     }
 
     return type;
@@ -454,10 +410,10 @@ sch_arc_set_property(GObject *object, guint property_id, const GValue *value, GP
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_ARC_ARC:
                 sch_arc_set_arc(SCH_ARC(object), g_value_get_boxed(value));
                 break;
@@ -517,14 +473,14 @@ sch_arc_set_property(GObject *object, guint property_id, const GValue *value, GP
 }
 
 
-gint
+int
 sch_arc_get_color(const SchArc *shape)
 {
-    gint color = SCH_ARC_DEFAULT_COLOR;
+    int color = SCH_ARC_DEFAULT_COLOR;
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         color = privat->color;
     }
 
@@ -535,30 +491,30 @@ sch_arc_get_color(const SchArc *shape)
 void
 sch_arc_get_arc(const SchArc *shape, GeomArc *arc)
 {
-    if (arc != NULL)
-    {
+    if (arc != NULL) {
+
         SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             *arc = privat->arc;
         }
-        else
-        {
+        else {
+
             geom_arc_init(arc);
         }
     }
 }
 
 
-gint
+int
 sch_arc_get_line_width(const SchArc *shape)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
-    gint width = SCH_ARC_DEFAULT_LINE_WIDTH;
+    int width = SCH_ARC_DEFAULT_LINE_WIDTH;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         width = privat->line_width;
     }
 
@@ -573,26 +529,24 @@ sch_arc_new(const SchConfig *config)
 
     sch_config_get_line_style(config, &line_style);
 
-    return SCH_ARC(g_object_new(
-        SCH_TYPE_ARC,
+    return SCH_ARC(g_object_new(SCH_TYPE_ARC,
         "color",            sch_config_get_graphic_color(config),
         "line-width",       sch_config_get_line_width(config),
         "line-cap-style",   line_style.cap_style,
         "line-dash-style",  line_style.dash_style,
         "line-dash-length", line_style.dash_length,
         "line-dash-space",  line_style.dash_space,
-        NULL
-        ));
+        NULL));
 }
 
 
 void
-sch_arc_rotate(SchShape *shape, gint angle)
+sch_arc_rotate(SchShape *shape, int angle)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         geom_arc_rotate(&(privat->arc), angle);
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -608,8 +562,8 @@ sch_arc_set_arc(SchArc *shape, const GeomArc *arc)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc = *arc;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -623,12 +577,12 @@ sch_arc_set_arc(SchArc *shape, const GeomArc *arc)
 
 
 void
-sch_arc_set_center_x(SchArc *shape, gint center_x)
+sch_arc_set_center_x(SchArc *shape, int center_x)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc.center_x = center_x;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -638,12 +592,12 @@ sch_arc_set_center_x(SchArc *shape, gint center_x)
 
 
 void
-sch_arc_set_center_y(SchArc *shape, gint center_y)
+sch_arc_set_center_y(SchArc *shape, int center_y)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc.center_y = center_y;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -653,12 +607,12 @@ sch_arc_set_center_y(SchArc *shape, gint center_y)
 
 
 void
-sch_arc_set_color(SchArc *shape, gint color)
+sch_arc_set_color(SchArc *shape, int color)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->color = color;
 
         g_object_notify(G_OBJECT(shape), "color");
@@ -671,8 +625,8 @@ sch_arc_set_line_style(SchArc *shape, const SchLineStyle *style)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line_style = *style;
 
         g_object_notify(G_OBJECT(shape), "line-style");
@@ -685,12 +639,12 @@ sch_arc_set_line_style(SchArc *shape, const SchLineStyle *style)
 
 
 void
-sch_arc_set_line_width(SchArc *shape, gint line_width)
+sch_arc_set_line_width(SchArc *shape, int line_width)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line_width = line_width;
 
         g_object_notify(G_OBJECT(shape), "line-width");
@@ -699,12 +653,12 @@ sch_arc_set_line_width(SchArc *shape, gint line_width)
 
 
 void
-sch_arc_set_radius(SchArc *shape, gint radius)
+sch_arc_set_radius(SchArc *shape, int radius)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc.radius = radius;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -714,12 +668,12 @@ sch_arc_set_radius(SchArc *shape, gint radius)
 
 
 void
-sch_arc_set_start(SchArc *shape, gint start)
+sch_arc_set_start(SchArc *shape, int start)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc.start = start;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -730,12 +684,12 @@ sch_arc_set_start(SchArc *shape, gint start)
 
 
 void
-sch_arc_set_sweep(SchArc *shape, gint sweep)
+sch_arc_set_sweep(SchArc *shape, int sweep)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->arc.sweep = sweep;
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -749,8 +703,8 @@ sch_arc_transform(SchShape *shape, const GeomTransform *transform)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         geom_arc_transform(&(privat->arc), transform);
 
         g_object_notify(G_OBJECT(shape), "arc");
@@ -767,8 +721,8 @@ sch_arc_translate(SchShape *shape, int dx, int dy)
 {
     SchArcPrivate *privat = SCH_ARC_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         geom_arc_translate(&(privat->arc), dx, dy);
 
         g_object_notify(G_OBJECT(shape), "arc");

@@ -199,14 +199,13 @@ sch_drawing_dispose(GObject *object)
 }
 
 void
-sch_drawing_foreach(SchDrawing *drawing, GFunc func, gpointer user_data)
+sch_drawing_foreach(SchDrawing *drawing, GFunc func, void *user_data)
 {
-    if (func != NULL)
-    {
+    if (func != NULL) {
+
         SchDrawingPrivate *privat = SCH_DRAWING_GET_PRIVATE(drawing);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
             g_slist_foreach(privat->shapes, func, user_data);
         }
     }
@@ -376,11 +375,11 @@ sch_drawing_set_property(GObject *object, guint property_id, const GValue *value
     {
         case SCH_DRAWING_FILE_FORMAT:
             sch_drawing_set_file_format(SCH_DRAWING(object), SCH_FILE_FORMAT_2(g_value_get_object(value)));
-            break; 
+            break;
 
         case SCH_DRAWING_FILENAME:
             sch_drawing_set_filename(SCH_DRAWING(object), g_value_get_string(value));
-            break; 
+            break;
 
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -457,14 +456,14 @@ sch_drawing_write(const SchDrawing *drawing, SchOutputStream *stream)
 {
     SchDrawingPrivate *privat = SCH_DRAWING_GET_PRIVATE(drawing);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GSList *node = privat->shapes;
 
         sch_file_format_2_write_version(privat->file_format, stream, NULL);
 
-        while (node != NULL)
-        {
+        while (node != NULL) {
+
             sch_shape_write(SCH_SHAPE(node->data), privat->file_format, stream, NULL);
 
             node = g_slist_next(node);
