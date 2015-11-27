@@ -66,13 +66,13 @@ static void
 gparts_category_model_finalize(GObject* object);
 
 static void
-gparts_category_model_get_property(GObject* object, guint property_id, GValue* value, GParamSpec* pspec);
+gparts_category_model_get_property(GObject* object, unsigned int property_id, GValue* value, GParamSpec* pspec);
 
 static void
-gparts_category_model_set_property(GObject* object, guint property_id, const GValue* value, GParamSpec* pspec);
+gparts_category_model_set_property(GObject* object, unsigned int property_id, const GValue* value, GParamSpec* pspec);
 
 static void
-gparts_load_children(GPartsDatabase* database, GtkTreeIter* iter);
+gparts_load_children(GPartsDatabase *database, GtkTreeIter* iter);
 
 static void
 gparts_category_model_tree_model_init(GtkTreeModelIface *iface);
@@ -89,7 +89,7 @@ gparts_category_model_iter_nth_child(GtkTreeModel *tree_model, GtkTreeIter *iter
  *
  */
 static void
-gparts_load_root(GPartsDatabase* database, GPartsCategoryModelNode **node)
+gparts_load_root(GPartsDatabase *database, GPartsCategoryModelNode **node)
 {
    *node = g_new0(GPartsCategoryModelNode, 1);
 
@@ -114,7 +114,7 @@ gparts_load_root(GPartsDatabase* database, GPartsCategoryModelNode **node)
  *
  */
 static void
-gparts_category_model_load_children(GPartsDatabase* database, GtkTreeIter *iter)
+gparts_category_model_load_children(GPartsDatabase *database, GtkTreeIter *iter)
 {
     GPartsCategoryModelNode **child;
     int  index;
@@ -126,28 +126,28 @@ gparts_category_model_load_children(GPartsDatabase* database, GtkTreeIter *iter)
 
     if (*child == NULL) {
 
-        GValue value0 = {0};
-        GValue value1 = {0};
+      GValue value0 = {0};
+      GValue value1 = {0};
 
-        *child = g_new0(GPartsCategoryModelNode, 1);
+      *child = g_new0(GPartsCategoryModelNode, 1);
 
-        (*child)->parent = *iter;
+      (*child)->parent = *iter;
 
-        gparts_database_result_get_field_value(node->result, index, 0, &value0);
+      gparts_database_result_get_field_value(node->result, index, 0, &value0);
 
-        g_value_init(&value1, G_TYPE_STRING);
-        g_value_transform(&value0, &value1);
-        g_value_unset(&value0);
+      g_value_init(&value1, G_TYPE_STRING);
+      g_value_transform(&value0, &value1);
+      g_value_unset(&value0);
 
-        GString *query = g_string_new(NULL);
+      GString *query = g_string_new(NULL);
 
-        g_string_printf(query, "SELECT * FROM Category WHERE ParentID = %s", g_value_get_string(&value1));
-        g_value_unset(&value1);
+      g_string_printf(query, "SELECT * FROM Category WHERE ParentID = %s", g_value_get_string(&value1));
+      g_value_unset(&value1);
 
-        (*child)->result = gparts_database_query(database, query->str, NULL);
-        g_string_free(query, TRUE);
+      (*child)->result = gparts_database_query(database, query->str, NULL);
+      g_string_free(query, TRUE);
 
-        (*child)->children = g_new0(GPartsCategoryModelNode, gparts_database_result_get_row_count((*child)->result));
+      (*child)->children = g_new0(GPartsCategoryModelNode, gparts_database_result_get_row_count((*child)->result));
     }
 }
 
@@ -296,7 +296,7 @@ gparts_category_model_get_field(GPartsCategoryModel* model, GtkTreeIter *iter, c
  *
  */
 static void
-gparts_category_model_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gparts_category_model_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     GPartsCategoryModelPrivate *private;
 
@@ -453,7 +453,7 @@ gparts_category_model_set_database(GObject *object, const GValue *value)
  *
  */
 static void
-gparts_category_model_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gparts_category_model_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     switch ( property_id )
     {
@@ -637,8 +637,8 @@ gparts_category_model_iter_has_child(GtkTreeModel *tree_model, GtkTreeIter *iter
 static int
 gparts_category_model_iter_next(GtkTreeModel *tree_model, GtkTreeIter *iter)
 {
-    guint new_position;
-    guint old_position;
+    unsigned int new_position;
+    unsigned int old_position;
     GPartsCategoryModelPrivate *private = GPARTS_CATEGORY_MODEL_GET_PRIVATE(tree_model);
 
     g_assert(iter != NULL);
