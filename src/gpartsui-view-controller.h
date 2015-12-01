@@ -48,6 +48,8 @@
 #define GPARTSUI_IS_VIEW_CONTROLLER_CLASS(cls) (G_TYPE_CHECK_CLASS_TYPE((cls),GPARTSUI_TYPE_VIEW_CONTROLLER))
 #define GPARTSUI_VIEW_CONTROLLER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj),GPARTSUI_TYPE_VIEW_CONTROLLER,GPartsUIViewControllerClass))
 
+typedef void (*GPartsUIController)(void *, GtkAction *action);
+
 struct _GPartsUIViewController
 {
     GObject parent;
@@ -58,16 +60,17 @@ struct _GPartsUIViewControllerClass
 {
     GObjectClass parent;
 
-    gchar* (*get_field)(GPartsUIViewController *controller, const gchar *name);
+    char * (*get_field)(GPartsUIViewController *controller, const char *name);
     GHashTable* (*get_table)(GPartsUIViewController *controller);
 
-    void (*set_copy_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_delete_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_edit_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_insert_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_open_document_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_open_website_action)(GPartsUIViewController *controller, GtkAction *action);
-    void (*set_paste_action)(GPartsUIViewController *controller, GtkAction *action);
+    GPartsUIController set_copy_action;
+    GPartsUIController set_delete_action;
+    GPartsUIController set_edit_action;
+    GPartsUIController set_insert_action;
+    GPartsUIController set_open_document_action;
+    GPartsUIController set_open_website_action;
+    GPartsUIController set_paste_action;
+
 };
 
 /*! \private */
