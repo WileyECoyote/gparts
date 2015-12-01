@@ -36,18 +36,19 @@ typedef struct _GPartsUIResultAdapterPrivate GPartsUIResultAdapterPrivate;
 struct _GPartsUIResultAdapterPrivate
 {
     GPartsDatabaseResult *result;
-    gint                 stamp;
+    int                   stamp;
 };
 
 struct _GPartsUIResultAdapterGetFieldsProcData
 {
-    GPartsUIResultAdapter *adapter;
-    GPtrArray             *array;
-    gint                  index;
+   const
+   GPartsUIResultAdapter *adapter;
+   GPtrArray             *array;
+   int                    index;
 };
 
 static void
-gpartsui_result_adapter_class_init(gpointer g_class, gpointer g_class_data);
+gpartsui_result_adapter_class_init(void *g_class, void *g_class_data);
 
 static void
 gpartsui_result_adapter_dispose(GObject *object);
@@ -56,49 +57,49 @@ static void
 gpartsui_result_adapter_finalize(GObject *object);
 
 static GType
-gpartsui_result_adapter_get_column_type(GtkTreeModel *tree_adapter, gint index);
+gpartsui_result_adapter_get_column_type(GtkTreeModel *tree_adapter, int index);
 
 static void
-gpartsui_result_adapter_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gpartsui_result_adapter_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static GtkTreeModelFlags
 gpartsui_result_adapter_get_flags(GtkTreeModel *tree_adapter);
 
-static gboolean
+static int
 gpartsui_result_adapter_get_iter(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreePath *path);
 
-static gint
+static int
 gpartsui_result_adapter_get_n_columns(GtkTreeModel *tree_adapter);
 
 static GtkTreePath*
 gpartsui_result_adapter_get_path(GtkTreeModel *tree_adapter, GtkTreeIter *iter);
 
 static void
-gpartsui_result_adapter_get_value(GtkTreeModel *tree_adapter, GtkTreeIter *iter, gint column, GValue *value);
+gpartsui_result_adapter_get_value(GtkTreeModel *tree_adapter, GtkTreeIter *iter, int column, GValue *value);
 
 static void
-gpartsui_result_adapter_instance_init(GTypeInstance *instance, gpointer g_class);
+gpartsui_result_adapter_instance_init(GTypeInstance *instance, void *g_class);
 
-/*static*/ gboolean
+/*static*/ int
 gpartsui_result_adapter_iter_children(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent);
 
-static gboolean
+static int
 gpartsui_result_adapter_iter_has_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter);
 
-static gboolean
+static int
 gpartsui_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter);
 
-static gint
+static int
 gpartsui_result_adapter_iter_n_children(GtkTreeModel *tree_adapter, GtkTreeIter *iter);
 
-static gboolean
-gpartsui_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent, gint n);
+static int
+gpartsui_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent, int n);
 
-static gboolean
+static int
 gpartsui_result_adapter_iter_parent(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *child);
 
 static void
-gpartsui_result_adapter_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gpartsui_result_adapter_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 gpartsui_result_adapter_set_result(GPartsUIResultAdapter *adapter, GPartsDatabaseResult *result);
@@ -107,11 +108,11 @@ static void
 gpartsui_result_adapter_tree_adapter_init(GtkTreeModelIface *iface);
 
 static void
-gpartsui_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data);
+gpartsui_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, void *user_data);
 
 
 static void
-gpartsui_result_adapter_class_init(gpointer g_class, gpointer g_class_data)
+gpartsui_result_adapter_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass* object_class = G_OBJECT_CLASS(g_class);
 
@@ -152,8 +153,8 @@ gpartsui_result_adapter_finalize(GObject *object)
     misc_object_chain_finalize(object);
 }
 
-gboolean
-gpartsui_result_adapter_get_column_index(GPartsUIResultAdapter *result_adapter, const gchar *name, gint *index)
+int
+gpartsui_result_adapter_get_column_index(GPartsUIResultAdapter *result_adapter, const gchar *name, int *index)
 {
     GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(result_adapter);
 
@@ -167,13 +168,13 @@ gpartsui_result_adapter_get_column_index(GPartsUIResultAdapter *result_adapter, 
  *  \return The column's GType.
  */
 static GType
-gpartsui_result_adapter_get_column_type(GtkTreeModel *tree_adapter, gint index)
+gpartsui_result_adapter_get_column_type(GtkTreeModel *tree_adapter, int index)
 {
     GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
     GType type = G_TYPE_INVALID;
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         type = gparts_database_result_get_column_type(privat->result, index);
     }
 
@@ -183,91 +184,94 @@ gpartsui_result_adapter_get_column_type(GtkTreeModel *tree_adapter, gint index)
 gchar*
 gpartsui_result_adapter_get_field(GPartsUIResultAdapter *model, GtkTreeIter *iter, const gchar *name)
 {
-    GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(model);
-    gchar *result = NULL;
+  GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(model);
+  gchar *result = NULL;
 
-    if ((privat != NULL) && (privat->result != NULL))
+  if ((privat != NULL) && (privat->result != NULL)) {
+
+    int index;
+    int success;
+
+    success = gparts_database_result_get_column_index(privat->result, name, &index);
+
+    if (success)
     {
-        gint index;
-        gboolean success;
+      int error = FALSE;
+      GString *buffer = g_string_sized_new(10);
+      GValue value = {0};
 
-        success = gparts_database_result_get_column_index(privat->result, name, &index);
+      gparts_database_result_get_field_value(
+        privat->result,
+        GPOINTER_TO_UINT(iter->user_data),
+                                             index,
+                                             &value);
 
-        if (success)
+      if(G_IS_VALUE(&value)) {
+
+        if (G_VALUE_HOLDS_STRING(&value))
         {
-            gboolean error = FALSE;
-            GString *buffer = g_string_sized_new(10);
-            GValue value = {0};
 
-            gparts_database_result_get_field_value(
-                privat->result,
-                GPOINTER_TO_UINT(iter->user_data),
-                index,
-                &value
-                );
-
-            if(G_IS_VALUE(&value))
-            {
-                if (G_VALUE_HOLDS_STRING(&value))
-                {
-                    g_string_printf(buffer, "%s", g_value_get_string(&value));
-                }
-                else if (G_VALUE_HOLDS_DOUBLE(&value))
-                {
-                    g_string_printf(buffer, "%f", g_value_get_double(&value));
-                }
-                else if (G_VALUE_HOLDS_INT(&value))
-                {
-                    g_string_printf(buffer, "%d", g_value_get_int(&value));
-                }
-                else if (g_value_type_transformable(G_VALUE_TYPE(&value), G_TYPE_STRING))
-                {
-                    GValue temp = {0};
-
-                    g_value_init(&temp, G_TYPE_STRING);
-                    g_value_transform(&value, &temp);
-
-                    g_string_printf(buffer, "%s", g_value_get_string(&temp));
-                    g_value_unset(&temp);
-                }
-                else
-                {
-                    error = TRUE;
-                }
-
-                result = g_string_free(buffer, error);
-             }
+          g_string_printf(buffer, "%s", g_value_get_string(&value));
         }
-    }
+        else if (G_VALUE_HOLDS_DOUBLE(&value))
+        {
 
-    return result;
+          g_string_printf(buffer, "%f", g_value_get_double(&value));
+        }
+        else if (G_VALUE_HOLDS_INT(&value))
+        {
+
+          g_string_printf(buffer, "%d", g_value_get_int(&value));
+        }
+        else if (g_value_type_transformable(G_VALUE_TYPE(&value), G_TYPE_STRING))
+        {
+          GValue temp = {0};
+
+          g_value_init(&temp, G_TYPE_STRING);
+          g_value_transform(&value, &temp);
+
+          g_string_printf(buffer, "%s", g_value_get_string(&temp));
+          g_value_unset(&temp);
+        }
+        else
+        {
+          error = TRUE;
+        }
+
+        result = g_string_free(buffer, error);
+      }
+    }
+  }
+
+  return result;
 }
 
 GStrv
-gpartsui_result_adapter_get_fields(const GPartsUIResultAdapter *adapter, GtkTreeSelection *selection, gint index)
+gpartsui_result_adapter_get_fields(const GPartsUIResultAdapter *adapter, GtkTreeSelection *selection, int index)
 {
     GStrv fields = NULL;
 
-    if (selection != NULL)
-    {
+    if (selection != NULL) {
+
         GPartsUIResultAdapterGetFieldsProcData data;
 
+        /*  GPartsUIResultAdapter * = GPartsUIResultAdapter*/
         data.adapter = adapter;
         data.array   = NULL;
         data.index   = index;
 
         gtk_tree_selection_selected_foreach(selection, gpartsui_result_adapter_get_fields_proc, &data);
 
-        if (data.array != NULL)
-        {
-            if (data.array->len > 0)
-            {
+        if (data.array != NULL) {
+
+            if (data.array->len > 0) {
+
                 g_ptr_array_add(data.array, NULL);
 
                 fields = (GStrv) g_ptr_array_free(data.array, FALSE);
             }
-            else
-            {
+            else {
+
                 g_ptr_array_free(data.array, TRUE);
             }
         }
@@ -277,80 +281,80 @@ gpartsui_result_adapter_get_fields(const GPartsUIResultAdapter *adapter, GtkTree
 }
 
 static void
-gpartsui_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer user_data)
+gpartsui_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, void *user_data)
 {
-    GPartsUIResultAdapterGetFieldsProcData *data = (GPartsUIResultAdapterGetFieldsProcData*) user_data;
+  GPartsUIResultAdapterGetFieldsProcData *data = (GPartsUIResultAdapterGetFieldsProcData*) user_data;
 
-    if (data != NULL)
-    {
-        GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(data->adapter);
+  if (data != NULL) {
 
-        if (privat != NULL)
+    GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(data->adapter);
+
+    if (privat != NULL) {
+
+      GValue value = {0};
+
+      gparts_database_result_get_field_value(
+        privat->result,
+        GPOINTER_TO_UINT(iter->user_data),
+                                             data->index,
+                                             &value
+      );
+
+      if(G_IS_VALUE(&value)) {
+
+        GString *buffer = g_string_sized_new(10);
+        int error = FALSE;
+
+        if (G_VALUE_HOLDS_STRING(&value))
         {
-            GValue value = {0};
-
-            gparts_database_result_get_field_value(
-                privat->result,
-                GPOINTER_TO_UINT(iter->user_data),
-                data->index,
-                &value
-                );
-
-            if(G_IS_VALUE(&value))
-            {
-                GString *buffer = g_string_sized_new(10);
-                gboolean error = FALSE;
-
-                if (G_VALUE_HOLDS_STRING(&value))
-                {
-                    g_string_printf(buffer, "%s", g_value_get_string(&value));
-                }
-                else if (G_VALUE_HOLDS_DOUBLE(&value))
-                {
-                    g_string_printf(buffer, "%f", g_value_get_double(&value));
-                }
-                else if (G_VALUE_HOLDS_INT(&value))
-                {
-                    g_string_printf(buffer, "%d", g_value_get_int(&value));
-                }
-                else if (g_value_type_transformable(G_VALUE_TYPE(&value), G_TYPE_STRING))
-                {
-                    GValue temp = {0};
-
-                    g_value_init(&temp, G_TYPE_STRING);
-                    g_value_transform(&value, &temp);
-
-                    g_string_printf(buffer, "%s", g_value_get_string(&temp));
-                    g_value_unset(&temp);
-                }
-                else
-                {
-                    error = TRUE;
-                }
-
-                if (!error)
-                {
-                    if (buffer->str[0] != '\0')
-                    {
-                        if (data->array == NULL)
-                        {
-                            data->array = g_ptr_array_new();
-                        }
-
-                        g_ptr_array_add(data->array, g_string_free(buffer, FALSE));
-                    }
-                    else
-                    {
-                        g_string_free(buffer, TRUE);
-                    }
-                }
-                else
-                {
-                    g_string_free(buffer, TRUE);
-                }
-            }
+          g_string_printf(buffer, "%s", g_value_get_string(&value));
         }
+        else if (G_VALUE_HOLDS_DOUBLE(&value))
+        {
+          g_string_printf(buffer, "%f", g_value_get_double(&value));
+        }
+        else if (G_VALUE_HOLDS_INT(&value))
+        {
+          g_string_printf(buffer, "%d", g_value_get_int(&value));
+        }
+        else if (g_value_type_transformable(G_VALUE_TYPE(&value), G_TYPE_STRING))
+        {
+          GValue temp = {0};
+
+          g_value_init(&temp, G_TYPE_STRING);
+          g_value_transform(&value, &temp);
+
+          g_string_printf(buffer, "%s", g_value_get_string(&temp));
+          g_value_unset(&temp);
+        }
+        else
+        {
+          error = TRUE;
+        }
+
+        if (!error)
+        {
+          if (buffer->str[0] != '\0')
+          {
+            if (data->array == NULL)
+            {
+              data->array = g_ptr_array_new();
+            }
+
+            g_ptr_array_add(data->array, g_string_free(buffer, FALSE));
+          }
+          else
+          {
+            g_string_free(buffer, TRUE);
+          }
+        }
+        else
+        {
+          g_string_free(buffer, TRUE);
+        }
+      }
     }
+  }
 }
 
 /*! \brief
@@ -360,14 +364,14 @@ gpartsui_result_adapter_get_fields_proc(GtkTreeModel *model, GtkTreePath *path, 
  *
  */
 static void
-gpartsui_result_adapter_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpartsui_result_adapter_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch ( property_id )
-        {
+    if (privat != NULL) {
+
+        switch ( property_id ) {
+
             case GPARTSUI_RESULT_ADAPTER_PROPID_RESULT:
                 g_value_set_object(value, privat->result);
                 break;
@@ -401,17 +405,17 @@ gpartsui_result_adapter_get_flags(GtkTreeModel *tree_adapter)
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise and the
  *  iter will not be valid.
  */
-static gboolean
+static int
 gpartsui_result_adapter_get_iter(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreePath *path)
 {
     GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
-    gint index = gtk_tree_path_get_indices(path)[0];
+    int index = gtk_tree_path_get_indices(path)[0];
 
-    guint rows = gparts_database_result_get_row_count(private->result);
+    unsigned int rows = gparts_database_result_get_row_count(private->result);
 
-    if (index < rows)
-    {
+    if (index < rows) {
+
         iter->stamp = private->stamp;
         iter->user_data = GUINT_TO_POINTER(index);
 
@@ -426,10 +430,11 @@ gpartsui_result_adapter_get_iter(GtkTreeModel *tree_adapter, GtkTreeIter *iter, 
  *  \param [in] tree_adapter The given tree model.
  *  \return The number of columns in the tree model.
  */
-static gint
+static int
 gpartsui_result_adapter_get_n_columns(GtkTreeModel *tree_adapter)
 {
-    GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
+    GPartsUIResultAdapterPrivate *private =
+    GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
     return gparts_database_result_get_column_count(private->result);
 }
@@ -443,7 +448,8 @@ gpartsui_result_adapter_get_n_columns(GtkTreeModel *tree_adapter)
 static GtkTreePath*
 gpartsui_result_adapter_get_path(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 {
-    GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
+    GPartsUIResultAdapterPrivate *private =
+    GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
     g_assert(iter != NULL);
     g_assert(iter->stamp == private->stamp);
@@ -462,43 +468,41 @@ gpartsui_result_adapter_get_path(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 GType
 gpartsui_result_adapter_get_type( void )
 {
-    static GType type = 0;
+  static GType type = 0;
 
-    if ( type == 0 )
-    {
-        static const GTypeInfo tinfo = {
-            sizeof(GPartsUIResultAdapterClass),
-            NULL,
-            NULL,
-            gpartsui_result_adapter_class_init,
-            NULL,
-            NULL,
-            sizeof(GPartsUIResultAdapter),
-            0,
-            gpartsui_result_adapter_instance_init,
-            NULL
-            };
+  if ( type == 0 ) {
 
-        static const GInterfaceInfo iinfo = {
-            (GInterfaceInitFunc) gpartsui_result_adapter_tree_adapter_init,
-            NULL,
-            NULL
-            };
+    static const GTypeInfo tinfo = {
+      sizeof(GPartsUIResultAdapterClass),
+      NULL,
+      NULL,
+      gpartsui_result_adapter_class_init,
+      NULL,
+      NULL,
+      sizeof(GPartsUIResultAdapter),
+      0,
+      gpartsui_result_adapter_instance_init,
+      NULL
+    };
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "gpartsui-result-adapter",
-            &tinfo,
-            0
-            );
+    static const GInterfaceInfo iinfo = {
+      (GInterfaceInitFunc) gpartsui_result_adapter_tree_adapter_init,
+      NULL,
+      NULL
+    };
 
-        g_type_add_interface_static(
-            type,
-            GTK_TYPE_TREE_MODEL,
-            &iinfo
-            );
-    }
-    return type;
+    type = g_type_register_static(
+      G_TYPE_OBJECT,
+      "gpartsui-result-adapter",
+      &tinfo,
+      0);
+
+    g_type_add_interface_static(
+      type,
+      GTK_TYPE_TREE_MODEL,
+      &iinfo);
+  }
+  return type;
 }
 
 /*! \brief Get a value from the tree model.
@@ -512,24 +516,21 @@ gpartsui_result_adapter_get_type( void )
  *  \param [out] value      The value of the cell as a GValue.
  */
 static void
-gpartsui_result_adapter_get_value(GtkTreeModel *tree_adapter, GtkTreeIter *iter, gint column, GValue *value)
+gpartsui_result_adapter_get_value(GtkTreeModel *tree_adapter, GtkTreeIter *iter, int column, GValue *value)
 {
     GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
     g_assert(iter != NULL);
     g_assert(iter->stamp == private->stamp);
 
-    gparts_database_result_get_field_value(
-        private->result,
+    gparts_database_result_get_field_value(private->result,
         GPOINTER_TO_UINT(iter->user_data),
         column,
-        value
-        );
+        value);
 
     /* Turn uninitialized values into blanks */
 
-    if (!G_IS_VALUE(value))
-    {
+    if (!G_IS_VALUE(value)) {
         g_value_init(value, G_TYPE_STRING);
     }
 }
@@ -540,12 +541,11 @@ gpartsui_result_adapter_get_value(GtkTreeModel *tree_adapter, GtkTreeIter *iter,
  *  \param g_class
  */
 static void
-gpartsui_result_adapter_instance_init(GTypeInstance* instance, gpointer g_class)
+gpartsui_result_adapter_instance_init(GTypeInstance* instance, void *g_class)
 {
     GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
         privat->stamp = g_random_int();
     }
 }
@@ -562,14 +562,15 @@ gpartsui_result_adapter_instance_init(GTypeInstance* instance, gpointer g_class)
  *  \retval TRUE  if successful and iter is valid.
  *  \retval FALSE if otherwise and the iter will not be valid.
  */
-/*static*/ gboolean
+/*static*/ int
 gpartsui_result_adapter_iter_children(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent)
 {
-    gboolean success = FALSE;
+    int success = FALSE;
 
-    if (parent == NULL)
-    {
-        GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
+    if (parent == NULL) {
+
+      GPartsUIResultAdapterPrivate *privat =
+      GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
         if (privat != NULL)
         {
@@ -591,7 +592,7 @@ gpartsui_result_adapter_iter_children(GtkTreeModel *tree_adapter, GtkTreeIter *i
  *  \param [out] iter       Unused.
  *  \return FALSE, always.
  */
-static gboolean
+static int
 gpartsui_result_adapter_iter_has_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 {
     return FALSE;
@@ -604,11 +605,11 @@ gpartsui_result_adapter_iter_has_child(GtkTreeModel *tree_adapter, GtkTreeIter *
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise and the
  *  iter will not be valid.
  */
-static gboolean
+static int
 gpartsui_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 {
-    guint new_position;
-    guint old_position;
+    unsigned int new_position;
+    unsigned int old_position;
     GPartsUIResultAdapterPrivate *private = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
     g_assert(iter != NULL);
@@ -618,12 +619,12 @@ gpartsui_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 
     new_position = old_position + 1;
 
-    if (new_position > old_position)
-    {
-        guint rows = gparts_database_result_get_row_count(private->result);
+    if (new_position > old_position) {
 
-        if (new_position < rows)
-        {
+        unsigned int rows = gparts_database_result_get_row_count(private->result);
+
+        if (new_position < rows) {
+
             iter->user_data = GUINT_TO_POINTER(new_position);
 
             return TRUE;
@@ -641,17 +642,17 @@ gpartsui_result_adapter_iter_next(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
  *  \param [in] iter       The given node.
  *  \return The number of iter's children.
  */
-static gint
+static int
 gpartsui_result_adapter_iter_n_children(GtkTreeModel *tree_adapter, GtkTreeIter *iter)
 {
-    gint rows = 0;
+    int rows = 0;
 
-    if (iter == NULL)
-    {
+    if (iter == NULL) {
+
         GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             rows = gparts_database_result_get_row_count(privat->result);
         }
     }
@@ -672,23 +673,23 @@ gpartsui_result_adapter_iter_n_children(GtkTreeModel *tree_adapter, GtkTreeIter 
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise and the
  *  iter will not be valid.
  */
-static gboolean
-gpartsui_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent, gint n)
+static int
+gpartsui_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *parent, int n)
 {
-    gboolean success = FALSE;
+    int success = FALSE;
 
     g_assert(iter != NULL);
 
-    if (parent == NULL)
-    {
+    if (parent == NULL) {
+
         GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(tree_adapter);
 
-        if (privat != NULL)
-        {
-            guint rows = gparts_database_result_get_row_count(privat->result);
+        if (privat != NULL) {
 
-            if (n < rows)
-            {
+            unsigned int rows = gparts_database_result_get_row_count(privat->result);
+
+            if (n < rows) {
+
                 iter->stamp = privat->stamp;
                 iter->user_data = GINT_TO_POINTER(n);
 
@@ -710,7 +711,7 @@ gpartsui_result_adapter_iter_nth_child(GtkTreeModel *tree_adapter, GtkTreeIter *
  *  \return TRUE if successful and iter is valid.  FALSE if otherwise and the
  *  iter will not be valid.
  */
-static gboolean
+static int
 gpartsui_result_adapter_iter_parent(GtkTreeModel *tree_adapter, GtkTreeIter *iter, GtkTreeIter *child)
 {
     return FALSE;
@@ -719,106 +720,103 @@ gpartsui_result_adapter_iter_parent(GtkTreeModel *tree_adapter, GtkTreeIter *ite
 GPartsUIResultAdapter*
 gpartsui_result_adapter_new(GPartsDatabaseResult *result)
 {
-    return GPARTSUI_RESULT_ADAPTER(g_object_new(
-        GPARTSUI_TYPE_RESULT_ADAPTER,
-        "result", result,
-        NULL
-        ));
+  return GPARTSUI_RESULT_ADAPTER(g_object_new(GPARTSUI_TYPE_RESULT_ADAPTER,
+                                              "result", result,
+                                              NULL));
 }
 
 void
 gpartsui_result_adapter_adjust_columns(const GPartsUIResultAdapter *adapter, GtkTreeView *view)
 {
-    GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(adapter);
+  GPartsUIResultAdapterPrivate *privat =
+  GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(adapter);
 
-    if (privat != NULL)
-    {
-        gint columns;
-        GtkTreeViewColumn *column;
-        gint index;
-        GValue value = {0};
+  if (privat != NULL) {
 
-        columns = gparts_database_result_get_column_count(privat->result);
+    int columns;
+    GtkTreeViewColumn *column;
+    int index;
+    GValue value = {0};
 
-        g_value_init(&value, G_TYPE_STRING);
+    columns = gparts_database_result_get_column_count(privat->result);
 
-        for(index=0; index<columns; index++)
-        {
-            GList *list;
+    g_value_init(&value, G_TYPE_STRING);
 
-            column = gtk_tree_view_get_column(view, index);
+    for(index=0; index<columns; index++) {
 
-            if (column == NULL)
-            {
-                GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+      GList *list;
 
-                column = gtk_tree_view_column_new();
+      column = gtk_tree_view_get_column(view, index);
 
-                g_object_set(
-                    column,
-                    "resizable", TRUE,
-                    "reorderable", TRUE,
-                    "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
-                    NULL
-                    );
+      if (column == NULL) {
 
-                gtk_tree_view_column_pack_start(column, renderer, TRUE);
+        GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 
-                gtk_tree_view_column_add_attribute(column, renderer, "text", index);
+        column = gtk_tree_view_column_new();
 
-                gtk_tree_view_append_column(view, column);
+        g_object_set(
+          column,
+          "resizable", TRUE,
+          "reorderable", TRUE,
+          "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+          NULL
+        );
 
-            }
+        gtk_tree_view_column_pack_start(column, renderer, TRUE);
 
-            list = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(column));
+        gtk_tree_view_column_add_attribute(column, renderer, "text", index);
 
-            if (list != NULL)
-            {
-                GList *node = g_list_first(list);
+        gtk_tree_view_append_column(view, column);
 
-                while (node != NULL)
-                {
-                    GType type = gparts_database_result_get_column_type(privat->result, index);
+      }
 
-                    if (type == G_TYPE_STRING)
-                    {
-                        g_object_set(G_OBJECT(node->data), "xalign", 0.0, NULL );
-                    }
-                    else
-                    {
-                        g_object_set(G_OBJECT(node->data), "xalign", 1.0, NULL );
-                    }
+      list = gtk_cell_layout_get_cells(GTK_CELL_LAYOUT(column));
 
-                    node = g_list_next(node);
-                }
-            }
+      if (list != NULL) {
 
-            g_list_free(list);
+        GList *node = g_list_first(list);
 
-            gparts_database_result_get_column_value(privat->result, index, &value);
-            g_object_set_property(G_OBJECT(column), "title", &value);
+        while (node != NULL) {
+
+          GType type = gparts_database_result_get_column_type(privat->result, index);
+
+          if (type == G_TYPE_STRING) {
+
+            g_object_set(G_OBJECT(node->data), "xalign", 0.0, NULL );
+          }
+          else {
+
+            g_object_set(G_OBJECT(node->data), "xalign", 1.0, NULL );
+          }
+
+          node = g_list_next(node);
         }
+      }
 
-        g_value_unset(&value);
+      g_list_free(list);
 
-        /* Delete any additional columns */
-
-        column = gtk_tree_view_get_column(view, columns);
-
-        while (column != NULL)
-        {
-            gtk_tree_view_remove_column(view, column);
-
-            column = gtk_tree_view_get_column(view, columns);
-        }
+      gparts_database_result_get_column_value(privat->result, index, &value);
+      g_object_set_property(G_OBJECT(column), "title", &value);
     }
+
+    g_value_unset(&value);
+
+    /* Delete any additional columns */
+
+    column = gtk_tree_view_get_column(view, columns);
+
+    while (column != NULL) {
+      gtk_tree_view_remove_column(view, column);
+      column = gtk_tree_view_get_column(view, columns);
+    }
+  }
 }
 
 static void
-gpartsui_result_adapter_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gpartsui_result_adapter_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
-    switch ( property_id )
-    {
+    switch ( property_id ) {
+
         case GPARTSUI_RESULT_ADAPTER_PROPID_RESULT:
             gpartsui_result_adapter_set_result(GPARTSUI_RESULT_ADAPTER(object), GPARTS_DATABASE_RESULT(g_value_get_object(value)));
             break;
@@ -833,17 +831,17 @@ gpartsui_result_adapter_set_result(GPartsUIResultAdapter *adapter, GPartsDatabas
 {
     GPartsUIResultAdapterPrivate *privat = GPARTSUI_RESULT_ADAPTER_GET_PRIVATE(adapter);
 
-    if (privat != NULL)
-    {
-        if (privat->result != NULL)
-        {
+    if (privat != NULL) {
+
+        if (privat->result != NULL) {
+
             g_object_unref(privat->result);
         }
 
         privat->result = result;
 
-        if (privat->result != NULL)
-        {
+        if (privat->result != NULL) {
+
             g_object_ref(privat->result);
         }
 
@@ -858,8 +856,8 @@ gpartsui_result_adapter_set_result(GPartsUIResultAdapter *adapter, GPartsDatabas
 static void
 gpartsui_result_adapter_tree_adapter_init(GtkTreeModelIface *iface)
 {
-    if (iface != NULL)
-    {
+    if (iface != NULL) {
+
         iface->get_flags       = gpartsui_result_adapter_get_flags;
         iface->get_n_columns   = gpartsui_result_adapter_get_n_columns;
         iface->get_column_type = gpartsui_result_adapter_get_column_type;
@@ -874,4 +872,3 @@ gpartsui_result_adapter_tree_adapter_init(GtkTreeModelIface *iface)
         iface->iter_parent     = gpartsui_result_adapter_iter_parent;
     }
 }
-
