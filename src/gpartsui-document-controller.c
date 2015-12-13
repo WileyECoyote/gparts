@@ -40,11 +40,11 @@ struct _GPartsUIDocumentControllerPrivate
     MiscUIActionController   *insert_controller;
     GPartsUIResultController *result_controller;
 
-    GPartsUICompanyModel     *company_model;
+    GPartsUIDocumentModel    *document_model;
 
-    GtkTreeSelection         *company_selection;
-    GtkTreeView              *company_tree_view;
-    GPartsUIResultAdapter    *company_tree_model;
+    GtkTreeSelection         *document_selection;
+    GtkTreeView              *document_tree_view;
+    GPartsUIResultAdapter    *document_tree_model;
 
     GtkAction                *open_document_action;
 
@@ -52,25 +52,25 @@ struct _GPartsUIDocumentControllerPrivate
 };
 
 static void
-gpartsui_document_controller_init(GTypeInstance *instance, gpointer g_class);
+gpartsui_document_controller_init(GTypeInstance *instance, void *g_class);
 
 static void
-gpartsui_document_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+gpartsui_document_controller_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec);
 
 static void
-gpartsui_document_controller_set_delete_action(GPartsUIDocumentController *controller, GtkAction *action);
+gpartsui_document_controller_set_delete_action(void *controller, GtkAction *action);
 
 static void
-gpartsui_document_controller_set_edit_action(GPartsUIDocumentController *controller, GtkAction *action);
+gpartsui_document_controller_set_edit_action(void *controller, GtkAction *action);
 
 static void
-gpartsui_document_controller_set_insert_action(GPartsUIDocumentController *controller, GtkAction *action);
+gpartsui_document_controller_set_insert_action(void *controller, GtkAction *action);
 
 static void
-gpartsui_document_controller_set_open_document_action(GPartsUIDocumentController *controller, GtkAction *action);
+gpartsui_document_controller_set_open_document_action(void *controller, GtkAction *action);
 
 static void
-gpartsui_document_controller_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+gpartsui_document_controller_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec);
 
 static void
 gpartsui_document_controller_update_open_document_action(GPartsUIDocumentController *controller);
@@ -97,7 +97,7 @@ gpartsui_document_controller_changed_selection_cb(GtkTreeSelection *selection, G
 
 
 static void
-gpartsui_document_controller_class_init(gpointer g_class, gpointer g_class_data)
+gpartsui_document_controller_class_init(void *g_class, void *g_class_data)
 {
     GPartsUIViewControllerClass *klasse = GPARTSUI_VIEW_CONTROLLER_CLASS(g_class);
 
@@ -111,29 +111,23 @@ gpartsui_document_controller_class_init(gpointer g_class, gpointer g_class_data)
     klasse->set_insert_action        = gpartsui_document_controller_set_insert_action;
     klasse->set_open_document_action = gpartsui_document_controller_set_open_document_action;
 
-    g_object_class_install_property(
-        G_OBJECT_CLASS(g_class),
-        GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_MODEL,
-        g_param_spec_object(
-            "document-model",
-            "Document Model",
-            "Document Model",
-            GPARTSUI_TYPE_DOCUMENT_MODEL,
-            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(G_OBJECT_CLASS(g_class),
+                                    GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_MODEL,
+                                    g_param_spec_object("document-model",
+                                                        "Document Model",
+                                                        "Document Model",
+                                                        GPARTSUI_TYPE_DOCUMENT_MODEL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        G_OBJECT_CLASS(g_class),
-        GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_VIEW,
-        g_param_spec_object(
-            "document-view",
-            "Document View",
-            "Document View",
-            GTK_TYPE_TREE_VIEW,
-            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(G_OBJECT_CLASS(g_class),
+                                    GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_VIEW,
+                                    g_param_spec_object("document-view",
+                                                        "Document View",
+                                                        "Document View",
+                                                        GTK_TYPE_TREE_VIEW,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_STRINGS));
 }
 
 GPartsUIDocumentModel*
@@ -149,12 +143,12 @@ gpartsui_document_controller_get_document_view(const GPartsUIDocumentController 
 }
 
 static void
-gpartsui_document_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+gpartsui_document_controller_get_property(GObject *object, unsigned int property_id, GValue *value, GParamSpec *pspec)
 {
     GPartsUIDocumentController *controller = GPARTSUI_DOCUMENT_CONTROLLER(object);
 
-    switch (property_id)
-    {
+    switch (property_id)  {
+
         case GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_MODEL:
             g_value_take_object(value, gpartsui_document_controller_get_document_model(controller));
             break;
@@ -174,8 +168,8 @@ gpartsui_document_controller_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsUIDocumentControllerClass),    /* class_size */
             NULL,                                      /* base_init */
@@ -189,49 +183,43 @@ gpartsui_document_controller_get_type(void)
             NULL                                       /* value_table */
             };
 
-        type = g_type_register_static(
-            GPARTSUI_TYPE_VIEW_CONTROLLER,
-            "GPartsUIDocumentController",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static(GPARTSUI_TYPE_VIEW_CONTROLLER,
+                                      "GPartsUIDocumentController",
+                                      &tinfo,
+                                      0);
     }
 
     return type;
 }
 
 static void
-gpartsui_document_controller_init(GTypeInstance *instance, gpointer g_class)
+gpartsui_document_controller_init(GTypeInstance *instance, void *g_class)
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->delete_controller = MISCUI_ACTION_CONTROLLER(g_object_new(
             MISCUI_TYPE_ACTION_CONTROLLER,
             "default-label",  "Delete",
             "sensitive",      FALSE,
-            NULL
-            ));
+            NULL));
 
         privat->edit_controller = MISCUI_ACTION_CONTROLLER(g_object_new(
             MISCUI_TYPE_ACTION_CONTROLLER,
             "default-label",  "Edit",
             "sensitive",      FALSE,
-            NULL
-            ));
+            NULL));
 
         privat->insert_controller = MISCUI_ACTION_CONTROLLER(g_object_new(
             MISCUI_TYPE_ACTION_CONTROLLER,
             "default-label",  "Insert",
             "sensitive",      FALSE,
-            NULL
-            ));
+            NULL));
 
         privat->result_controller = GPARTSUI_RESULT_CONTROLLER(g_object_new(
             GPARTSUI_TYPE_RESULT_CONTROLLER,
-            NULL
-            ));
+            NULL));
     }
 }
 
@@ -246,21 +234,17 @@ gpartsui_document_controller_open_document(const GPartsUIDocumentController *con
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->documents != NULL)
-        {
-            gchar **temp = privat->documents;
+    if (privat != NULL) {
 
-            while (*temp != NULL)
-            {
+        if (privat->documents != NULL) {
+
+            char **temp = privat->documents;
+
+            while (*temp != NULL) {
+
                 GString *command = g_string_new(NULL);
 
-                g_string_printf(
-                    command,
-                    "gnome-open %s",
-                    *temp
-                    );
+                g_string_printf(command, "gnome-open %s", *temp);
 
                 g_spawn_command_line_async(command->str, NULL);
 
@@ -273,47 +257,46 @@ gpartsui_document_controller_open_document(const GPartsUIDocumentController *con
 }
 
 static void
-gpartsui_document_controller_open_document_cb(GtkAction *action, GPartsUIDocumentController *controller)
+gpartsui_document_controller_open_document_cb(GtkAction *action,
+                                              GPartsUIDocumentController *controller)
 {
     gpartsui_document_controller_open_document(controller);
 }
 
 static void
-gpartsui_document_controller_changed_selection_cb(GtkTreeSelection *selection, GPartsUIDocumentController *controller)
+gpartsui_document_controller_changed_selection_cb(GtkTreeSelection *selection,
+                                                  GPartsUIDocumentController *controller)
 {
     gpartsui_document_controller_update_documents(controller);
 }
 
 void
-gpartsui_document_controller_set_document_model(GPartsUIDocumentController *controller, GPartsUIDocumentModel *model)
+gpartsui_document_controller_set_document_model(GPartsUIDocumentController *controller,
+                                                GPartsUIDocumentModel      *model)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->company_model != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->company_model,
+    if (privat != NULL) {
+
+        if (privat->document_model != NULL) {
+
+            g_signal_handlers_disconnect_by_func(privat->document_model,
                 G_CALLBACK(gpartsui_document_controller_notify_document_result_cb),
-                controller
-                );
+                controller);
 
-            g_object_unref(privat->company_model);
+            g_object_unref(privat->document_model);
         }
 
-        privat->company_model = model;
+        privat->document_model = model;
 
-        if (privat->company_model != NULL)
-        {
-            g_object_ref(privat->company_model);
+        if (privat->document_model != NULL) {
 
-            g_signal_connect(
-                privat->company_model,
-                "notify::company-result",
+            g_object_ref(privat->document_model);
+
+            g_signal_connect(privat->document_model,"notify::company-result",
                 G_CALLBACK(gpartsui_document_controller_notify_document_result_cb),
-                controller
-                );
+                controller);
         }
 
         gpartsui_document_controller_update_tree_model(controller);
@@ -323,114 +306,113 @@ gpartsui_document_controller_set_document_model(GPartsUIDocumentController *cont
 void
 gpartsui_document_controller_set_document_view(GPartsUIDocumentController *controller, GtkTreeView *view)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->company_selection != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->company_selection,
+    if (privat != NULL) {
+
+        if (privat->document_selection != NULL) {
+
+            g_signal_handlers_disconnect_by_func(privat->document_selection,
                 G_CALLBACK(gpartsui_document_controller_changed_selection_cb),
-                controller
-                );
+                controller);
 
-            g_object_unref(privat->company_selection);
+            g_object_unref(privat->document_selection);
 
-            privat->company_selection = NULL;
+            privat->document_selection = NULL;
         }
 
-        if (privat->company_tree_view != NULL)
-        {
-            g_object_unref(privat->company_tree_view);
+        if (privat->document_tree_view != NULL) {
+
+            g_object_unref(privat->document_tree_view);
         }
 
-        privat->company_tree_view = view;
+        privat->document_tree_view = view;
 
-        if (privat->company_tree_view != NULL)
-        {
-            g_object_ref(privat->company_tree_view);
+        if (privat->document_tree_view != NULL) {
 
-            privat->company_selection = gtk_tree_view_get_selection(privat->company_tree_view);
+            g_object_ref(privat->document_tree_view);
+
+            privat->document_selection = gtk_tree_view_get_selection(privat->document_tree_view);
         }
 
-        if (privat->company_selection != NULL)
-        {
-            g_object_ref(privat->company_selection);
+        if (privat->document_selection != NULL)  {
 
-            g_signal_connect(
-                privat->company_selection,
-                "changed",
+            g_object_ref(privat->document_selection);
+
+            g_signal_connect(privat->document_selection,"changed",
                 G_CALLBACK(gpartsui_document_controller_changed_selection_cb),
-                controller
-                );
+                controller);
         }
     }
 }
 
 static void
-gpartsui_document_controller_set_delete_action(GPartsUIDocumentController *controller, GtkAction *action)
+gpartsui_document_controller_set_delete_action(void *pcontroller, GtkAction *action)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentController *controller = pcontroller;
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL)  {
+
         miscui_action_controller_set_action(privat->delete_controller, action);
     }
 }
 
 static void
-gpartsui_document_controller_set_edit_action(GPartsUIDocumentController *controller, GtkAction *action)
+gpartsui_document_controller_set_edit_action(void *pcontroller, GtkAction *action)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentController *controller = pcontroller;
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL)  {
+
         miscui_action_controller_set_action(privat->edit_controller, action);
     }
 }
 
 static void
-gpartsui_document_controller_set_insert_action(GPartsUIDocumentController *controller, GtkAction *action)
+gpartsui_document_controller_set_insert_action(void *pcontroller, GtkAction *action)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentController *controller = pcontroller;
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL)  {
+
         miscui_action_controller_set_action(privat->insert_controller, action);
     }
 }
 
 static void
-gpartsui_document_controller_set_open_document_action(GPartsUIDocumentController *controller, GtkAction *action)
+gpartsui_document_controller_set_open_document_action(void *pcontroller, GtkAction *action)
 {
-    GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIDocumentController *controller = pcontroller;
+    GPartsUIDocumentControllerPrivate *privat =
+    GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->open_document_action != NULL)
-        {
-            g_signal_handlers_disconnect_by_func(
-                privat->open_document_action,
+    if (privat != NULL) {
+
+        if (privat->open_document_action != NULL) {
+
+            g_signal_handlers_disconnect_by_func(privat->open_document_action,
                 G_CALLBACK(gpartsui_document_controller_open_document_cb),
-                controller
-                );
+                controller);
 
             g_object_unref(privat->open_document_action);
         }
 
         privat->open_document_action = action;
 
-        if (privat->open_document_action != NULL)
-        {
+        if (privat->open_document_action != NULL) {
+
             g_object_ref(privat->open_document_action);
 
-            g_signal_connect(
-                privat->open_document_action,
-                "activate",
+            g_signal_connect(privat->open_document_action, "activate",
                 G_CALLBACK(gpartsui_document_controller_open_document_cb),
-                controller
-                );
+                controller);
 
             gpartsui_document_controller_update_open_document_action(controller);
         }
@@ -439,12 +421,12 @@ gpartsui_document_controller_set_open_document_action(GPartsUIDocumentController
 
 
 static void
-gpartsui_document_controller_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+gpartsui_document_controller_set_property(GObject *object, unsigned int property_id, const GValue *value, GParamSpec *pspec)
 {
     GPartsUIDocumentController *controller = GPARTSUI_DOCUMENT_CONTROLLER(object);
 
-    switch (property_id)
-    {
+    switch (property_id) {
+
         case GPARTSUI_DOCUMENT_CONTROLLER_DOCUMENT_MODEL:
             gpartsui_document_controller_set_document_model(controller, GPARTSUI_DOCUMENT_MODEL(g_value_get_object(value)));
             break;
@@ -463,23 +445,23 @@ gpartsui_document_controller_update_open_document_action(GPartsUIDocumentControl
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        guint count = 0;
+    if (privat != NULL) {
 
-        if (privat->documents != NULL)
-        {
+        unsigned int count = 0;
+
+        if (privat->documents != NULL) {
+
             count = g_strv_length(privat->documents);
         }
 
         gtk_action_set_sensitive(privat->open_document_action, (count > 0));
 
-        if (count > 1)
-        {
+        if (count > 1) {
+
             gtk_action_set_label(privat->open_document_action, "Open Documents");
         }
-        else
-        {
+        else {
+
             gtk_action_set_label(privat->open_document_action, "Open Document");
         }
     }
@@ -490,22 +472,22 @@ gpartsui_document_controller_update_tree_model(GPartsUIDocumentController *contr
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GPartsDatabaseResult *database_result;
 
-        if (privat->company_tree_model != NULL)
-        {
-            g_object_unref(privat->company_tree_model);
+        if (privat->document_tree_model != NULL) {
 
-            privat->company_tree_model = NULL;
+            g_object_unref(privat->document_tree_model);
+
+            privat->document_tree_model = NULL;
         }
 
-        database_result = gpartsui_document_model_get_document_result(privat->company_model);
+        database_result = gpartsui_document_model_get_document_result(privat->document_model);
 
-        if (database_result != NULL)
-        {
-            privat->company_tree_model = gpartsui_result_adapter_new(database_result);
+        if (database_result != NULL)  {
+
+            privat->document_tree_model = gpartsui_result_adapter_new(database_result);
 
             g_object_unref(database_result);
         }
@@ -519,13 +501,13 @@ gpartsui_document_controller_update_tree_view(GPartsUIDocumentController *contro
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        if (privat->company_tree_view)
-        {
-            gpartsui_result_adapter_adjust_columns(privat->company_tree_model, privat->company_tree_view);
+    if (privat != NULL) {
 
-            gtk_tree_view_set_model(privat->company_tree_view, GTK_TREE_MODEL(privat->company_tree_model));
+        if (privat->document_tree_view) {
+
+            gpartsui_result_adapter_adjust_columns(privat->document_tree_model, privat->document_tree_view);
+
+            gtk_tree_view_set_model(privat->document_tree_view, GTK_TREE_MODEL(privat->document_tree_model));
         }
     }
 }
@@ -535,13 +517,12 @@ gpartsui_document_controller_update_documents(GPartsUIDocumentController *contro
 {
     GPartsUIDocumentControllerPrivate *privat = GPARTSUI_DOCUMENT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         g_strfreev(privat->documents);
 
-        privat->documents = gpartsui_result_adapter_get_fields(privat->company_tree_model, privat->company_selection, 2);
+        privat->documents = gpartsui_result_adapter_get_fields(privat->document_tree_model, privat->document_selection, 2);
 
         gpartsui_document_controller_update_open_document_action(controller);
     }
 }
-
