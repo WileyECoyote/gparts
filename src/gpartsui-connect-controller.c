@@ -185,67 +185,59 @@ gpartsui_connect_controller_class_init(gpointer g_class, gpointer g_class_data)
     klasse->get_property = gpartsui_connect_controller_get_property;
     klasse->set_property = gpartsui_connect_controller_set_property;
 
-    g_object_class_install_property(
-        klasse,
-        GPARTSUI_CONNECT_CONTROLLER_CONNECT_ACTION,
-        g_param_spec_object(
-            "connect-action",
-            "Connect Action",
-            "Connect Action",
-            GTK_TYPE_ACTION,
-            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(klasse,
+                                    GPARTSUI_CONNECT_CONTROLLER_CONNECT_ACTION,
+                                    g_param_spec_object("connect-action",
+                                                        "Connect Action",
+                                                        "Connect Action",
+                                                        GTK_TYPE_ACTION,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        klasse,
-        GPARTSUI_CONNECT_CONTROLLER_CONNECT_MODEL,
-        g_param_spec_object(
-            "connect-model",
-            "Connect Model",
-            "Connect Model",
-            GPARTSUI_TYPE_CONNECT_MODEL,
-            G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+    g_object_class_install_property(klasse,
+                                    GPARTSUI_CONNECT_CONTROLLER_CONNECT_MODEL,
+                                    g_param_spec_object("connect-model",
+                                                        "Connect Model",
+                                                        "Connect Model",
+                                                        GPARTSUI_TYPE_CONNECT_MODEL,
+                                                        G_PARAM_READWRITE |
+                                                        G_PARAM_STATIC_STRINGS));
 }
 
 void
 gpartsui_connect_controller_connect(GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        gint result = gtk_dialog_run(privat->connect_dialog);
+  if (privat != NULL) {
 
-        if (result == GTK_RESPONSE_OK)
-        {
-            GError *error = NULL;
+    int result = gtk_dialog_run(privat->connect_dialog);
 
-            gpartsui_connect_model_connect(privat->connect_model, &error);
+    if (result == GTK_RESPONSE_OK) {
 
-            if (error != NULL)
-            {
-                GtkWidget *error_dialog = gtk_message_dialog_new(
-                    NULL,
-                    GTK_DIALOG_MODAL,
-                    GTK_MESSAGE_ERROR,
-                    GTK_BUTTONS_CLOSE,
-                    "%s",
-                    error->message
-                    );
+      GError *error = NULL;
 
-                gtk_dialog_run(GTK_DIALOG(error_dialog));
+      gpartsui_connect_model_connect(privat->connect_model, &error);
 
-                gtk_widget_destroy(error_dialog);
+      if (error != NULL) {
 
-                g_clear_error(&error);
-            }
-        }
+        GtkWidget *error_dialog = gtk_message_dialog_new(NULL,
+                                                         GTK_DIALOG_MODAL,
+                                                         GTK_MESSAGE_ERROR,
+                                                         GTK_BUTTONS_CLOSE,
+                                                         "%s",
+                                                         error->message);
 
-        gtk_widget_hide(GTK_WIDGET(privat->connect_dialog));
+        gtk_dialog_run(GTK_DIALOG(error_dialog));
+
+        gtk_widget_destroy(error_dialog);
+
+        g_clear_error(&error);
+      }
     }
+
+    gtk_widget_hide(GTK_WIDGET(privat->connect_dialog));
+  }
 }
 
 static void
@@ -275,7 +267,7 @@ gpartsui_connect_controller_database_name_notify_cb(GPartsUIConnectModel *model,
 
     if (privat != NULL)
     {
-        gchar *database = gpartsui_connect_model_get_database_name(privat->connect_model);
+        char *database = gpartsui_connect_model_get_database_name(privat->connect_model);
 
         g_signal_handlers_block_by_func(
             privat->database_entry,
@@ -463,24 +455,26 @@ gpartsui_connect_controller_database_valid_notify_cb(GPartsUIConnectModel *model
 static void
 gpartsui_connect_controller_dispose(GObject *object)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(object);
+  GPartsUIConnectControllerPrivate *privat =
+  GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        misc_object_unref(privat->connect_dialog);
-        privat->connect_dialog = NULL;
+  if (privat != NULL) {
 
-        misc_object_unref(privat->file_dialog);
-        privat->file_dialog = NULL;
-    }
+    misc_object_unref(privat->connect_dialog);
+    privat->connect_dialog = NULL;
 
-    misc_object_chain_dispose(object);
+    misc_object_unref(privat->file_dialog);
+    privat->file_dialog = NULL;
+  }
+
+  misc_object_chain_dispose(object);
 }
 
 static void
 gpartsui_connect_controller_finalize(GObject *object)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(object);
+    GPartsUIConnectControllerPrivate *privat =
+    GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(object);
 
     misc_object_chain_finalize(object);
 }
@@ -488,75 +482,71 @@ gpartsui_connect_controller_finalize(GObject *object)
 static void
 gpartsui_connect_controller_filename_button_clicked_cb(GtkButton *button, GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat =
+  GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if ((privat != NULL) && (privat->file_dialog != NULL))
-    {
-        gint result = gtk_dialog_run(GTK_DIALOG(privat->file_dialog));
+  if ((privat != NULL) && (privat->file_dialog != NULL)) {
 
-        if (result == GTK_RESPONSE_OK)
-        {
-            gchar *filename = gtk_file_chooser_get_filename(privat->file_dialog);
+    int result = gtk_dialog_run(GTK_DIALOG(privat->file_dialog));
 
-            gtk_entry_set_text(privat->filename_entry, filename);
+    if (result == GTK_RESPONSE_OK) {
 
-            g_free(filename);
-        }
+      GtkFileChooser *dialog;
+      GtkEntry *entry;
 
-        gtk_widget_hide(GTK_WIDGET(privat->file_dialog));
+      char *filename;
+
+      dialog   = (GtkFileChooser*)privat->file_dialog;
+      entry    = (GtkEntry*)privat->filename_entry;
+      filename = gtk_file_chooser_get_filename(dialog);
+
+      gtk_entry_set_text(entry, filename);
+
+      g_free(filename);
     }
+
+    gtk_widget_hide(GTK_WIDGET(privat->file_dialog));
+  }
 }
 
 
 static void
 gpartsui_connect_controller_filename_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        gchar *filename = gpartsui_connect_model_get_filename(privat->connect_model);
+  if (privat != NULL) {
 
-        g_signal_handlers_block_by_func(
-            privat->filename_entry,
-            G_CALLBACK(gpartsui_connect_controller_filename_text_notify_cb),
-            controller
-            );
+    char *filename = gpartsui_connect_model_get_filename(privat->connect_model);
 
-        gtk_entry_set_text(
-            GTK_ENTRY(privat->filename_entry),
-            filename
-            );
+    g_signal_handlers_block_by_func(privat->filename_entry,
+    G_CALLBACK(gpartsui_connect_controller_filename_text_notify_cb),
+                                    controller);
 
-        g_signal_handlers_unblock_by_func(
-            privat->filename_entry,
-            G_CALLBACK(gpartsui_connect_controller_filename_text_notify_cb),
-            controller
-            );
+    gtk_entry_set_text(GTK_ENTRY(privat->filename_entry),
+                       filename);
 
-        g_free(filename);
-    }
+    g_signal_handlers_unblock_by_func(privat->filename_entry,
+    G_CALLBACK(gpartsui_connect_controller_filename_text_notify_cb),
+                                      controller);
+
+    g_free(filename);
+  }
 }
 
 static void
 gpartsui_connect_controller_filename_sensitive_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        gboolean sensitive = gpartsui_connect_model_get_filename_sensitive(privat->connect_model);
+  if (privat != NULL) {
 
-        gtk_widget_set_sensitive(
-            privat->filename_button,
-            sensitive
-            );
+    int sensitive = gpartsui_connect_model_get_filename_sensitive(privat->connect_model);
 
-        gtk_widget_set_sensitive(
-            privat->filename_entry,
-            sensitive
-            );
-    }
+    gtk_widget_set_sensitive(privat->filename_button, sensitive);
+
+    gtk_widget_set_sensitive(privat->filename_entry, sensitive);
+  }
 }
 
 static void
@@ -564,35 +554,31 @@ gpartsui_connect_controller_filename_text_notify_cb(GtkEntry *entry, GParamSpec 
 {
     GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        g_signal_handlers_block_by_func(
-            privat->connect_model,
-            G_CALLBACK(gpartsui_connect_controller_filename_notify_cb),
-            controller
-            );
+    if (privat != NULL) {
 
-        gpartsui_connect_model_set_filename(
-            privat->connect_model,
-            gtk_entry_get_text(GTK_ENTRY(privat->filename_entry))
-            );
-
-        g_signal_handlers_unblock_by_func(
-            privat->connect_model,
+        g_signal_handlers_block_by_func(privat->connect_model,
             G_CALLBACK(gpartsui_connect_controller_filename_notify_cb),
-            controller
-            );
+            controller);
+
+        gpartsui_connect_model_set_filename(privat->connect_model,
+            gtk_entry_get_text(GTK_ENTRY(privat->filename_entry)));
+
+        g_signal_handlers_unblock_by_func(privat->connect_model,
+            G_CALLBACK(gpartsui_connect_controller_filename_notify_cb),
+            controller);
     }
 }
 
 static void
 gpartsui_connect_controller_filename_valid_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
+/*
     GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
     if (privat != NULL)
     {
     }
+*/
 }
 
 GType
@@ -600,8 +586,8 @@ gpartsui_connect_controller_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(GPartsUIConnectControllerClass),
             NULL,
@@ -615,12 +601,10 @@ gpartsui_connect_controller_get_type(void)
             NULL
             };
 
-        type = g_type_register_static(
-            G_TYPE_OBJECT,
-            "GPartsUIConnectController",
-            &tinfo,
-            0
-            );
+        type = g_type_register_static( G_TYPE_OBJECT,
+                                       "GPartsUIConnectController",
+                                       &tinfo,
+                                       0);
     }
     return type;
 }
@@ -629,14 +613,15 @@ GtkAction*
 gpartsui_connect_controller_get_connect_action(const GPartsUIConnectController *controller)
 {
     GtkAction *action = NULL;
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIConnectControllerPrivate *privat =
+    GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         action = privat->connect_action;
 
-        if (action != NULL)
-        {
+        if (action != NULL) {
+
             g_object_ref(action);
         }
     }
@@ -648,14 +633,15 @@ GPartsUIConnectModel*
 gpartsui_connect_controller_get_connect_model(const GPartsUIConnectController *controller)
 {
     GPartsUIConnectModel *model = NULL;
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+    GPartsUIConnectControllerPrivate *privat =
+    GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         model = privat->connect_model;
 
-        if (model != NULL)
-        {
+        if (model != NULL) {
+
             g_object_ref(model);
         }
     }
@@ -666,63 +652,56 @@ gpartsui_connect_controller_get_connect_model(const GPartsUIConnectController *c
 static void
 gpartsui_connect_controller_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
 {
-    switch (property_id)
-    {
-        case GPARTSUI_CONNECT_CONTROLLER_CONNECT_ACTION:
-            g_value_take_object(value, gpartsui_connect_controller_get_connect_action(GPARTSUI_CONNECT_CONTROLLER(object)));
-            break;
+  switch (property_id) {
 
-        case GPARTSUI_CONNECT_CONTROLLER_CONNECT_MODEL:
-            g_value_take_object(value, gpartsui_connect_controller_get_connect_model(GPARTSUI_CONNECT_CONTROLLER(object)));
-            break;
+    case GPARTSUI_CONNECT_CONTROLLER_CONNECT_ACTION:
+      g_value_take_object(value, gpartsui_connect_controller_get_connect_action(GPARTSUI_CONNECT_CONTROLLER(object)));
+      break;
 
-        default:
-            G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
-    }
+    case GPARTSUI_CONNECT_CONTROLLER_CONNECT_MODEL:
+      g_value_take_object(value, gpartsui_connect_controller_get_connect_model(GPARTSUI_CONNECT_CONTROLLER(object)));
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+  }
 }
 
 static void
 gpartsui_connect_controller_hostname_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        gchar *hostname = gpartsui_connect_model_get_hostname(privat->connect_model);
+  if (privat != NULL) {
 
-        g_signal_handlers_block_by_func(
-            privat->hostname_entry,
-            G_CALLBACK(gpartsui_connect_controller_hostname_text_notify_cb),
-            controller
-            );
+    char *hostname = gpartsui_connect_model_get_hostname(privat->connect_model);
 
-        gtk_entry_set_text(
-            GTK_ENTRY(privat->hostname_entry),
-            hostname
-            );
+    g_signal_handlers_block_by_func(privat->hostname_entry,
+    G_CALLBACK(gpartsui_connect_controller_hostname_text_notify_cb),
+                                    controller);
 
-        g_signal_handlers_unblock_by_func(
-            privat->hostname_entry,
-            G_CALLBACK(gpartsui_connect_controller_hostname_text_notify_cb),
-            controller
-            );
+    gtk_entry_set_text(GTK_ENTRY(privat->hostname_entry),
+                       hostname);
 
-        g_free(hostname);
-    }
+    g_signal_handlers_unblock_by_func(privat->hostname_entry,
+    G_CALLBACK(gpartsui_connect_controller_hostname_text_notify_cb),
+                                      controller);
+
+    g_free(hostname);
+  }
 }
 
 static void
 gpartsui_connect_controller_hostname_sensitive_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
-    GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
+  GPartsUIConnectControllerPrivate *privat =
+  GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        gtk_widget_set_sensitive(
-            privat->hostname_entry,
-            gpartsui_connect_model_get_hostname_sensitive(privat->connect_model)
-            );
-    }
+  if (privat != NULL) {
+
+    gtk_widget_set_sensitive(privat->hostname_entry,
+    gpartsui_connect_model_get_hostname_sensitive(privat->connect_model));
+  }
 }
 
 static void
@@ -730,35 +709,31 @@ gpartsui_connect_controller_hostname_text_notify_cb(GtkEntry *entry, GParamSpec 
 {
     GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
-    if (privat != NULL)
-    {
-        g_signal_handlers_block_by_func(
-            privat->connect_model,
-            G_CALLBACK(gpartsui_connect_controller_hostname_notify_cb),
-            controller
-            );
+    if (privat != NULL) {
 
-        gpartsui_connect_model_set_hostname(
-            privat->connect_model,
-            gtk_entry_get_text(GTK_ENTRY(privat->hostname_entry))
-            );
-
-        g_signal_handlers_unblock_by_func(
-            privat->connect_model,
+        g_signal_handlers_block_by_func(privat->connect_model,
             G_CALLBACK(gpartsui_connect_controller_hostname_notify_cb),
-            controller
-            );
+            controller);
+
+        gpartsui_connect_model_set_hostname(privat->connect_model,
+            gtk_entry_get_text(GTK_ENTRY(privat->hostname_entry)));
+
+        g_signal_handlers_unblock_by_func(privat->connect_model,
+            G_CALLBACK(gpartsui_connect_controller_hostname_notify_cb),
+            controller);
     }
 }
 
 static void
 gpartsui_connect_controller_hostname_valid_notify_cb(GPartsUIConnectModel *model, GParamSpec *param, GPartsUIConnectController *controller)
 {
+/*
     GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(controller);
 
     if (privat != NULL)
     {
     }
+*/
 }
 
 static void
@@ -766,36 +741,32 @@ gpartsui_connect_controller_instance_init(GTypeInstance *instance, gpointer g_cl
 {
     GPartsUIConnectControllerPrivate *privat = GPARTSUI_CONNECT_CONTROLLER_GET_PRIVATE(instance);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         GtkWidget *content;
 
-        privat->connect_dialog = GTK_DIALOG(gtk_dialog_new_with_buttons(
-            "Connect to a Database",
-            NULL,
-            GTK_DIALOG_MODAL,
-            GTK_STOCK_HELP,    GTK_RESPONSE_HELP,
-            GTK_STOCK_CANCEL,  GTK_RESPONSE_CANCEL,
-            GTK_STOCK_CONNECT, GTK_RESPONSE_OK,
-            NULL
-            ));
+        privat->connect_dialog =
+        GTK_DIALOG(gtk_dialog_new_with_buttons("Connect to a Database",
+                                               NULL,
+                                               GTK_DIALOG_MODAL,
+                                               GTK_STOCK_HELP,    GTK_RESPONSE_HELP,
+                                               GTK_STOCK_CANCEL,  GTK_RESPONSE_CANCEL,
+                                               GTK_STOCK_CONNECT, GTK_RESPONSE_OK,
+                                               NULL));
 
-        privat->file_dialog = GTK_FILE_CHOOSER(gtk_file_chooser_dialog_new(
-            "Select a Database File",
-            NULL,
-            GTK_FILE_CHOOSER_ACTION_OPEN,
-            GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-            GTK_STOCK_OK,     GTK_RESPONSE_OK,
-            NULL
-            ));
+        privat->file_dialog =
+        GTK_DIALOG(gtk_file_chooser_dialog_new("Select a Database File",
+                                               NULL,
+                                               GTK_FILE_CHOOSER_ACTION_OPEN,
+                                               GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                               GTK_STOCK_OK,     GTK_RESPONSE_OK,
+                                               NULL));
 
-        gtk_dialog_set_alternative_button_order(
-            privat->connect_dialog,
-            GTK_RESPONSE_HELP,
-            GTK_RESPONSE_OK,
-            GTK_RESPONSE_CANCEL,
-            -1
-            );
+        gtk_dialog_set_alternative_button_order(privat->connect_dialog,
+                                                GTK_RESPONSE_HELP,
+                                                GTK_RESPONSE_OK,
+                                                GTK_RESPONSE_CANCEL,
+                                                -1);
 
         gtk_dialog_set_default_response(privat->connect_dialog, GTK_RESPONSE_OK);
 
@@ -1161,7 +1132,7 @@ gpartsui_connect_controller_password_notify_cb(GPartsUIConnectModel *model, GPar
 
     if (privat != NULL)
     {
-        gchar *password = gpartsui_connect_model_get_password(privat->connect_model);
+        char *password = gpartsui_connect_model_get_password(privat->connect_model);
 
         g_signal_handlers_block_by_func(
             privat->password_entry,
@@ -1390,7 +1361,7 @@ gpartsui_connect_controller_set_connect_model(GPartsUIConnectController *control
 
         if (privat->connect_model != NULL)
         {
-            gchar *temp;
+            char *temp;
 
             g_object_ref(privat->connect_model);
 
@@ -1627,7 +1598,7 @@ gpartsui_connect_controller_username_notify_cb(GPartsUIConnectModel *model, GPar
 
     if (privat != NULL)
     {
-        gchar *username = gpartsui_connect_model_get_username(privat->connect_model);
+        char *username = gpartsui_connect_model_get_username(privat->connect_model);
 
         g_signal_handlers_block_by_func(
             privat->username_entry,
