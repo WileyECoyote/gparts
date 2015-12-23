@@ -61,7 +61,7 @@ sch_bus_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStre
 
 
 static void
-sch_bus_class_init(gpointer g_class, gpointer g_class_data)
+sch_bus_class_init(void *g_class, void *g_class_data)
 {
     GObjectClass *object_class = G_OBJECT_CLASS(g_class);
     SchBusClass *klasse = SCH_BUS_CLASS(g_class);
@@ -73,9 +73,7 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
 
     klasse->parent.write  = sch_bus_write;
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_X1,
+    g_object_class_install_property(object_class, SCH_BUS_X1,
         g_param_spec_int(
             "x1",
             "X1",
@@ -83,13 +81,9 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             G_MININT,
             G_MAXINT,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_Y1,
+    g_object_class_install_property(object_class, SCH_BUS_Y1,
         g_param_spec_int(
             "y1",
             "Y1",
@@ -97,13 +91,9 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             G_MININT,
             G_MAXINT,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_X2,
+    g_object_class_install_property(object_class, SCH_BUS_X2,
         g_param_spec_int(
             "x2",
             "X2",
@@ -111,13 +101,9 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             G_MININT,
             G_MAXINT,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_Y2,
+    g_object_class_install_property(object_class, SCH_BUS_Y2,
         g_param_spec_int(
             "y2",
             "Y2",
@@ -125,13 +111,9 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             G_MININT,
             G_MAXINT,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_COLOR,
+    g_object_class_install_property(object_class, SCH_BUS_COLOR,
         g_param_spec_int(
             "color",
             "Color",
@@ -139,13 +121,9 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             0,
             G_MAXINT,
             SCH_BUS_DEFAULT_COLOR,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-    g_object_class_install_property(
-        object_class,
-        SCH_BUS_RIPPER_DIR,
+    g_object_class_install_property(object_class, SCH_BUS_RIPPER_DIR,
         g_param_spec_int(
             "ripper-dir",
             "Ripper Direction",
@@ -153,9 +131,7 @@ sch_bus_class_init(gpointer g_class, gpointer g_class_data)
             0,
             G_MAXINT,
             0,
-            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS
-            )
-        );
+            G_PARAM_LAX_VALIDATION | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 }
 
 static void
@@ -163,10 +139,10 @@ sch_bus_get_property(GObject *object, unsigned int property_id, GValue *value, G
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_BUS_X1:
                 g_value_set_int(value, privat->line.x[0]);
                 break;
@@ -202,8 +178,8 @@ sch_bus_get_type(void)
 {
     static GType type = G_TYPE_INVALID;
 
-    if (type == G_TYPE_INVALID)
-    {
+    if (type == G_TYPE_INVALID) {
+
         static const GTypeInfo tinfo = {
             sizeof(SchBusClass),    /* class_size */
             NULL,                   /* base_init */
@@ -221,8 +197,7 @@ sch_bus_get_type(void)
             SCH_TYPE_SHAPE,
             "SchBus",
             &tinfo,
-            0
-            );
+            0);
     }
 
     return type;
@@ -233,10 +208,10 @@ sch_bus_set_property(GObject *object, unsigned int property_id, const GValue *va
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(object);
 
-    if (privat != NULL)
-    {
-        switch (property_id)
-        {
+    if (privat != NULL) {
+
+        switch (property_id) {
+
             case SCH_BUS_X1:
                 privat->line.x[0] = g_value_get_int(value);
                 break;
@@ -273,8 +248,8 @@ sch_bus_get_color(const SchBus *shape)
     int index = SCH_BUS_DEFAULT_COLOR;
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         index = privat->color;
     }
 
@@ -284,16 +259,16 @@ sch_bus_get_color(const SchBus *shape)
 void
 sch_bus_get_line(const SchBus *shape, GeomLine *line)
 {
-    if (line != NULL)
-    {
+    if (line != NULL) {
+
         SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-        if (privat != NULL)
-        {
+        if (privat != NULL) {
+
             *line = privat->line;
         }
-        else
-        {
+        else {
+
             geom_line_init(line);
         }
     }
@@ -314,8 +289,8 @@ sch_bus_set_line(SchBus *shape, const GeomLine *line)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line = *line;
 
         g_object_notify(G_OBJECT(shape), "x0");
@@ -330,8 +305,8 @@ sch_bus_set_x0(SchBus *shape, int x0)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line.x[0] = x0;
 
         g_object_notify(G_OBJECT(shape), "x0");
@@ -343,8 +318,8 @@ sch_bus_set_x1(SchBus *shape, int x1)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line.x[1] = x1;
 
         g_object_notify(G_OBJECT(shape), "x1");
@@ -356,8 +331,8 @@ sch_bus_set_y0(SchBus *shape, int y0)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL) {
+
         privat->line.y[0] = y0;
 
         g_object_notify(G_OBJECT(shape), "y0");
@@ -369,8 +344,8 @@ sch_bus_set_y1(SchBus *shape, int y1)
 {
     SchBusPrivate *privat = SCH_BUS_GET_PRIVATE(shape);
 
-    if (privat != NULL)
-    {
+    if (privat != NULL)  {
+
         privat->line.y[1] = y1;
 
         g_object_notify(G_OBJECT(shape), "y1");
@@ -382,4 +357,3 @@ sch_bus_write(const SchShape *shape, const SchFileFormat2 *format, SchOutputStre
 {
     sch_file_format_2_write_bus(format, stream, SCH_BUS(shape), error);
 }
-
